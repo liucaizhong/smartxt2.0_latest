@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>智能中文-调研寻踪</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta name="description" content="smartxt2.0 theme search">
+    <meta name="author" content="liucaizhong">    
+    <link rel="shortcut icon" href="/img/icon/favicon.ico">  
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css">
+    <!-- Plugins CSS -->    
+    <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+    <!-- Theme CSS -->
+    <link rel="stylesheet" href="/css/styles.css">
+</head> 
+
+<body>
+    <!-- ******HEADER****** --> 
+    <header id="header" class="header navbar-fixed-top scrolled">
+        <div class="container"> 
+            <div class="nav-left">
+                <div class="logo">
+                    <a href="/index"></a>
+                </div><!--//logo-->
+            </div><!-- //nav-left  -->  
+            <div class="nav-right">
+                <nav class="navbar">
+                    <button class="navbar-toggler hidden-lg-up" type="button" data-toggle="collapse" data-target="#main-nav" aria-controls="main-nav" aria-expanded="false" aria-label="Toggle navigation">&#9776;</button>
+                    <div class="collapse navbar-toggleable-md" id="main-nav">
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/index">首&nbsp;&nbsp;页</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/news">智能公告</a>
+                            </li>
+                            <li class="nav-item dropdown" data-hover="dropdown">
+                                <a class="nav-link" data-toggle="dropdown" data-close-others="false" href="#" role="button" aria-haspopup="true" aria-expanded="false">智能检索</a>
+                                <div class="dropdown-menu dark">
+                                  <a class="dropdown-item" href="/explore/theme">主题搜索</a>
+                                  <a class="dropdown-item" href="/explore/topic">话题探索</a>
+                                  <a class="dropdown-item" href="/explore/focus">热点观察</a>
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/research">调研寻踪</a>
+                            </li>
+<!--                             <li id="loginTab" class="nav-item btn btn-primary nav-li">
+                                <a class="nav-link nav-me" href="/login">登录</a>
+                            </li> -->
+                            <li id="userTab" class="nav-item dropdown" data-hover="dropdown">
+                                <a class="nav-link" data-toggle="dropdown" data-close-others="false" href="#" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user fa-2x" aria-hidden="true"></i></a>
+                                <div class="dropdown-menu dark">
+                                    <a class="dropdown-item" href="/user">用户中心</a>
+                                    <a class="dropdown-item" href="/logout">注销登录</a>
+                                </div>
+                            </li>
+<!--                             <li class="nav-item btn btn-success">
+                                <a class="nav-link" href="/signup">注册</a>
+                            </li> -->
+                        </ul>
+                    </div><!-- //main-nav -->
+                </nav><!-- //nav -->
+            </div><!-- //nav-right  -->       
+        </div><!--//container-->
+    </header><!--//header-->      
+    
+    <!-- ******CONDITIONS****** -->
+    <section class="research-conditions">
+        <div class="container bottom-line">
+            <div class="row bottom-line">
+                <!-- Search Input -->
+                <div class="col-xs-12 col-lg-6 search-field">
+                    <label for="stockInput" class="search-label">
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                        <span class="sr-only">Search icons</span>
+                    </label>
+                    <input id="stockInput" class="form-control search-input" placeholder="输入股票代码或股票名称" autocomplete="off" spellcheck="false" autocorrect="off" tabindex="1">
+                    <a id="search-clear" class="search-clear none" onclick="clearSearch(this)"><i class="fa fa-times-circle" aria-hidden="true"></i><span class="sr-only">Clear search</span></a>
+                </div>
+                <div id="stockList" class="stock-list">
+                    <ul class="stock-ul">
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <form class="form-research">
+                    <!-- period -->
+                    <div class="form-group row">
+                        <label for="btnPeriod" class="col-xs-4 col-lg-2 col-form-label form-label"><i class="fa fa-clock-o" aria-hidden="true"></i>调研时间</label>
+                        <div id="btnPeriod" class="col-xs-8 col-lg-10">
+                            <button id="p0" type="button" class="btn btn-valid" onclick="onPeriod(this)">最近10天</button>
+                            <button id="p1" type="button" class="btn btn-invalid" onclick="onPeriod(this)">最近20天</button>
+                            <button id="p2" type="button" class="btn btn-invalid" onclick="onPeriod(this)">最近1个月</button>
+                        </div>
+                    </div>
+                    <!-- source -->
+                    <div class="form-group row">
+                        <label for="btnSource" class="col-xs-4 col-lg-2 col-form-label form-label"><i class="fa fa-users" aria-hidden="true"></i>调研人群</label>
+                        <div id="btnSource" class="col-xs-8 col-lg-10">
+                            <button id="s0" type="button" class="btn btn-valid" onclick="onSource(this)">全体</button>
+                            <button id="s1" type="button" class="btn btn-invalid" onclick="onSource(this)">买方</button>
+                            <button id="s2" type="button" class="btn btn-invalid" onclick="onSource(this)">卖方</button>
+                        </div>
+                    </div>
+                    <!-- theme -->
+                    <div class="form-group row">
+                        <label for="btnTheme" class="col-xs-4 col-lg-2 col-form-label form-label"><i class="fa fa-file-text-o" aria-hidden="true"></i>调研主题</label>
+                        <div id="btnTheme" class="col-xs-8 col-lg-10 btnTheme" onclick="onTheme(this,event)"></div>
+                    </div>
+                    <!-- map -->
+                    <div class="form-group row">
+                    <label for="searchMap" class="col-xs-4 col-lg-2 col-form-label form-label"><i class="fa fa-map-o" aria-hidden="true"></i>调研地图</label>
+                    </div>
+                    <div id="searchMap" class="col-xs-12 col-lg-12 searchmap-lg searchmap-xs"></div>
+                </form>
+            </div>
+        </div> 
+    </section>     
+
+    <!-- ******RESULTS****** -->
+    <section id="research-list" class="research-list">
+        <div id="result-list" class="container">
+        </div>
+    </section>  
+
+    <!-- ******FOOTER****** --> 
+    <footer class="footer">
+        <div class="container">
+            <div class="row links">
+                <a href="/about">关于我们&nbsp;</a>
+                <a href="/help">帮助文档&nbsp;</a>
+                <a href="/privacy">隐私申明&nbsp;</a>
+                <div class="weixin"><i class="fa fa-weixin" aria-hidden="true"></i></div>
+                <div class="apple" ><i class="fa fa-apple" aria-hidden="true"></i></div>
+            </div>
+            <div class="row copyright">
+                <span><i class="fa fa-copyright" aria-hidden="true"></i>2014-2016&nbsp;Smartxt.&nbsp;All Rights Reserved(沪ICP备15056427-1号)</span>
+            </div>
+        </div>       
+    </footer><!--//footer-->
+ 
+    <!-- Javascript -->   
+    <!-- get data from nodejs -->
+    <script>
+        window.researchRes = '{{jsonData}}';
+    </script>
+    <!-- jquery -->
+    <script type="text/javascript" src="/lib/jquery/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/lib/jquery/plugins/jquery.placeholder.min.js"></script>
+    <script type="text/javascript" src="/lib/jquery/plugins/back-to-top.js"></script>
+    <!-- tether -->
+    <script type="text/javascript" src="/lib/tether/js/tether.min.js"></script>
+    <!-- bootstrap -->
+    <script type="text/javascript" src="/lib/bootstrap/js/bootstrap.min.js"></script> 
+    <!-- <script type="text/javascript" src="/lib/bootstrap/plugins/bootstrap-hover-dropdown.min.js"></script> -->
+    <!-- i18n used in future -->
+    <!-- <script type="text/javascript" src="/lib/i18n/i18n.min.js"></script> -->
+    <!-- echarts -->
+    <script type="text/javascript" src="/lib/echarts/echarts.js"></script>
+    <script type="text/javascript" src="/lib/echarts/macarons.js"></script>
+    <script type="text/javascript" src="/lib/echarts/china.js"></script>
+    <!-- custom -->
+    <script type="text/javascript" src="/src/common.js"></script>
+    <script type="text/javascript" src="/src/research.js"></script>
+            
+</body>
+</html> 
+
+

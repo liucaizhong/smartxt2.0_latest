@@ -1,0 +1,87 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>智能中文-登录</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta name="description" content="smartxt2.0 theme search">
+    <meta name="author" content="liucaizhong">    
+    <link rel="shortcut icon" href="/img/icon/favicon.ico">  
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css">
+    <!-- Datepicker -->
+    <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap-datetimepicker.min.css">
+    <!-- Plugins CSS -->    
+    <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+    <!-- Theme CSS -->
+    <link rel="stylesheet" href="/css/styles.css">
+</head> 
+
+<body class="login-body">     
+    
+    <!-- ******LOGIN******* -->
+    <section class="login-section">
+        <div class="container">
+            <div class="login-content">
+                <header>
+                    <a href="/index">
+                        <div class="logo-big"></div>
+                    </a><!--//logo-->
+                    <h3>Smartxt&nbsp;你的投资管家</h3>
+                </header>
+                <form id="form-login" action="">
+                    <div class="form-group">
+                        <input id="account" type="text" class="form-control" placeholder="用户名">
+                        <h6 id="account-err" class="login-err">用户名错误或不存在</h6>
+                    </div>
+                    <div class="form-group">
+                        <input id="password" type="password" class="form-control" placeholder="密码">
+                        <h6 id="password-err" class="login-err">密码错误</h6>
+                    </div>
+                    <div class="login-panel">
+                        <div class="remember-me" onclick="rememberMe(event)">
+                            <input id="rememberMe" type="checkbox">
+                            <a>记住我</a>
+                        </div>
+<!--                         <div class="forget-pass">
+                            <a onclick="forgetPassword()">忘记密码？</a>
+                        </div> -->
+                    </div>
+                    <button class="btn btn-primary login-submit" type="submit">登录</button>
+                    <p>
+<!--                         <small>还没有账号？</small>
+                        <a onclick="createUser()">
+                            <span class="create-user">创建账号</span>
+                        </a> -->
+                        <small>机构客户申请账号，请与东方创新联系；<br></small>
+                        <small>其他用户可关注主页底端的微信公众号，自助申请参与公测。</small>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </section>
+ 
+    <!-- jquery -->
+    <script>
+        window.user = '{{user}}';
+        window.error = '{{error}}';
+    </script>
+    <script type="text/javascript" src="/lib/jquery/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/lib/jquery/plugins/jquery.placeholder.min.js"></script>
+    <!-- tether -->
+    <script type="text/javascript" src="/lib/tether/js/tether.min.js"></script>
+    <!-- bootstrap -->
+    <script type="text/javascript" src="/lib/bootstrap/js/bootstrap.min.js"></script> 
+    <script type="text/javascript" src="/lib/bootstrap/plugins/bootstrap-hover-dropdown.min.js"></script>
+    <!-- i18n used in future -->
+    <!-- <script type="text/javascript" src="/lib/i18n/i18n.min.js"></script> -->
+    <!-- custom -->
+    <script type="text/javascript" src="/src/common.js"></script>
+    <script type="text/javascript" src="/src/login.js"></script>
+            
+</body>
+</html> 
+
+

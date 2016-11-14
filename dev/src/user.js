@@ -97,7 +97,7 @@ function _renderConceptTab(data) {
 		var sourceName = cur.split('#')[1];
 		var fragment = $(`<div class="row table-content">
                               <div class="col-xs-5 col-lg-5 theme-padding-top" onclick="onCheckTheme(event)">
-                                    <!-- <input type="checkbox"> -->
+                                    <input type="checkbox">
                                     <span class="theme-name"></span>
                               </div>
                               <div class="col-xs-5 col-lg-5 theme-padding-top">
@@ -123,7 +123,7 @@ function _renderTopicTab(data) {
 		var sourceName = cur.split('#')[0];
 		var fragment = $(`<div class="row table-content">
                               <div class="col-xs-4 col-lg-4 topic-padding-top" onclick="onCheckTopic(event)">
-                                  <!--  <input type="checkbox"> -->
+                                  	<input type="checkbox">
                                     <span class="topic-name"></span>
                               </div>
                               <div class="col-xs-4 col-lg-4 topic-padding-top">
@@ -164,7 +164,7 @@ function customOpStock(li) {
 
 	var tableContent = $(`<div class="row table-content">
                               <div class="col-xs-8 col-lg-8" onclick="onCheckStock(event)">
-                                   <!-- <input type="checkbox"> -->
+                                    <input type="checkbox">
                                     <span class="stock-code"></span>
                                     <span class="stock-name"></span>
                               </div>
@@ -283,7 +283,10 @@ function onConfirm() {
 			//to do later
 			
 			$('#del-all-stock').hide(500);
-			// checkAll.checked = false;
+			checkAll.checked = false;
+			$('#stockTableContent').find('input:checked').each(function(idx, elem) {
+				elem.checked = false;
+			});
 
 			//delete the checked stocks
 			$(delStocks).parent().parent().remove();
@@ -301,7 +304,10 @@ function onConfirm() {
 			//to do later
 			
 			$('#del-all-theme').hide(500);
-			// checkAll.checked = false;
+			checkAll.checked = false;
+			$('#themeTableContent').find('input:checked').each(function(idx, elem) {
+				elem.checked = false;
+			});
 			
 			//delete the checked stocks
 			$(delThemes).parent().parent().remove();
@@ -311,6 +317,25 @@ function onConfirm() {
 			delThemes = [];
 			break;
 		case 2:
+			var checkAll = document.getElementById('checkAllTopic');
+
+			$('#global-alert').hide();
+
+			//ajax post request
+			//to do later
+			
+			$('#del-all-topic').hide(500);
+			checkAll.checked = false;
+			$('#topicTableContent').find('input:checked').each(function(idx, elem) {
+				elem.checked = false;
+			});
+			
+			//delete the checked stocks
+			$(delTopics).parent().parent().remove();
+
+			_showFadeMsg('成功删除话题');
+			
+			delTopics = [];
 			break;
 	}
 }
@@ -428,7 +453,7 @@ function onLoadTheme(that) {
 function onDelAllTopic(that) {
 	var tableContent = $('#topicTableContent input:checked');
 	var delNum = tableContent.length;
-	opObj = 1;
+	opObj = 2;
 
 	if(delNum) {
 		delTopics = tableContent;
@@ -495,7 +520,7 @@ function onCheckTopic(event) {
 
 function onDelTopic(that) {
 	delTopics = $(that);
-	opObj = 1;
+	opObj = 2;
 
 	var topicName = $(that).parent().parent().find('span[class*="topic-name"]').text();
 

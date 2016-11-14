@@ -113,7 +113,7 @@
                       </div>
                       <div class="row table-header">
                             <div class="choose-all col-xs-8 col-lg-8" onclick="onCheckAllStock(event)">
-                                <!-- <input id="checkAllStock" type="checkbox"> -->
+                                <input id="checkAllStock" type="checkbox">
                                 <a>全部股票</a>
                             </div>
                             <div class="col-xs-4 col-lg-4 span-del">
@@ -123,7 +123,7 @@
                       <div id="stockTableContent">
                           <div class="row table-content">
                               <div class="col-xs-8 col-lg-8" onclick="onCheckStock(event)">
-                                    <!-- <input type="checkbox"> -->
+                                    <input type="checkbox">
                                     <span class="stock-code">600100</span>
                                     <span class="stock-name">大大大大大大</span>
                               </div>
@@ -143,7 +143,7 @@
                         </div>
                         <div class="row table-header">
                             <div class="choose-all col-xs-5 col-lg-5" onclick="onCheckAllTheme(event)">
-                                <!-- <input id="checkAllTheme" type="checkbox"> -->
+                                <input id="checkAllTheme" type="checkbox">
                                 <a>全部主题</a>
                             </div>
                             <div class="col-xs-5 col-lg-5">
@@ -168,7 +168,7 @@
                         </div>
                         <div class="row table-header">
                             <div class="choose-all col-xs-4 col-lg-4" onclick="onCheckAllTopic(event)">
-                                <!-- <input id="checkAllTopic" type="checkbox"> -->
+                                <input id="checkAllTopic" type="checkbox">
                                 <a>全部话题</a>
                             </div>
                             <div class="col-xs-4 col-lg-4">
@@ -193,7 +193,7 @@
                         </div>
                         <div class="row table-header">
                             <div class="choose-all col-xs-10 col-lg-10" onclick="onCheckAllWord(event)">
-                                <!-- <input id="checkAllWord" type="checkbox"> -->
+                                <input id="checkAllWord" type="checkbox">
                                 <a>全部新词</a>
                             </div>
                             <div class="col-xs-2 col-lg-2">
@@ -206,7 +206,7 @@
               </div>
               <div class="tab-pane" id="profile" role="tabpanel">
               <!--  bottom-line -->
-                <div class="profile-content">
+                <div class="profile-content bottom-line">
                     <div class="row">
                         <label class="label-user">用户名</label>
                         <span id="userName" class="text-user"></span>
@@ -225,7 +225,7 @@
                             <span id="fieldNo" class="field-no">+086</span>
                             <span id="mobile" class="mobile-user"></span>
                         </div>
-                        <button id="btnUpdateMobile" class="btn btn-primary none" onclick="onUpdateMobile(this)" data-state="0">修改</button>
+                        <button id="btnUpdateMobile" class="btn btn-primary" onclick="onUpdateMobile(this)" data-state="0">修改</button>
                     </div>
                     <div id="inputMobile" class="row none">
                         <form action="">
@@ -245,7 +245,7 @@
                     <div class="row">
                         <label class="label-user">邮箱</label>
                         <span id="email" class="text-mobile"></span>
-                        <button id="btnUpdateEmail" class="btn btn-primary none" onclick="onUpdateEmail(this)" data-state="0">修改</button>
+                        <button id="btnUpdateEmail" class="btn btn-primary" onclick="onUpdateEmail(this)" data-state="0">修改</button>
                     </div>
                     <div id="inputEmail" class="row none">
                         <form action="">
@@ -259,7 +259,7 @@
                         </form>
                     </div>
                 </div>
-                <div id="changePassword" class="none">
+                <div id="changePassword">
                     <div class="col-xs-3 col-lg-3">
                         <span class="label-user">修改密码</span>
                     </div>

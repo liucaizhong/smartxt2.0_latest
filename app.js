@@ -99,7 +99,7 @@ app.use(express.static(path.join(__dirname, 'build')));
 app.use('/index', index);
 // app.use('/signup', signup);
 app.use('/login', login);
-// app.all(/^\/(explore|research|news|user|about|privacy|help|logout)/, auth.isAuthenticated);
+app.all(/^\/(explore|research|news|user|about|privacy|help|logout)/, auth.isAuthenticated);
 // app.use('/pricing', pricing);
 app.use('/explore', explore);
 app.use('/news', news);

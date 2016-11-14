@@ -97,7 +97,7 @@ function _renderConceptTab(data) {
 	data.forEach(function (cur) {
 		var conceptName = cur.split('#')[0];
 		var sourceName = cur.split('#')[1];
-		var fragment = $('<div class="row table-content">\n                              <div class="col-xs-5 col-lg-5 theme-padding-top" onclick="onCheckTheme(event)">\n                                    <!-- <input type="checkbox"> -->\n                                    <span class="theme-name"></span>\n                              </div>\n                              <div class="col-xs-5 col-lg-5 theme-padding-top">\n                                    <span class="source-name"></span>\n                              </div>\n                              <div class="col-xs-1 col-lg-1 span-fork theme-padding-top">\n                                    <i class="fa fa-times" aria-hidden="true" onclick="onDelTheme(this)"></i>\n                              </div>\n                              <div class="col-xs-1 col-lg-1">\n                                <button class="btn btn-primary btn-load" type="button" onclick="onLoadTheme(this)">查看</button>\n                              </div>\n                          </div>');
+		var fragment = $('<div class="row table-content">\n                              <div class="col-xs-5 col-lg-5 theme-padding-top" onclick="onCheckTheme(event)">\n                                    <input type="checkbox">\n                                    <span class="theme-name"></span>\n                              </div>\n                              <div class="col-xs-5 col-lg-5 theme-padding-top">\n                                    <span class="source-name"></span>\n                              </div>\n                              <div class="col-xs-1 col-lg-1 span-fork theme-padding-top">\n                                    <i class="fa fa-times" aria-hidden="true" onclick="onDelTheme(this)"></i>\n                              </div>\n                              <div class="col-xs-1 col-lg-1">\n                                <button class="btn btn-primary btn-load" type="button" onclick="onLoadTheme(this)">查看</button>\n                              </div>\n                          </div>');
 		$(fragment).find('.theme-name').text(conceptName);
 		$(fragment).find('.source-name').text(sourceName);
 		$conceptDiv.append(fragment);
@@ -109,7 +109,7 @@ function _renderTopicTab(data) {
 	data.forEach(function (cur) {
 		var topicName = cur.split('#')[1];
 		var sourceName = cur.split('#')[0];
-		var fragment = $('<div class="row table-content">\n                              <div class="col-xs-4 col-lg-4 topic-padding-top" onclick="onCheckTopic(event)">\n                                  <!--  <input type="checkbox"> -->\n                                    <span class="topic-name"></span>\n                              </div>\n                              <div class="col-xs-4 col-lg-4 topic-padding-top">\n                                    <span class="source-name"></span>\n                              </div>\n                              <div class="col-xs-2 col-lg-2 span-fork topic-padding-top">\n                                    <i class="fa fa-times" aria-hidden="true" onclick="onDelTopic(this)"></i>\n                              </div>\n                              <div class="col-xs-2 col-lg-2">\n                                <button class="btn btn-primary btn-load" type="button" onclick="onLoadTopic(this)">查看</button>\n                              </div>\n                          </div>');
+		var fragment = $('<div class="row table-content">\n                              <div class="col-xs-4 col-lg-4 topic-padding-top" onclick="onCheckTopic(event)">\n                                  \t<input type="checkbox">\n                                    <span class="topic-name"></span>\n                              </div>\n                              <div class="col-xs-4 col-lg-4 topic-padding-top">\n                                    <span class="source-name"></span>\n                              </div>\n                              <div class="col-xs-2 col-lg-2 span-fork topic-padding-top">\n                                    <i class="fa fa-times" aria-hidden="true" onclick="onDelTopic(this)"></i>\n                              </div>\n                              <div class="col-xs-2 col-lg-2">\n                                <button class="btn btn-primary btn-load" type="button" onclick="onLoadTopic(this)">查看</button>\n                              </div>\n                          </div>');
 		$(fragment).find('.topic-name').text(topicName);
 		$(fragment).find('.source-name').text(sourceName);
 		$topicDiv.append(fragment);
@@ -136,7 +136,7 @@ function customOpStock(li) {
 	//ajax post
 	//to do later
 
-	var tableContent = $('<div class="row table-content">\n                              <div class="col-xs-8 col-lg-8" onclick="onCheckStock(event)">\n                                   <!-- <input type="checkbox"> -->\n                                    <span class="stock-code"></span>\n                                    <span class="stock-name"></span>\n                              </div>\n                              <div class="col-xs-4 col-lg-4 span-fork">\n                                    <i class="fa fa-times" aria-hidden="true" onclick="onDelStock(this)"></i>\n                              </div>\n                          </div>');
+	var tableContent = $('<div class="row table-content">\n                              <div class="col-xs-8 col-lg-8" onclick="onCheckStock(event)">\n                                    <input type="checkbox">\n                                    <span class="stock-code"></span>\n                                    <span class="stock-name"></span>\n                              </div>\n                              <div class="col-xs-4 col-lg-4 span-fork">\n                                    <i class="fa fa-times" aria-hidden="true" onclick="onDelStock(this)"></i>\n                              </div>\n                          </div>');
 
 	$(tableContent).find('span[class*="stock-code"]').text(code);
 	$(tableContent).find('span[class*="stock-name"]').text(name);
@@ -246,7 +246,10 @@ function onConfirm() {
 			//to do later
 
 			$('#del-all-stock').hide(500);
-			// checkAll.checked = false;
+			checkAll.checked = false;
+			$('#stockTableContent').find('input:checked').each(function (idx, elem) {
+				elem.checked = false;
+			});
 
 			//delete the checked stocks
 			$(delStocks).parent().parent().remove();
@@ -264,7 +267,10 @@ function onConfirm() {
 			//to do later
 
 			$('#del-all-theme').hide(500);
-			// checkAll.checked = false;
+			checkAll.checked = false;
+			$('#themeTableContent').find('input:checked').each(function (idx, elem) {
+				elem.checked = false;
+			});
 
 			//delete the checked stocks
 			$(delThemes).parent().parent().remove();
@@ -274,6 +280,25 @@ function onConfirm() {
 			delThemes = [];
 			break;
 		case 2:
+			var checkAll = document.getElementById('checkAllTopic');
+
+			$('#global-alert').hide();
+
+			//ajax post request
+			//to do later
+
+			$('#del-all-topic').hide(500);
+			checkAll.checked = false;
+			$('#topicTableContent').find('input:checked').each(function (idx, elem) {
+				elem.checked = false;
+			});
+
+			//delete the checked stocks
+			$(delTopics).parent().parent().remove();
+
+			_showFadeMsg('成功删除话题');
+
+			delTopics = [];
 			break;
 	}
 }
@@ -389,7 +414,7 @@ function onLoadTheme(that) {
 function onDelAllTopic(that) {
 	var tableContent = $('#topicTableContent input:checked');
 	var delNum = tableContent.length;
-	opObj = 1;
+	opObj = 2;
 
 	if (delNum) {
 		delTopics = tableContent;
@@ -454,7 +479,7 @@ function onCheckTopic(event) {
 
 function onDelTopic(that) {
 	delTopics = $(that);
-	opObj = 1;
+	opObj = 2;
 
 	var topicName = $(that).parent().parent().find('span[class*="topic-name"]').text();
 

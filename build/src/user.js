@@ -8,11 +8,24 @@ var delTopics = [];
 var URL_PROFILE = '/cross?id=3&';
 //http://139.196.18.233:8087/axis2/services/smartxtAPI/getUserConcept?user=13524213611&response=application/json
 var URL_CONCEPT = '/cross?id=4&';
+var URL_DELCONCEPT = '/crosspost?id=14';
 //http://139.196.18.233:8087/axis2/services/smartxtAPI/getUserTopic?user=13524213611&response=application/json
 var URL_TOPIC = '/cross?id=5&';
+var URL_DELTOPIC = '/crosspost?id=16';
+//http://139.196.18.233:8087/smartxtAPI/getSelfChoiceStocks?userId=?
+var URL_STOCKS = '/cross?id=7&';
+//http://139.196.18.233:8087/smartxtAPI/stockSubmit?userId= &code=
+var URL_ADDSTOCK = '/crosspost?id=8';
+//http://139.196.18.233:8087/smartxtAPI/stockRemoval
+var URL_DELSTOCK = '/crosspost?id=9';
+//http://139.196.18.233:8087/smartxtAPI/submitStatus
+var URL_FRESHWORD = '/cross?id=12&';
+//http://139.196.18.233:8087/smartxtAPI/profileUpdate
+var URL_UPDATEPROFILE = '/crosspost?id=17';
 //0:stock,1:theme,2:topic
 var opObj = 0;
 var loginfo;
+var sourceRange = ['投资者总体', '散户群体', '从业人群', '新闻媒体'];
 
 $(document).ready(function () {
 	//get user
@@ -23,14 +36,47 @@ $(document).ready(function () {
 		delete window.user;
 		//get user profile
 		$.ajax({
-			url: URL_PROFILE + 'user=' + loginfo.username + '&response=application/json',
+			url: URL_PROFILE + 'userId=' + loginfo.username,
 			method: 'GET',
 			dataType: 'json',
 			success: function success(data) {
 				var d = JSON.parse(data);
-				d = d.getUserInfoResponse.return.entry;
-				if (d) {
-					_renderProfileTab(d);
+				d = JSON.parse(d);
+
+				_renderProfileTab(d);
+			},
+			error: function error(err) {
+				console.log(err);
+			}
+		});
+		//get self-selected stocks
+		$.ajax({
+			url: URL_STOCKS + 'userId=' + loginfo.username,
+			method: 'GET',
+			dataType: 'json',
+			success: function success(data) {
+				var d = JSON.parse(data);
+				d = JSON.parse(d);
+
+				if (d && d.length) {
+					_renderStockTab(d);
+				}
+			},
+			error: function error(err) {
+				console.log(err);
+			}
+		});
+		//get fresh words
+		$.ajax({
+			url: URL_FRESHWORD + 'userId=' + loginfo.username,
+			method: 'GET',
+			dataType: 'json',
+			success: function success(data) {
+				var d = JSON.parse(data);
+				d = JSON.parse(d);
+
+				if (d && d.length) {
+					_renderWordTab(d);
 				}
 			},
 			error: function error(err) {
@@ -39,12 +85,12 @@ $(document).ready(function () {
 		});
 		//get concept 
 		$.ajax({
-			url: URL_CONCEPT + 'user=' + loginfo.username + '&response=application/json',
+			url: URL_CONCEPT + 'userId=' + loginfo.username,
 			method: 'GET',
 			dataType: 'json',
 			success: function success(data) {
 				var d = JSON.parse(data);
-				d = d.getUserConceptResponse.return;
+				d = JSON.parse(d);
 				if (d) {
 					_renderConceptTab(d);
 				}
@@ -55,12 +101,12 @@ $(document).ready(function () {
 		});
 		//get topic
 		$.ajax({
-			url: URL_TOPIC + 'user=' + loginfo.username + '&response=application/json',
+			url: URL_TOPIC + 'userId=' + loginfo.username,
 			method: 'GET',
 			dataType: 'json',
 			success: function success(data) {
 				var d = JSON.parse(data);
-				d = d.getUserTopicResponse.return;
+				d = JSON.parse(d);
 				if (d) {
 					_renderTopicTab(d);
 				}
@@ -70,33 +116,54 @@ $(document).ready(function () {
 			}
 		});
 	}
+
+	$('#inputEmailContent').keydown(function (e) {
+		var keycode = e.keyCode;
+		if (keycode == 13) {
+			e.preventDefault();
+			onSubmitUpdateEmail();
+		}
+	});
+
+	$('#form-password input').keydown(function (e) {
+		var keycode = e.keyCode;
+		if (keycode == 13) {
+			e.preventDefault();
+			onSubmitUpdatePassword();
+		}
+	});
 });
 
-function _renderProfileTab(data) {
+function _renderProfileTab(d) {
+	$('#userLevel').text(d.rating);
+	$('#realName').text(d.userName);
+	$('#email').text(d.email);
+	$('#userName').text(d.phone);
+	$('#mobile').text(d.phone);
+}
+
+function _renderWordTab(data) {
+	var $wordDiv = $('#wordTableContent');
 	data.forEach(function (cur) {
-		switch (cur.key) {
-			case 'rating':
-				$('#userLevel').text(cur.value);
-				break;
-			case 'userName':
-				$('#realName').text(cur.value);
-				break;
-			case 'email':
-				$('#email').text(cur.value);
-				break;
-			case 'phone':
-				$('#userName').text(cur.value);
-				$('#mobile').text(cur.value);
-				break;
-		}
+		var fragment = $('<div class="row table-content">\n                              <div class="col-xs-10 col-lg-10 theme-padding-top">\n                                    <span class="theme-name"></span>\n                              </div>\n                              <div class="col-xs-2 col-lg-2 theme-padding-top">\n                                    <span class="source-name"></span>\n                              </div>\n                          </div>');
+
+		$(fragment).find('.theme-name').text(cur.concept);
+		$(fragment).find('.source-name').text(cur.status);
+		$wordDiv.append(fragment);
 	});
 }
 
 function _renderConceptTab(data) {
 	var $conceptDiv = $('#themeTableContent');
 	data.forEach(function (cur) {
-		var conceptName = cur.split('#')[0];
-		var sourceName = cur.split('#')[1];
+		var conceptName = cur.split('@')[0];
+		var sourceName = '';
+		cur.split('@')[1].split(';').forEach(function (s) {
+			sourceName += sourceRange[+s] + ';';
+		});
+		sourceName = sourceName.substr(0, sourceName.length - 1);
+
+		// var sourceName = cur.split('@')[1];
 		var fragment = $('<div class="row table-content">\n                              <div class="col-xs-5 col-lg-5 theme-padding-top" onclick="onCheckTheme(event)">\n                                    <input type="checkbox">\n                                    <span class="theme-name"></span>\n                              </div>\n                              <div class="col-xs-5 col-lg-5 theme-padding-top">\n                                    <span class="source-name"></span>\n                              </div>\n                              <div class="col-xs-1 col-lg-1 span-fork theme-padding-top">\n                                    <i class="fa fa-times" aria-hidden="true" onclick="onDelTheme(this)"></i>\n                              </div>\n                              <div class="col-xs-1 col-lg-1">\n                                <button class="btn btn-primary btn-load" type="button" onclick="onLoadTheme(this)">查看</button>\n                              </div>\n                          </div>');
 		$(fragment).find('.theme-name').text(conceptName);
 		$(fragment).find('.source-name').text(sourceName);
@@ -107,8 +174,8 @@ function _renderConceptTab(data) {
 function _renderTopicTab(data) {
 	var $topicDiv = $('#topicTableContent');
 	data.forEach(function (cur) {
-		var topicName = cur.split('#')[1];
-		var sourceName = cur.split('#')[0];
+		var topicName = cur.split('@')[1];
+		var sourceName = cur.split('@')[0];
 		var fragment = $('<div class="row table-content">\n                              <div class="col-xs-4 col-lg-4 topic-padding-top" onclick="onCheckTopic(event)">\n                                  \t<input type="checkbox">\n                                    <span class="topic-name"></span>\n                              </div>\n                              <div class="col-xs-4 col-lg-4 topic-padding-top">\n                                    <span class="source-name"></span>\n                              </div>\n                              <div class="col-xs-2 col-lg-2 span-fork topic-padding-top">\n                                    <i class="fa fa-times" aria-hidden="true" onclick="onDelTopic(this)"></i>\n                              </div>\n                              <div class="col-xs-2 col-lg-2">\n                                <button class="btn btn-primary btn-load" type="button" onclick="onLoadTopic(this)">查看</button>\n                              </div>\n                          </div>');
 		$(fragment).find('.topic-name').text(topicName);
 		$(fragment).find('.source-name').text(sourceName);
@@ -134,8 +201,38 @@ function customOpStock(li) {
 	var name = $li.find('span[class*="item-2"]').text();
 	$('#stockInput').val('');
 	//ajax post
-	//to do later
+	$.ajax({
+		url: URL_ADDSTOCK,
+		method: 'POST',
+		data: {
+			userId: loginfo.username,
+			code: code
+		},
+		// contentType: 'application/json',
+		dataType: 'json',
+		success: function success(data) {
+			var d = JSON.parse(data);
+			d = JSON.parse(d);
 
+			if (d.flag) {
+				_insertStock(code, name, true);
+			} else {
+				_showFadeMsg(d.msg);
+			}
+		},
+		error: function error(err) {
+			console.log(err);
+		}
+	});
+}
+
+function _renderStockTab(data) {
+	data.forEach(function (cur) {
+		_insertStock(cur.code, cur.name);
+	});
+}
+
+function _insertStock(code, name, flag) {
 	var tableContent = $('<div class="row table-content">\n                              <div class="col-xs-8 col-lg-8" onclick="onCheckStock(event)">\n                                    <input type="checkbox">\n                                    <span class="stock-code"></span>\n                                    <span class="stock-name"></span>\n                              </div>\n                              <div class="col-xs-4 col-lg-4 span-fork">\n                                    <i class="fa fa-times" aria-hidden="true" onclick="onDelStock(this)"></i>\n                              </div>\n                          </div>');
 
 	$(tableContent).find('span[class*="stock-code"]').text(code);
@@ -144,7 +241,7 @@ function customOpStock(li) {
 	$('#stockTableContent').append(tableContent);
 
 	//show successful msg or error
-	_showFadeMsg('成功添加至股票列表');
+	if (flag) _showFadeMsg('成功添加至股票列表');
 }
 
 function _showFadeMsg(text) {
@@ -235,28 +332,57 @@ function onDelStock(that) {
 	$('#global-alert').show();
 }
 
+function _delStock() {
+	var checkAll = document.getElementById('checkAllStock');
+	var codes = [];
+
+	$('#global-alert').hide();
+
+	Array.prototype.forEach.call(delStocks, function (cur) {
+		codes.push($(cur).parent().parent().find('.stock-code').text());
+	});
+
+	//ajax post request
+	$.ajax({
+		url: URL_DELSTOCK,
+		method: 'POST',
+		data: {
+			userId: loginfo.username,
+			code: codes
+		},
+		// contentType: 'application/json',
+		dataType: 'json',
+		success: function success(data) {
+			var d = JSON.parse(data);
+			d = JSON.parse(d);
+
+			if (d.flag) {
+				$('#del-all-stock').hide(500);
+				checkAll.checked = false;
+				$('#stockTableContent').find('input:checked').each(function (idx, elem) {
+					elem.checked = false;
+				});
+
+				//delete the checked stocks
+				$(delStocks).parent().parent().remove();
+
+				_showFadeMsg('成功删除股票');
+
+				delStocks = [];
+			} else {
+				_showFadeMsg(d.msg);
+			}
+		},
+		error: function error(err) {
+			console.log(err);
+		}
+	});
+}
+
 function onConfirm() {
 	switch (opObj) {
 		case 0:
-			var checkAll = document.getElementById('checkAllStock');
-
-			$('#global-alert').hide();
-
-			//ajax post request
-			//to do later
-
-			$('#del-all-stock').hide(500);
-			checkAll.checked = false;
-			$('#stockTableContent').find('input:checked').each(function (idx, elem) {
-				elem.checked = false;
-			});
-
-			//delete the checked stocks
-			$(delStocks).parent().parent().remove();
-
-			_showFadeMsg('成功删除股票');
-
-			delStocks = [];
+			_delStock();
 			break;
 		case 1:
 			var checkAll = document.getElementById('checkAllTheme');
@@ -264,20 +390,54 @@ function onConfirm() {
 			$('#global-alert').hide();
 
 			//ajax post request
-			//to do later
+			var $parentsToDel = $(delThemes).parent().parent();
+			var links = '';
+			Array.prototype.forEach.call($parentsToDel, function (cur) {
+				links += $(cur).find('span[class*="theme-name"]').text();
+				links += '@';
+				var sources = $(cur).find('span[class*="source-name"]').text().split(';');
+				sources.forEach(function (cur) {
+					links += sourceRange.indexOf(cur) + ';';
+				});
+				links = links.substr(0, links.length - 1);
+				links += ',';
+			});
+			links = links.substr(0, links.length - 1);
+			$.ajax({
+				url: URL_DELCONCEPT,
+				method: 'POST',
+				data: {
+					userId: loginfo.username,
+					links: links
+				},
+				// contentType: 'application/json',
+				dataType: 'json',
+				success: function success(data) {
+					var d = JSON.parse(data);
+					d = JSON.parse(d);
 
-			$('#del-all-theme').hide(500);
-			checkAll.checked = false;
-			$('#themeTableContent').find('input:checked').each(function (idx, elem) {
-				elem.checked = false;
+					if (d[0].status) {
+						$('#del-all-theme').hide(500);
+						checkAll.checked = false;
+						$('#themeTableContent').find('input:checked').each(function (idx, elem) {
+							elem.checked = false;
+						});
+
+						//delete the checked stocks
+						$parentsToDel.remove();
+
+						_showFadeMsg('成功删除主题');
+
+						delThemes = [];
+					} else {
+						_showFadeMsg(d.msg);
+					}
+				},
+				error: function error(err) {
+					console.log(err);
+				}
 			});
 
-			//delete the checked stocks
-			$(delThemes).parent().parent().remove();
-
-			_showFadeMsg('成功删除主题');
-
-			delThemes = [];
 			break;
 		case 2:
 			var checkAll = document.getElementById('checkAllTopic');
@@ -285,20 +445,51 @@ function onConfirm() {
 			$('#global-alert').hide();
 
 			//ajax post request
-			//to do later
+			var $parentsToDel = $(delTopics).parent().parent();
+			var links = '';
+			Array.prototype.forEach.call($parentsToDel, function (cur) {
+				links += $(cur).find('span[class*="source-name"]').text();
+				links += '@';
+				links += $(cur).find('span[class*="topic-name"]').text();
+				links += ',';
+			});
+			links = links.substr(0, links.length - 1);
 
-			$('#del-all-topic').hide(500);
-			checkAll.checked = false;
-			$('#topicTableContent').find('input:checked').each(function (idx, elem) {
-				elem.checked = false;
+			$.ajax({
+				url: URL_DELTOPIC,
+				method: 'POST',
+				data: {
+					userId: loginfo.username,
+					links: links
+				},
+				// contentType: 'application/json',
+				dataType: 'json',
+				success: function success(data) {
+					var d = JSON.parse(data);
+					d = JSON.parse(d);
+
+					if (d[0].status) {
+						$('#del-all-topic').hide(500);
+						checkAll.checked = false;
+						$('#topicTableContent').find('input:checked').each(function (idx, elem) {
+							elem.checked = false;
+						});
+
+						//delete the checked stocks
+						$(delTopics).parent().parent().remove();
+
+						_showFadeMsg('成功删除话题');
+
+						delTopics = [];
+					} else {
+						_showFadeMsg(d.msg);
+					}
+				},
+				error: function error(err) {
+					console.log(err);
+				}
 			});
 
-			//delete the checked stocks
-			$(delTopics).parent().parent().remove();
-
-			_showFadeMsg('成功删除话题');
-
-			delTopics = [];
 			break;
 	}
 }
@@ -390,9 +581,10 @@ function onDelTheme(that) {
 	opObj = 1;
 
 	var themeName = $(that).parent().parent().find('span[class*="theme-name"]').text();
+	var sourceName = $(that).parent().parent().find('span[class*="source-name"]').text();
 
 	$('#alertTitle').text('删除主题');
-	$('#alertText').text('确定删除主题：' + themeName + '？');
+	$('#alertText').html('确定删除主题：' + themeName + '<br>' + '来源：' + sourceName + '？');
 	$('#global-alert').show();
 }
 
@@ -559,64 +751,106 @@ function onUpdateEmail(that) {
 
 function onSubmitUpdateEmail() {
 	console.log('update email!');
+	var newEmail = $('#inputEmailContent').val();
 
-	if (!$('#inputEmailContent').val()) {
+	if (!newEmail) {
 		$('#emailErr').text('邮箱地址为空').show();
 		return;
 	}
 
 	var reg = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/g;
-	if (!reg.test($('#inputEmailContent').val())) {
+	if (!reg.test(newEmail)) {
 		$('#emailErr').text('邮箱格式不正确').show();
 		return;
 	}
 
-	//update successfully
-	$('#btnUpdateEmail').text('修改');
-	$('#emailErr').hide();
-	$('#inputEmail').slideToggle();
-	$('#inputEmailContent').val('');
-	_showFadeMsg('成功修改邮箱');
+	//ajax send request
+	$.ajax({
+		url: URL_UPDATEPROFILE,
+		method: 'POST',
+		data: {
+			userId: loginfo.username,
+			field: 'email',
+			value: newEmail
+		},
+		// contentType: 'application/json',
+		dataType: 'json',
+		success: function success(data) {
+			var d = JSON.parse(data);
+			d = JSON.parse(d);
+
+			if (d.flag) {
+				//update successfully
+				$('#email').text(newEmail);
+				$('#btnUpdateEmail').text('修改');
+				$('#emailErr').hide();
+				$('#inputEmail').slideToggle();
+				$('#inputEmailContent').val('');
+				_showFadeMsg('成功修改邮箱');
+			} else {
+				$('#emailErr').text(d.msg).show();
+			}
+		},
+		error: function error(err) {
+			console.log(err);
+		}
+	});
 }
 
 function onSubmitUpdatePassword() {
 	console.log('update password!');
 
 	if (!$('#oldPassword').val()) {
-		$('#changePasswordError').text('旧密码为空');
-		//error exists
-		$('#changePasswordError').fadeIn();
+		$('#changePasswordError').text('旧密码为空').fadeIn();
 		return;
 	}
 
 	if (!$('#newPassword').val()) {
-		$('#changePasswordError').text('新密码为空');
-		//error exists
-		$('#changePasswordError').fadeIn();
+		$('#changePasswordError').text('新密码为空').fadeIn();
 		return;
 	}
 
 	if (!$('#repeatNewPassword').val()) {
-		$('#changePasswordError').text('重复新密码为空');
-		//error exists
-		$('#changePasswordError').fadeIn();
+		$('#changePasswordError').text('重复新密码为空').fadeIn();
 		return;
 	}
 
 	if ($('#newPassword').val().localeCompare($('#repeatNewPassword').val())) {
-		$('#changePasswordError').text('两次输入密码不一致');
-		//error exists
-		$('#changePasswordError').fadeIn();
+		$('#changePasswordError').text('两次输入密码不一致').fadeIn();
 		return;
 	}
 
 	//ajax
 	//to do later
+	$.ajax({
+		url: URL_UPDATEPROFILE,
+		method: 'POST',
+		data: {
+			userId: loginfo.username,
+			field: 'passWord',
+			value: $.md5($('#newPassword').val())
+		},
+		// contentType: 'application/json',
+		dataType: 'json',
+		success: function success(data) {
+			var d = JSON.parse(data);
+			d = JSON.parse(d);
 
-	//successfully
-	$('#oldPassword').val('');
-	$('#newPassword').val('');
-	$('#repeatNewPassword').val('');
-	$('#changePasswordError').fadeOut();
-	_showFadeMsg('成功修改密码');
+			if (d.flag) {
+				//update successfully
+				$('#oldPassword').val('');
+				$('#newPassword').val('');
+				$('#repeatNewPassword').val('');
+				$('#changePasswordError').text('成功修改密码').fadeIn();
+				setTimeout(function () {
+					$('#changePasswordError').fadeOut();
+				}, 1000);
+			} else {
+				$('#changePasswordError').text(d.msg).fadeIn();
+			}
+		},
+		error: function error(err) {
+			console.log(err);
+		}
+	});
 }

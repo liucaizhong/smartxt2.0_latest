@@ -122,6 +122,10 @@ app.get('/logout', (req, res, next) => {
 app.get('/cross', function(req, res) {
   cross.get(req, res);
 });
+app.post('/crosspost', function(req, res) {
+  // console.log('post request start!');
+  cross.post(req, res);
+})
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -35,13 +35,16 @@ router.post('/theme', (req, res, next) => {
 	res.render('theme', {
 		concept: concept,
 		themes: themes,
-		sources: sources
+		sources: sources,
+		user: JSON.stringify(req.user)
 	});
 });
 
 // focus insights
 router.get('/focus', (req, res, next) => {
-  res.render('focus');
+  res.render('focus', {
+  	user: JSON.stringify(req.user)
+  });
 });
 
 //topic search
@@ -66,7 +69,8 @@ router.post('/topic', (req, res, next) => {
 
 	res.render('topic', {
 		topic: topic,
-		stock: stock
+		stock: stock,
+		user: JSON.stringify(req.user)
 	});
 });
 

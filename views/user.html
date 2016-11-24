@@ -121,17 +121,6 @@
                             </div>
                       </div>
                       <div id="stockTableContent">
-                          <div class="row table-content">
-                              <div class="col-xs-8 col-lg-8" onclick="onCheckStock(event)">
-                                    <input type="checkbox">
-                                    <span class="stock-code">600100</span>
-                                    <span class="stock-name">大大大大大大</span>
-                              </div>
-                              <div class="col-xs-4 col-lg-4 span-fork">
-                                    <i class="fa fa-times" aria-hidden="true" onclick="onDelStock(this)"></i>
-                              </div>
-                          </div>
-
                       </div>
                   </div>
               </div>
@@ -192,8 +181,8 @@
                             <div class="span-checknum">您已选择<span id="wordChecked"></span>/<span id="wordAll"></span>条</div>
                         </div>
                         <div class="row table-header">
-                            <div class="choose-all col-xs-10 col-lg-10" onclick="onCheckAllWord(event)">
-                                <input id="checkAllWord" type="checkbox">
+                            <div class="choose-all col-xs-10 col-lg-10">
+                                <!-- <input id="checkAllWord" type="checkbox"> -->
                                 <a>全部新词</a>
                             </div>
                             <div class="col-xs-2 col-lg-2">
@@ -225,7 +214,7 @@
                             <span id="fieldNo" class="field-no">+086</span>
                             <span id="mobile" class="mobile-user"></span>
                         </div>
-                        <button id="btnUpdateMobile" class="btn btn-primary" onclick="onUpdateMobile(this)" data-state="0">修改</button>
+                        <!-- <button id="btnUpdateMobile" class="btn btn-primary" onclick="onUpdateMobile(this)" data-state="0">修改</button> -->
                     </div>
                     <div id="inputMobile" class="row none">
                         <form action="">
@@ -304,7 +293,7 @@
             </div>
         </div>
     </div>
-    <div id="fade-alert">
+    <div id="fade-alert" class="user-alert">
         <div>
             <i class="fa fa-check fa-2x" aria-hidden="true"></i>
             <span id="fade-msg"></span>
@@ -336,6 +325,7 @@
     <script type="text/javascript" src="/lib/jquery/js/jquery.min.js"></script>
     <script type="text/javascript" src="/lib/jquery/plugins/jquery.placeholder.min.js"></script>
     <script type="text/javascript" src="/lib/jquery/plugins/back-to-top.js"></script>
+    <script type="text/javascript" src="/lib/jquery/plugins/jQuery.md5.js"></script>
     <!-- tether -->
     <script type="text/javascript" src="/lib/tether/js/tether.min.js"></script>
     <!-- bootstrap -->

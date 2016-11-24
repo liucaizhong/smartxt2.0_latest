@@ -2,6 +2,10 @@
 
 //url
 var URL = '/cross?id=2&';
+//http://139.196.18.233:8087/smartxtAPI/topicFollow
+var URL_COLLECT = '/crosspost?id=15';
+//http://139.196.18.233:8087/smartxtAPI/topicUnFollow
+var URL_UNCOLLECT = '/crosspost?id=16';
 var cond = {
 	topic: '',
 	stock: ''
@@ -43,34 +47,66 @@ $(document).ready(function () {
 	//form submit 
 	$('#form-topic').submit(function (e) {
 		e.preventDefault();
-		console.log('start submit handler');
-
+		_hideErr();
 		var stock = $('#stockInput').val();
-		$('#stockInput').val('');
 		var topic = $('#eventInput').val();
-		$('#eventInput').val('');
+		if (stock && topic && !$('#stockInput').hasClass('error')) {
 
-		cond.topic = topic;
-		cond.stock = stock;
+			cond.topic = topic;
+			cond.stock = stock;
 
-		var url = URL + 'stock=' + stock + '&topic=' + topic + '&response=application/json';
-		_renderChart(url);
+			var url = URL + 'stock=' + stock + '&topic=' + topic + '&response=application/json';
+			_renderChart(url);
+		}
 	});
 });
 
 function onStar(that) {
 	var $btn = $(that);
-	$btn.toggleClass('collect');
+	if (!$btn.hasClass('collect')) {
+		var path = URL_COLLECT;
+		var msg = '已收藏';
+		var postData = {
+			userId: loginfo.username,
+			code: cond.stock,
+			topic: cond.topic
+		};
+	} else {
+		var path = URL_UNCOLLECT;
+		var msg = '取消收藏';
+		var postData = {
+			userId: loginfo.username,
+			links: cond.stock + '@' + cond.topic
+		};
+	}
 
-	//add event to collection
-	//to do
+	$.ajax({
+		url: path,
+		method: 'POST',
+		data: postData,
+		// contentType: 'application/json',
+		dataType: 'json',
+		success: function success(data) {
+			var d = JSON.parse(data);
+			d = JSON.parse(d);
+
+			if (d.flag || d[0].status) {
+				$btn.toggleClass('collect');
+				_showFadeMsg(msg);
+			} else {
+				_showFadeMsg(d.msg);
+			}
+		},
+		error: function error(err) {
+			console.log(err);
+		}
+	});
 }
 
 function _renderChart(url) {
 
-	$('.charts .none').show();
-	//scroll to result list
-	$("html, body").animate({ scrollTop: $('section.charts').offset().top - 60 }, 800);
+	chartAttention = echarts.init(document.getElementById('chart-attention'), 'macarons');
+	chartPrice = echarts.init(document.getElementById('chart-price'), 'macarons');
 	// configure echart
 	chartAttention.showLoading();
 	chartPrice.showLoading();
@@ -84,6 +120,19 @@ function _renderChart(url) {
 			var legend = cond.stock + '-' + cond.topic;
 			data = JSON.parse(data);
 			var entry = data.topicHeatResponse.return.entry;
+			if (!entry) {
+				chartAttention.hideLoading();
+				chartPrice.hideLoading();
+				_showErr('找不到相关信息');
+				return false;
+			}
+
+			$('#stockInput').val('');
+			$('#eventInput').val('');
+			$('.charts .topic-collect').show();
+			//scroll to result list
+			$("html, body").animate({ scrollTop: $('section.charts').offset().top - 60 }, 800);
+
 			entry.forEach(function (cur) {
 				category.push(cur.key);
 				heat.push(cur.value[0]);
@@ -201,4 +250,31 @@ function customOpStock(li) {
 	// var code = $li.find('span[class*="item-1"]').text();
 	var name = $li.find('span[class*="item-2"]').text();
 	$('#stockInput').val(name);
+}
+
+function _showErr(text) {
+	$('div#error-msg>strong').text(text);
+	$('div#error-msg').show(500);
+}
+
+function _hideErr() {
+	$('div#error-msg').hide(500);
+}
+
+function delAlert(that) {
+	var $btn = $(that);
+	$btn.parent().hide(500);
+}
+
+function _showFadeMsg(text) {
+
+	var l = $('.topic-collect>span').offset().left - 50;
+	var t = $('.topic-collect>span').offset().top + 50;
+	$('#fade-msg').text(text);
+
+	$('#fade-alert').css({ 'left': l, 'top': t }).fadeIn(function () {
+		setTimeout(function () {
+			$('#fade-alert').fadeOut();
+		}, 1000);
+	});
 }

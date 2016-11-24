@@ -205,7 +205,7 @@ function _cutStr(str, len) {
 		}
 		str_cut = str_cut.concat(a);
 		if (str_length >= len) {
-			//.short = str_cut; .long = str;
+			//.short = str_cut + '...'; .long = str;
 			//show button of showing all
 			return;
 		}

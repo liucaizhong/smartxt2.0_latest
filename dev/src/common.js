@@ -1,4 +1,5 @@
-var URL_STOCKLIST = '/stockList.json';
+//http://139.196.18.233:8087/smartxtAPI/getStockMap
+var URL_STOCKLIST = '/cross?id=11';
 var stocks = [];
 var LISTMAX = 10;
 var listTop = 0, listLeft = 0, listWidth = 0, listHeight = 0;
@@ -98,7 +99,9 @@ $(document).ready(() => {
         async: true,
         dataType: 'json',
         success: (data) => {
-            data.stocklist.forEach(function(cur) {
+            var d = JSON.parse(data);
+            d = JSON.parse(d);
+            d.forEach(function(cur) {
                 stocks.push(cur.code+cur.name);
             });
         },
@@ -110,6 +113,8 @@ $(document).ready(() => {
     //search panel
     $('#stockInput').on('input propertychange', function(e) {
         var value = $(this).val();
+        if($(this).hasClass('error'))
+            $(this).removeClass('error');
         if(!value) {
             _hideStockList();
             return;
@@ -181,7 +186,9 @@ $(document).ready(() => {
         if(indicator > 0) {
             _showStockList();
         } else {
-            $stockUl.append($('<li>未找到符合条件的结果</li>'));
+            $stockUl.append($('<li class="stock-not-found">未找到符合条件的结果</li>'));
+            if(!$(this).hasClass('error'))
+                $(this).addClass('error');
             _showStockList();
         }
     });

@@ -34,8 +34,30 @@ var chartColor = ['#B8C309', '#0CF5F5'];
 // var STOCKURL = '139.196.18.233:8087/axis2/services/smartxtAPI/getStocks?';
 var HEATURL = '/cross?id=0&';
 var STOCKURL = '/cross?id=1&';
+var URL_ADDFRESHWORD = '/crosspost?id=10';
+//http://139.196.18.233:8087/smartxtAPI/conceptFollow
+var URL_COLLECT = '/crosspost?id=13';
+//http://139.196.18.233:8087/smartxtAPI/conceptUnFollow
+var URL_UNCOLLECT = '/crosspost?id=14';
 
 $(document).ready(function () {
+    $('#fresh-word').on('input propertychange', function (e) {
+        var input = $(this)[0];
+
+        if ($(input).val()) {
+            $('#btnFresh').attr('disabled', false);
+        } else {
+            $('#btnFresh').attr('disabled', true);
+        }
+    });
+
+    $('#fresh-word').keydown(function (e) {
+        var keycode = e.keyCode;
+        if (keycode == 13) {
+            e.preventDefault();
+            onAddFreshWord();
+        }
+    });
     //datepicker initialization
     $('#datepicker').datetimepicker();
     var picker = $('#datepicker').data('datetimepicker');
@@ -63,9 +85,9 @@ $(document).ready(function () {
         _renderCharts();
     }
     if (window.themes && window.sources) {
-        theme = unescape(decodeURIComponent(window.themes)).split('+');
+        theme = unescape(decodeURIComponent(window.themes)).split(';');
         source = [];
-        var jumpSource = unescape(decodeURIComponent(window.sources)).split('+');
+        var jumpSource = unescape(decodeURIComponent(window.sources)).split(';');
         jumpSource.forEach(function (cur) {
             source.push(sourceName.indexOf(cur));
         });
@@ -402,8 +424,7 @@ function delThemeTag(that) {
 
 function delAlert(that) {
     var $btn = $(that);
-    var parentId = $($btn.parent()).attr('id');
-    $('div#' + parentId).hide(500);
+    $btn.parent().hide(500);
 }
 
 function _renderLineChart(data) {
@@ -831,10 +852,49 @@ function onEnterTheme(event) {
 
 function onStar(that) {
     var $btn = $(that);
-    $btn.toggleClass('collect');
+    // $btn.toggleClass('collect');
 
-    //add event to collection
-    //to do
+    if (!$btn.hasClass('collect')) {
+        var path = URL_COLLECT;
+        var msg = '已收藏';
+        var data = {
+            userId: loginfo.username,
+            concept: theme.join(';'),
+            source: source.join(';')
+        };
+    } else {
+        var path = URL_UNCOLLECT;
+        var msg = '取消收藏';
+        var links = '';
+        links += theme.join(';') + '@';
+        links += source.join(';');
+        var data = {
+            userId: loginfo.username,
+            links: links
+        };
+    }
+
+    $.ajax({
+        url: path,
+        method: 'POST',
+        data: data,
+        // contentType: 'application/json',
+        dataType: 'json',
+        success: function success(data) {
+            var d = JSON.parse(data);
+            d = JSON.parse(d);
+
+            if (d.flag || d[0].status) {
+                $btn.toggleClass('collect');
+                _showFadeMsg(msg);
+            } else {
+                _showFadeMsg(d.msg);
+            }
+        },
+        error: function error(err) {
+            console.log(err);
+        }
+    });
 }
 
 function onsourceNav(that) {
@@ -847,4 +907,48 @@ function onsourceNav(that) {
     var sourceId = $that.attr('id');
     source[0] = sourceId.substr(sourceId.length - 1, 1);
     _renderCharts();
+}
+
+function _showFadeMsg(text) {
+
+    var l = $('.theme-inputbar').offset().left - 50;
+    var t = $('.theme-inputbar').offset().top + 50;
+    $('#fade-msg').text(text);
+
+    $('#fade-alert').css({ 'left': l, 'top': t }).fadeIn(function () {
+        setTimeout(function () {
+            $('#fade-alert').fadeOut();
+        }, 1000);
+    });
+}
+
+function onAddFreshWord(that) {
+    //fresh-word
+    var $freshInput = $('#fresh-word');
+    var value = $freshInput.val();
+    //ajax post
+    $.ajax({
+        url: URL_ADDFRESHWORD,
+        method: 'POST',
+        data: {
+            userId: loginfo.username,
+            concept: value
+        },
+        // contentType: 'application/json',
+        dataType: 'json',
+        success: function success(data) {
+            var d = JSON.parse(data);
+            d = JSON.parse(d);
+
+            if (d.flag) {
+                _showFadeMsg('新词提交成功');
+                $freshInput.val('');
+            } else {
+                _showFadeMsg(d.msg);
+            }
+        },
+        error: function error(err) {
+            console.log(err);
+        }
+    });
 }

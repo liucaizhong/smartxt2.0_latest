@@ -15,6 +15,7 @@ var CHARTNUM = 4;
 var HEATURL = '/cross?id=0&';
 //echarts
 var charts = [];
+var loginfo;
 
 $(document).ready(() => {
 	//echart resize handler
@@ -25,11 +26,15 @@ $(document).ready(() => {
 	});
 
 	//get user info
-	console.log('user', window.user);
-
-	//get concept list
-	//render echarts
-	_renderConceptList();
+	if(window.user) {
+        loginfo = window.user.replace(/&quot;/g,'"');
+        loginfo = JSON.parse(loginfo);
+        delete window.user;
+        console.log('user', loginfo);
+       	//get concept list
+		//render echarts
+		_renderConceptList();
+    }
 
 	//loading more
 	$(window).scroll(function() {
@@ -121,20 +126,23 @@ function _renderConceptList() {
 	}else {
 		typeUrl = methodRange[method] + periodRange[period];
 	}
-	var conceptUrl = CONCEPTURL + 'src='+ sourceRange[source] + '&type=' + typeUrl + '&response=application/json';
+	var conceptUrl = CONCEPTURL + 'userId=' + loginfo.username + '&source='+ sourceRange[source] + '&type=' + typeUrl;
 	$.ajax({
 		url: conceptUrl,
 		type: 'GET',
 		async: true,
 		dataType: 'json',
 		success: (data) => {
-			var d = JSON.parse(data).getConceptListResponse.return;
-		    if(d) {
+			var d = JSON.parse(data);
+			d = JSON.parse(d);
+		    if(d.length) {
 		        conceptList = d;  
 		        _renderCharts(conceptList.splice(0,CHARTNUM)); 
+		        $('.loading-more').show();
 		    } else {
 		        //show message
-			    $('.focus-charts>div.container').empty().text('未找到相关记录');
+			    $('.focus-charts>div.container').empty().html('<div>未找到相关记录</div>');
+			    $('.loading-more').hide();
 		    }
 		},
 		error: (err) => {

@@ -85,19 +85,33 @@
                     <button type="submit" class="btn btn-primary btn-submit-topic">提交事件</button>
                 </div>
             </form>
+            <div id="error-msg" class="alert alert-danger alert-dismissible none" role="alert">
+              <button type="button" class="close" aria-label="Close" onclick="delAlert(this)">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+              <strong></strong> 
+            </div>
         </div>  
     </section>                
           
     <!-- ******CHARTS****** -->
     <section class="charts topic-charts">
         <div class="container">
-            <div class="none">
+            <div class="topic-collect">
                 <span><i class="fa fa-star-o fa-2x btn-star" title="收藏" onclick="onStar(this)" aria-hidden="true"></i></span>
             </div>
             <div class="topic-chart" id="chart-attention"></div>
             <div class="topic-chart" id="chart-price"></div>
         </div>
     </section>
+
+    <div id="fade-alert">
+        <div>
+            <i class="fa fa-check fa-2x" aria-hidden="true"></i>
+            <span id="fade-msg"></span>
+        </div>
+    </div>
      
     <!-- ******FOOTER****** --> 
     <footer class="footer">

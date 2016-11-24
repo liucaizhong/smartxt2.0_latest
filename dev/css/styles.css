@@ -339,6 +339,11 @@ i[class*='fa-angle-double-up']:hover {
   margin-top: 90px;
 }
 
+.topic-collect {
+  text-align: right;
+  display: none;
+}
+
 .topic-input {
   padding-left: 6px;
   border-style: none;
@@ -1138,9 +1143,9 @@ span[class*="item-2"]>strong {
   height: 600px;
 }
 
-.charts span {
+/*.charts span {
   float: right;
-}
+}*/
 
 .topic-charts .container div:nth-child(2){
   margin-bottom: 50px;
@@ -1580,8 +1585,13 @@ span[class*="item-2"]>strong {
   margin-bottom: 40px;
 }
 
+.loading-more {
+  border-top: 1px solid #e3e3e3;
+  display: none;
+}
+
 .more-button .btn-more {
-  margin-top: 0;
+  margin-top: 20px;
   min-width: 300px;
   display: none;
 }
@@ -1621,4 +1631,23 @@ span[class*="item-2"]>strong {
 .btn-theme-collect {
   left: 70px;
   position: relative;
+}
+
+#stockInput:focus,
+#eventInput:focus {
+  outline: none;
+}
+#stockInput.error {
+  border: 1px solid red;
+}
+
+.topic-conditions #error-msg {
+  left: 10%;
+  position: relative;
+  width: 85%;
+}
+
+#fade-alert.user-alert {
+  left: 50%;
+  top: 35%;
 }

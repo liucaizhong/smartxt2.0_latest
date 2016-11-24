@@ -12,21 +12,6 @@ var $resultItem = null;
 var URL_SURVEY = '/survey.20160929.json';
 
 $(document).ready(function () {
-    //ajax get stock list
-    $.ajax({
-        url: URL_STOCKLIST,
-        type: 'GET',
-        async: true,
-        dataType: 'json',
-        success: function success(data) {
-            data.stocklist.forEach(function (cur) {
-                stocks.push(cur.code + cur.name);
-            });
-        },
-        error: function error(err) {
-            console.log(err);
-        }
-    });
 
     //search panel
     $('#stockInput').on('input propertychange', function (e) {

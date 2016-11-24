@@ -163,9 +163,9 @@
             </ul>
             <div class="theme-inputbar">
                 <div id="inputFreshWord" class="input-group inputFreshWord">
-                    <input type="text" class="form-control" placeholder="请输入新词" autocomplete="off">
+                    <input id="fresh-word" type="text" class="form-control" placeholder="请输入新词" autocomplete="off">
                     <span class="input-group-btn">
-                        <button class="btn btn-primary" type="button" onclick="onAddFreshWord(this)">提交</button>
+                        <button id="btnFresh" class="btn btn-primary" type="button" onclick="onAddFreshWord(this)" disabled="true">提交</button>
                     </span>
                 </div>
                 <div>
@@ -189,6 +189,13 @@
 
         </div>
     </section>
+
+    <div id="fade-alert">
+        <div>
+            <i class="fa fa-check fa-2x" aria-hidden="true"></i>
+            <span id="fade-msg"></span>
+        </div>
+    </div>
      
     <!-- ******FOOTER****** --> 
     <footer class="footer">

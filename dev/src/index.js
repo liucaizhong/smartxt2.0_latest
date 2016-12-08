@@ -1,7 +1,27 @@
 var URL_VISIT = '/crosspost?id=18';
-var userName;
+var URL_ALLCONCEPTS = '/cross?id=23';
 
 $(document).ready(function() {
+    $.ajax({
+        url: URL_ALLCONCEPTS,
+        type: 'GET',
+        async: true,
+        dataType: 'json',
+        success: (data) => {
+            var d = JSON.parse(data);
+            d = JSON.parse(d);
+
+            if(d && d.length) {
+                //render line chart
+                _renderDatalist(d);
+            } else {
+                //show message
+            }
+        },
+        error: (err) => {
+            console.log(err);
+        }
+    });
     /* ======= Fixed header when scrolled ======= */    
     $(window).on('scroll load', function() {
          
@@ -23,20 +43,25 @@ $(document).ready(function() {
     	}
     });
 
+    var postData = {
+        target: 'index',
+        userId: 'undefined'
+    };
     if(window.user) {
         var loginfo = window.user.replace(/&quot;/g,'"');
         loginfo = JSON.parse(loginfo);
-        userName = loginfo.username;
+        var userName = loginfo.username;
         delete window.user;
         console.log('user', loginfo);
+        postData.userId = userName;
+        // $.extend({
+        //     userId: userName,  
+        // }, postData);
     }
     $.ajax({
         url: URL_VISIT,
         method: 'POST',
-        data: {
-            userId: userName,
-            target: 'index'
-        },
+        data: postData,
         // contentType: 'application/json',
         dataType: 'json',
         success: (data) => {
@@ -51,6 +76,11 @@ $(document).ready(function() {
     });
 });
 
-// function customOpStock(li) {
-    
-// }
+function _renderDatalist(d) {
+    var all = $('#allConcepts');
+    d.forEach(function(cur) {
+        var option = document.createElement('OPTION');
+        $(option).val(cur);
+        all.append(option);
+    });
+}

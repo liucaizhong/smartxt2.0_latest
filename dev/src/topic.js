@@ -1,20 +1,55 @@
-//url
-var URL = '/cross?id=2&';
+//http://139.196.18.233:8087/smartxtAPI/topicHeat?
+var URL_TOPICHEAT = '/cross?id=2&';
 //http://139.196.18.233:8087/smartxtAPI/topicFollow
 var URL_COLLECT = '/crosspost?id=15';
 //http://139.196.18.233:8087/smartxtAPI/topicUnFollow
 var URL_UNCOLLECT = '/crosspost?id=16';
+var URL_ALLTOPICS = '/cross?id=24&';
 var cond = {
 	topic: '',
 	stock: ''
 };
 var loginfo;
 //echarts
-var chartAttention = echarts.init(document.getElementById('chart-attention'), 'macarons');
-var chartPrice = echarts.init(document.getElementById('chart-price'), 'macarons');
+var chartAttention = echarts.init(document.getElementById('chart-attention'));
+var chartPrice = echarts.init(document.getElementById('chart-price'));
 echarts.connect([chartAttention, chartPrice]);
 
 $(document).ready(() => {
+	//get user
+    if(window.user) {
+        loginfo = window.user.replace(/&quot;/g,'"');
+        loginfo = JSON.parse(loginfo);
+        delete window.user;
+
+        var loadUrl = URL_ALLTOPICS + 'userId=' + loginfo.username + '&keyword=';
+        $.ajax({
+	        url: loadUrl,
+	        type: 'GET',
+	        async: true,
+	        dataType: 'json',
+	        success: (data) => {
+	            var d = JSON.parse(data);
+	            d = JSON.parse(d);
+
+	            if(d && d.length) {
+	                var idx = Math.floor(Math.random() * (d.length>10?10:d.length));
+	                cond.topic = d[idx].event;
+			        cond.stock = d[idx].name;
+
+			        var url = URL_TOPICHEAT + 'userId=' + loginfo.username + '&stock=' + cond.stock + '&topic=' + cond.topic;
+			        _renderChart(url);
+			        _renderTopicTags(d);
+	            } else {
+	                //show message
+	            }
+	        },
+	        error: (err) => {
+	            console.log(err);
+	        }
+	    });
+    } 
+	
 	//echart resize
 	$(window).on('resize',()=>{
 		chartAttention.resize();
@@ -31,16 +66,9 @@ $(document).ready(() => {
         cond.topic = topic;
         cond.stock = stock;
 
-        var url = URL + 'stock=' + stock + '&topic=' + topic + '&response=application/json';
+        var url = URL_TOPICHEAT + 'userId=' + loginfo.username + '&stock=' + stock + '&topic=' + topic;
         _renderChart(url);
     }
-    //get user
-    console.log(window.user);
-    if(window.user) {
-        loginfo = window.user.replace(/&quot;/g,'"');
-        loginfo = JSON.parse(loginfo);
-        delete window.user;
-    } 
 
 	//form submit 
 	$('#form-topic').submit(function(e) {
@@ -53,10 +81,21 @@ $(document).ready(() => {
 			cond.topic = topic;
 	        cond.stock = stock;
 			
-			var url = URL + 'stock=' + stock + '&topic=' + topic + '&response=application/json';
+			var url = URL_TOPICHEAT + 'userId=' + loginfo.username + '&stock=' + stock + '&topic=' + topic;
 	        _renderChart(url);
 		}
 	});
+
+	$('#topicPoolInput').on('input propertychange', function(e) {
+        var value = $(this).val();
+        if(value) {
+            $('#search-clear').show();
+            $('#topic-tags').find(":not(label[data-value*='"+value+"'])").hide();
+            $('#topic-tags').find("label[data-value*='"+value+"']").show();
+        }else{
+        	$('#topic-tags').children().show();
+        }
+    });
 });
 
 function onStar(that) {
@@ -103,8 +142,9 @@ function onStar(that) {
 
 function _renderChart(url) {
 	
-	chartAttention = echarts.init(document.getElementById('chart-attention'), 'macarons');
-	chartPrice = echarts.init(document.getElementById('chart-price'), 'macarons');
+	chartAttention = echarts.init(document.getElementById('chart-attention'));
+	chartPrice = echarts.init(document.getElementById('chart-price'));
+	echarts.connect([chartAttention, chartPrice]);
 	// configure echart
 	chartAttention.showLoading();
 	chartPrice.showLoading();
@@ -116,15 +156,26 @@ function _renderChart(url) {
             var index = [];	
             var category = [];
             var legend = cond.stock+'-'+cond.topic;	
-            data = JSON.parse(data);
-            var entry = data.topicHeatResponse.return.entry;
-            if(!entry) {
+            var d = JSON.parse(data);
+            d= JSON.parse(d);
+            var entry = d.topicHeat;
+            if(!entry || !entry.length) {
             	chartAttention.hideLoading();
             	chartPrice.hideLoading();
             	_showErr('找不到相关信息');
             	return false;
             }
-
+            var flag = d.flag;
+            var $btnCollect = $('.charts .topic-collect .btn-star');
+            if(0 == flag || -1 == flag) {
+            	if($btnCollect.hasClass('collect')) {
+            		$btnCollect.removeClass('collect');
+            	}
+            }else if(1 == flag) {
+            	if(!$btnCollect.hasClass('collect')) {
+            		$btnCollect.addClass('collect');
+            	}
+            }
             $('#stockInput').val('');
 			$('#eventInput').val('');
             $('.charts .topic-collect').show();
@@ -132,9 +183,9 @@ function _renderChart(url) {
     		$("html, body").animate({scrollTop: $('section.charts').offset().top-60}, 800);
 
             entry.forEach(function(cur) {
-            	category.push(cur.key);
-            	heat.push(cur.value[0]);
-            	index.push(cur.value[1]);
+            	category.push(cur.date);
+            	heat.push(cur.heat);
+            	index.push(cur.index);
             });				
 
             //attention
@@ -146,22 +197,21 @@ function _renderChart(url) {
 					tooltip: {
 						trigger: 'axis'
 					},
-					color: ['#c23531'],
-					dataZoom: [
-			        {
-			        	type: 'slider',
-			            show: true,
-			            xAxisIndex: [0],
-			            start: 5,
-			            end: 25
-			        },{
-			        	type: 'inside',
-			            xAxisIndex: [0],
-			            start: 5,
-			            end: 25
+					dataZoom: [{
+						handleColor: 'rgb(75,188,208)', 
+						fillerColor: 'rgb(75,188,208)',  
+						borderWidth:0,
+						show : true,  
+						realtime: true,  
+						start : 75.5, 
+						end: 100, 
+						height:15
 			        }],
 					legend: {
-				        data:[legend]
+				        data:[{
+				        	name: legend,
+				        	icon: 'line'
+				        }]
 				    },
 					toolbox: {
 						feature: {
@@ -169,18 +219,70 @@ function _renderChart(url) {
 						}
 					},
 					xAxis: [{
-						// name: 'Date',
 						type: 'category',
-						data: category
+						data: category,
+						axisLine: {
+							show: true, 
+							lineStyle:{
+								type:'solid', 
+								width: 1, 
+								color: 'rgb(75,188,208)' 
+							}
+						},
+						axisTick: false, 
+						axisLabel:{
+							textStyle: {
+				                fontFamily : '微软雅黑', 
+				                fontSize : 12,
+				                color: 'black'
+				            }
+						},
+						boundaryGap : false
 					}],
 					yAxis: [{
 						name: '关注度(H)',
-						type: 'value'
+						type: 'value',
+						scale:true, 
+						axisLine: {
+							show: true, 
+							lineStyle:{
+								type:'solid', 
+								width: 1, 
+								color: 'rgb(75,188,208)' 
+							}
+						},
+						axisLabel:{
+							textStyle:{
+				                fontFamily : '微软雅黑', 
+				                fontSize : 12,
+				                color: 'black'
+				            }
+						},
+						axisTick: false,
+						nameTextStyle:{
+				            fontFamily : '微软雅黑', 
+				            fontSize : 12,
+				            color: 'black'
+				        }, 
+				        splitNumber:10, 
+				        splitLine: {
+				        	show: true, 
+				        	lineStyle:{
+				        		type:'dashed', 
+				        		width: 1, 
+				        		color:'#dcdcdc' 
+				        	}
+				        }
 					}],
 					series: [{
 						name: legend,
 						type: 'line',
-						data: heat
+						data: heat,
+						itemStyle: {
+							normal:{
+								color:'rgb(50,70,95)'
+							}
+						}
 					}]
 				}
 			});
@@ -195,22 +297,21 @@ function _renderChart(url) {
 					tooltip: {
 						trigger: 'axis'
 					},
-					color: ['#66ccff'],
-					dataZoom: [
-			        {
-			        	type: 'slider',
-			            show: true,
-			            xAxisIndex: [0],
-			            start: 5,
-			            end: 25
-			        },{
-			        	type: 'inside',
-			            xAxisIndex: [0],
-			            start: 5,
-			            end: 25
+					dataZoom: [{
+						handleColor: 'rgb(75,188,208)', 
+						fillerColor: 'rgb(75,188,208)',  
+						borderWidth:0,
+						show : true,  
+						realtime: true,  
+						start : 75.5, 
+						end: 100, 
+						height:15
 			        }],
 					legend: {
-				        data:[legend]
+				        data:[{
+				        	name: legend,
+				        	icon: 'line'
+				        }]
 				    },
 					toolbox: {
 						feature: {
@@ -220,16 +321,69 @@ function _renderChart(url) {
 					xAxis: [{
 						// name: 'Date',
 						type: 'category',
-						data: category
+						data: category,
+						axisLine: {
+							show: true, 
+							lineStyle:{
+								type:'solid', 
+								width: 1, 
+								color: 'rgb(75,188,208)' 
+							}
+						},
+						axisTick: false, 
+						axisLabel:{
+							textStyle: {
+				                fontFamily : '微软雅黑', 
+				                fontSize : 12,
+				                color: 'black'
+				            }
+						},
+						boundaryGap : false
 					}],
 					yAxis: [{
 						name: '价格指数(I)',
-						type: 'value'
+						type: 'value',
+						scale:true, 
+						axisLine: {
+							show: true, 
+							lineStyle:{
+								type:'solid', 
+								width: 1, 
+								color: 'rgb(75,188,208)' 
+							}
+						},
+						axisLabel:{
+							textStyle:{
+				                fontFamily : '微软雅黑', 
+				                fontSize : 12,
+				                color: 'black'
+				            }
+						},
+						axisTick: false,
+						nameTextStyle:{
+				            fontFamily : '微软雅黑', 
+				            fontSize : 12,
+				            color: 'black'
+				        }, 
+				        splitNumber:10, 
+				        splitLine: {
+				        	show: true, 
+				        	lineStyle:{
+				        		type:'dashed', 
+				        		width: 1, 
+				        		color:'#dcdcdc' 
+				        	}
+				        }
 					}],
 					series: [{
 						name: legend,
 						type: 'line',
-						data: index
+						data: index,
+						itemStyle: {
+							normal:{
+								color:'rgb(230,85,30)'
+							}
+						}
 					}]
 				}
 			});
@@ -277,4 +431,47 @@ function _showFadeMsg(text) {
 			$('#fade-alert').fadeOut();
 		}, 1000);
 	});
+}
+
+function onPool(that) {
+	$('#topic-tags').children().show();
+	var poolHeight = $(document).height();
+	$('#pool').height(poolHeight).show();
+}
+
+function destroyPool(that) {
+	$('#pool').hide();
+	clearSearch();
+}
+
+function clearSearch(that) {
+    $('#topicPoolInput').val('');
+    $('#topic-tags').children().show();
+    $('#search-clear').hide();
+
+}
+
+function _renderTopicTags(tags) {
+	var $tagsPool = $('#topic-tags');
+	tags.forEach(function(cur) {
+		var tag = $('<label class="label-category" ></label>');
+		$(tag).attr('data-value',cur.code+'|'+cur.name+'|'+cur.event);
+		$(tag).text(cur.code+'-'+cur.name+'-'+cur.event);
+		$tagsPool.append(tag);
+	});
+	
+}
+
+function checkTag(e) {
+	e.stopPropagation();
+	if(e.target.tagName === 'LABEL') {
+		destroyPool();
+		var value = $(e.target).attr('data-value').split('|');
+		cond.topic = value[2];
+        cond.stock = value[1];
+
+        var url = URL_TOPICHEAT + 'userId=' + loginfo.username + '&stock=' + cond.stock + '&topic=' + cond.topic;
+        _renderChart(url);
+
+	}
 }

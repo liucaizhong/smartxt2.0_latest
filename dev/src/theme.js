@@ -15,13 +15,13 @@ var jump = false;
 // var jumpSource = [];
 var loginfo;
 //echarts
-var lineChart = echarts.init(document.getElementById('line-chart'), 'macarons');
+var lineChart = echarts.init(document.getElementById('line-chart'));
 var histogram = [];
 var leftWidth = 0, rightWidth = 0;
 var leftRatio = 55, rightRatio = 45;
 var chartIndex = ['文本相关度','价格相关度','流通市值','机构持股比例','股价','5日涨幅'];
 // var chartColor = ['#c23531','#2f4554', '#61a0a8', '#d48265', '#91c7ae','#749f83',  '#ca8622', '#bda29a','#6e7074', '#546570', '#c4ccd3'];
-var chartColor = ['#B8C309', '#0CF5F5'];
+var chartColor = ['rgba(199,194,93, .75)', 'rgba(75,188,208, .75)'];
 
 //ajax url
 //example: concept=NB-IoT&src=*&response=application/json
@@ -35,8 +35,38 @@ var URL_ADDFRESHWORD = '/crosspost?id=10';
 var URL_COLLECT = '/crosspost?id=13';
 //http://139.196.18.233:8087/smartxtAPI/conceptUnFollow
 var URL_UNCOLLECT = '/crosspost?id=14';
+var URL_ALLCONCEPTS = '/cross?id=23';
 
 $(document).ready(() => {
+    $.ajax({
+        url: URL_ALLCONCEPTS,
+        type: 'GET',
+        async: true,
+        dataType: 'json',
+        success: (data) => {
+            var d = JSON.parse(data);
+            d = JSON.parse(d);
+
+            if(d && d.length) {
+                var idx = Math.floor(Math.random() * (d.length>10?10:d.length)); 
+                theme.push(d[idx]);
+                jump = true;
+                _renderCharts();
+                _renderDatalist(d);
+            } else {
+                //show message
+            }
+        },
+        error: (err) => {
+            console.log(err);
+        }
+    });
+    //get user
+    if(window.user) {
+        loginfo = window.user.replace(/&quot;/g,'"');
+        loginfo = JSON.parse(loginfo);
+        delete window.user;
+    } 
     $('#fresh-word').on('input propertychange', function(e) {
         var input = $(this)[0];
 
@@ -96,27 +126,6 @@ $(document).ready(() => {
             method = 1;
         }
         _renderCharts();
-
-        // var themeUrl = 'concept=';
-        // jumpTheme.forEach(function(cur) {
-        //     themeUrl += cur.trim() + ',';
-        // });
-        // //remove comma at the end of str
-        // themeUrl = themeUrl.substr(0, themeUrl.length-1);
-
-        // var sourceUrl = '&src=';
-        // jumpSource.forEach(function(cur) {
-        //     sourceUrl += sourceRange[sourceName.indexOf(cur.trim())];
-        // });
-        // sourceUrl = sourceUrl.substr(0, sourceUrl.length-1);
-
-        // var heatUrl = HEATURL + themeUrl + sourceUrl +'&response=application/json';
-        // var date = new Date();
-        // var dateStr = date.getFullYear().toString() + (date.getMonth()+1).toString() + date.getDate().toString();
-        // var stockUrl = STOCKURL + themeUrl + '&date=' + dateStr + sourceUrl +'&period=10&response=application/json';
-        // console.log(heatUrl);
-        // console.log(stockUrl);
-        // _renderCharts(heatUrl, stockUrl);
     }
     //#form-theme submit handler
     $('#form-theme').submit(function(e) {
@@ -144,14 +153,16 @@ $(document).ready(() => {
 
         _renderCharts();
     });   
-    //get user
-    console.log(window.user);
-    if(window.user) {
-        loginfo = window.user.replace(/&quot;/g,'"');
-        loginfo = JSON.parse(loginfo);
-        delete window.user;
-    } 
 });
+
+function _renderDatalist(d) {
+    var all = $('#allConcepts');
+    d.forEach(function(cur) {
+        var option = document.createElement('OPTION');
+        $(option).val(cur);
+        all.append(option);
+    });
+}
 
 function _loadingChart(chart) {
 	chart.showLoading();
@@ -174,19 +185,6 @@ function _renderCharts(heatUrl, stockUrl) {
         $('#sourceNavs').hide();
     }
 
-    // if(jump) {
-    //     var sourceId = 'sn' + sourceName.indexOf(jumpSource[0]);
-    //     var $source = $('#'+sourceId);
-    //     if(!$source.hasClass('active')) {
-    //         $('#sourceNavs').find('a.nav-link[class*="active"]').removeClass('active');
-    //         $source.addClass('active');
-    //     }
-    //     $('#sourceNavs').show();
-    //     jump = 0;
-    // }
-
-    // $('#inputFreshWord').show();
-    // $('#btnThemeCollect').show();
     $('.theme-inputbar').show();
 
     //generate new URL
@@ -205,9 +203,12 @@ function _renderCharts(heatUrl, stockUrl) {
         async: true,
         dataType: 'json',
         success: (data) => {
-            if(data) {
+            var d = JSON.parse(data);
+            d = JSON.parse(d);
+
+            if(d && d.length) {
                 //render line chart
-                _renderLineChart(JSON.parse(data));
+                _renderLineChart(d);
             } else {
                 //show message
             }
@@ -223,9 +224,12 @@ function _renderCharts(heatUrl, stockUrl) {
         async: true,
         dataType: 'json',
         success: (data) => {
-            if(data) {
+            var d = JSON.parse(data);
+            d = JSON.parse(d);
+
+            if(d && d.length) {
                 //render line chart
-                _renderHistogram(JSON.parse(data));
+                _renderHistogram(d);
             } else {
                 //show message
             }
@@ -238,24 +242,26 @@ function _renderCharts(heatUrl, stockUrl) {
 
 function _genUrl(url, flag) {
 	var url = url;
-    var urlTheme = 'concept=';
-    var urlSource = 'src=';
+    var urlTheme = 'concepts=';
+    var urlSource = 'sources=';
     var urlDate = 'date=';
     var urlPeriod = 'period=';
+
+    url += 'userId=' + loginfo.username;
     //add theme to url
     theme.forEach(function(cur) {
-    	urlTheme += cur.trim() + ',';
+    	urlTheme += cur.trim() + ';';
     });
     //remove comma at the end of str
     urlTheme = urlTheme.substr(0, urlTheme.length-1);
     //add source to url
     source.forEach(function(cur) {
-    	urlSource += sourceRange[cur].trim() +',';
+    	urlSource += cur +';';
     });
 	//remove comma at the end of str
 	urlSource = urlSource.substr(0, urlSource.length-1);
 
-	url = url + urlTheme + '&' + urlSource;
+	url += '&' + urlTheme + '&' + urlSource;
     if(flag) {
         //add date to url
         urlDate += $('#date-input').val().replace(/\//g,'');
@@ -264,7 +270,6 @@ function _genUrl(url, flag) {
 
         url += '&' + urlDate + '&' + urlPeriod;
     }
-    url += '&response=application/json';
 
     return url;
 }
@@ -428,67 +433,83 @@ function _renderLineChart(data) {
     //scroll to result list
     // $("html, body").animate({scrollTop: $('#charts').offset().top - 100}, 800);
 
-    lineChart = echarts.init(document.getElementById('line-chart'), 'macarons'); 
+    lineChart = echarts.init(document.getElementById('line-chart')); 
     // chart.showLoading();
 
-    var entry = data.getHeatResponse.return.entry;
-    if(jQuery.isEmptyObject(entry)) {
-        //show message
+    var flag = data[0].flag;
+    if(flag == -1) {
         lineChart.hideLoading();
-        return;
+        return false;
+    }else if(flag == 0) {
+        var $btnStar = $('.btn-theme-collect>i.btn-star');
+        if($btnStar.hasClass('collect')) {
+            $btnStar.removeClass('collect');
+        }
+    }else if(flag == 1) {
+        var $btnStar = $('.btn-theme-collect>i.btn-star');
+        if(!$btnStar.hasClass('collect')) {
+            $btnStar.addClass('collect');
+        }
     }
+    var entry = data.splice(1);
 
   	var legend = []; 
   	var category = [];
   	var series = [];
 
   	if(Array.isArray(entry)) {
-  		var catFlag = true;
+  		// var catFlag = true;
 
-  		entry.forEach(function(cur,i) {
+  		entry.forEach(function(cur) {
 	  		var serieH = {
-		  		name: 'H-'+cur.key,
+		  		name: cur.concept+' H',
 		  		type: 'line',
 		  		yAxisIndex: 0,
-                // areaStyle: {
-                //     normal: {}
-                // }
+                itemStyle : {
+                    normal: {
+                        areaStyle: {
+                            type: 'default', 
+                            color:'rgba(239,243,246,.6)'
+                        }, 
+                        color: 'rgb(50,70,90)'
+                    }
+                },
+                symbol: 'none'
 		  	};
 		  	var serieI = {
-		  		name: 'I-'+cur.key,
+		  		name: cur.concept+' I',
 		  		type: 'line',
 		  		yAxisIndex: 1,
-                // areaStyle: {
-                //     normal: {}
-                // }
+                itemStyle : {
+                    normal: {
+                        areaStyle: {
+                            type: 'default', 
+                            color: 'rgba(250,225,222,.6)'
+                        }, 
+                        color: 'rgb(235,85,30)'
+                    }
+                },
+                symbol: 'none'
 		  	};
 
 	  		var heat = [];
 	  		var index = [];
 
-            // if(method == 1) {
-            //     var indexOfSource = sourceRange.indexOf(cur.key);
-            //     legend.push(sourceName[indexOfSource] + '(H)');
-            //     legend.push(sourceName[indexOfSource] + '(I)');
-            // } else {
-            //     legend.push(cur.key + '(H)');
-            //     legend.push(cur.key + '(I)');
-            // }
-            legend.push('H-'+cur.key);
-            legend.push('I-'+cur.key);
+            if(method == 1) {
+                legend.push({name:sourceName[+cur.source] + ' H',icon: 'line'});
+                legend.push({name:sourceName[+cur.source] + ' I',icon: 'line'});
+                serieH.name = sourceName[+cur.source] +' H';
+                serieI.name = sourceName[+cur.source] +' I';
+            } else {
+                legend.push({name:cur.concept + ' H',icon: 'line'});
+                legend.push({name:cur.concept + ' I',icon: 'line'});
+            }
 
-	  		cur.value.entry.forEach(function(data) {
-	  			heat.push(data.value[0]);
-	  			index.push(data.value[1]);
-
-	  			if(catFlag) {
-	  				category.push(data.key);
-	  			}
+	  		cur.heat.forEach(function(data) {
+	  			heat.push(data.heat);
+	  			index.push(data.index);
+                category.push(data.date);
 	  		});
-
-	  		if(category.length) {
-	  			catFlag = false;
-	  		}
 
 	  		serieH.data = heat;
 	  		series.push(serieH);
@@ -496,57 +517,7 @@ function _renderLineChart(data) {
 	  		serieI.data = index;
 	  		series.push(serieI);
 	  	});
-  	} else {
-  		var serieH = {
-	  		name: 'H-'+entry.key,
-	  		type: 'line',
-	  		yAxisIndex: 0,
-            // areaStyle: {
-            //     normal: {}
-            // }
-	  	};
-	  	var serieI = {
-	  		name: 'I-'+entry.key,
-	  		type: 'line',
-	  		yAxisIndex: 1,
-            // areaStyle: {
-            //     normal: {}
-            // }
-	  	};
-        if(method == 1) {
-            serieH.name = 'H-'+sourceName[source[0]];
-            serieI.name = 'I-'+sourceName[source[0]];
-        }
-
-  		var heat = [];
-	  	var index = [];
-
-        // if(method == 1) {
-        //     var indexOfSource = sourceRange.indexOf(entry.key);
-        //     legend.push(sourceName[indexOfSource] + '(H)');
-        //     legend.push(sourceName[indexOfSource] + '(I)');
-        // } else {
-        //     legend.push(entry.key + '(H)');
-        //     legend.push(entry.key + '(I)');
-        // }
-        legend.push('H-'+entry.key);
-        legend.push('I-'+entry.key);
-        if(method == 1) {
-            legend[0] = 'H-'+sourceName[source[0]];
-            legend[1] = 'I-'+sourceName[source[0]];
-        }
-
-  		entry.value.entry.forEach(function(data) {
-	  		heat.push(data.value[0]);
-	  		index.push(data.value[1]);
-	  		category.push(data.key);
-	  	})
-	  	serieH.data = heat;
-	  	series.push(serieH);
-
-	  	serieI.data = index;
-	  	series.push(serieI);
-  	}
+    }
 
   	var chartTitle = '';
   	if(method != 1) {
@@ -554,33 +525,24 @@ function _renderLineChart(data) {
   	} else {
   		chartTitle = theme[0];
   	}
-
-    // if(jump) {
-    //     chartTitle = jumpSource[0];
-    //     jump = 0;
-    // }
-
-  	// console.log('legend', legend);
-  	// console.log('series', series);
-  	// console.log('category', category);
  
     lineChart.setOption({
         baseOption: {
             title: {
-                text: chartTitle
+                // text: chartTitle
             },
             tooltip: {
                 trigger: 'axis'
             },
             dataZoom: [{
-                type: 'slider',
-                show: true,
-                start: 5,
-                end: 25
-            }, {
-                type: 'inside',
-                start: 5,
-                end: 25
+                handleColor:'rgb(75,188,208)', 
+                fillerColor:'rgb(75,188,208)',  
+                borderWidth:0,
+                show : true,  
+                realtime: true,  
+                start:75.5, 
+                end: 100,
+                height:15
             }],
             legend: {
                 data: legend
@@ -592,20 +554,89 @@ function _renderLineChart(data) {
             },
             xAxis: {
             	type: 'category',
-                data: category
+                data: category,
+                axisLine: {
+                    show: true, 
+                    lineStyle:{
+                        type:'solid', 
+                        width: 1, 
+                        color:'rgb(75,188,208)' 
+                    }
+                },
+                axisTick:false,
+                axisLabel:{
+                    textStyle: {
+                        color:'black',
+                        fontFamily : '微软雅黑', 
+                        fontSize : 12
+                    }
+                },
+                boundaryGap : false
             },
             yAxis: [{
                 name: '关注度(H)',
                 type: 'value',
-                min: 'auto',
-                max: 'auto',
-	  			splitNumber: 10
+	  			splitNumber: 10,
+                scale:true, 
+                axisLine: {
+                    show: true, 
+                    lineStyle:{
+                        type:'solid', 
+                        width: 1, 
+                        color:'rgb(75,188,208)' 
+                    }
+                },
+                axisLabel:{
+                    textStyle:{
+                        color:'black',
+                        fontFamily : '微软雅黑', 
+                        fontSize : 12
+                    }
+                },
+                splitLine: {
+                    show: true, 
+                    lineStyle:{
+                        type:'dashed', 
+                        width: 1
+                    }
+                },
+                nameTextStyle:{
+                    color:'black',
+                    fontFamily : '微软雅黑', 
+                    fontSize : 12
+                }
             }, {
                 name: '指数(I)',
                 type: 'value',
-                min: 'auto',
-                max: 'auto',
-	  			splitNumber: 5
+	  			splitNumber: 10,
+                scale:true, 
+                axisLine: {
+                    show: true, 
+                    lineStyle:{
+                        type:'solid', 
+                        width: 1, 
+                        color:'rgb(75,188,208)' 
+                    }
+                },
+                axisLabel:{
+                    textStyle:{
+                        color:'black',
+                        fontFamily : '微软雅黑', 
+                        fontSize : 12
+                    }
+                },
+                splitLine: {
+                    show: false, 
+                    lineStyle:{
+                        type:'dashed', 
+                        width: 1
+                    }
+                },
+                nameTextStyle:{
+                    color:'black',
+                    fontFamily : '微软雅黑', 
+                    fontSize : 12
+                }
             }],
             series: series
         }
@@ -614,21 +645,16 @@ function _renderLineChart(data) {
 }
 
 function _renderHistogram(data) {
-    //data preprocess
-    var entry = data.getStocksResponse.return.entry;
-    if(jQuery.isEmptyObject(entry)) {
-        return;
+    var flag = data[0].flag;
+    if(flag == -1) {
+        return false;
     }
+    //data preprocess
+    var entry = data.splice(1);
+
     var legend = [];
     var chartData = [];
-    //data for one tab 
-    var category = [];
-    var text = [];
-    var price = [];
-    var marketValue = [];
-    var holdRatio = [];
-    var stockPrice = [];
-    var fiveIncrease = [];
+
     //get tab-list/tab-content
     var $tabList = $($('#tab-list')[0]);
     var $tabContent = $($('#tab-content')[0]);
@@ -638,24 +664,30 @@ function _renderHistogram(data) {
 
     if(Array.isArray(entry)) {
         entry.forEach(function(cur) {
-            // if(method == 1) {
-            //     var indexOfSource = sourceRange.indexOf(cur.key);
-            //     legend.push(sourceName[indexOfSource]);
-            // } else {
-            //     legend.push(cur.key);
-            // }
-            legend.push(cur.key);
-            if(cur.value) {
-                var value = cur.value.slice(0,10);
-                value.forEach(function(cur) {
-                    var array = cur.array;
-                    category.push(array[1]+'('+array[0]+')');
-                    text.push(array[2]);
-                    price.push(array[3]);
-                    marketValue.push(array[4]);
-                    holdRatio.push(array[5]);
-                    stockPrice.push(array[6]);
-                    fiveIncrease.push(array[7]);
+            if(method == 1) {
+                legend.push(sourceName[+cur.source]);
+            } else {
+                legend.push(cur.concept);
+            }
+            //data for one tab 
+            var category = [];
+            var text = [];
+            var price = [];
+            var marketValue = [];
+            var holdRatio = [];
+            var stockPrice = [];
+            var fiveIncrease = [];
+            // legend.push(cur.concept);
+            if(cur.stocks && cur.stocks.length) {
+                var value = cur.stocks;
+                value.forEach(function(val) {
+                    category.push(val.name+'('+val.code+')');
+                    text.push(val.txtCor);
+                    price.push(val.priceCor);
+                    marketValue.push(val.MV);
+                    holdRatio.push(val.HOLD);
+                    stockPrice.push(val.CP);
+                    fiveIncrease.push(val.RT);
                 });
                 chartData.push({
                     category: category,
@@ -666,38 +698,7 @@ function _renderHistogram(data) {
                 chartData.push({});
             }
         });
-    } else {
-        // if(method == 1) {
-        //     var indexOfSource = sourceRange.indexOf(entry.key);
-        //     legend.push(sourceName[indexOfSource]);
-        // } else {
-        //     legend.push(entry.key);
-        // }
-        legend.push(entry.key);
-        if(method == 1) {
-            legend[0] = sourceName[source[0]];
-        }
-
-        if(entry.value) {
-            var value = entry.value.slice(0,10);
-            value.forEach(function(cur) {
-                var array = cur.array;
-                category.push(array[1]+'('+array[0]+')');
-                text.push(array[2]);
-                price.push(array[3]);
-            });
-
-            chartData.push({
-                category: category,
-                data: [text,price,marketValue,holdRatio,stockPrice,fiveIncrease]
-            });
-        } else {
-            //add a empty obj
-            chartData.push({});
-        }
     }
-
-    console.log('chartData', chartData);
 
     for (var i = 0, len = legend.length; i < len; ++i) {
         //render nav tabs: based on legend
@@ -748,14 +749,16 @@ function _renderLeftHistogram(category,data,index,color,id) {
         }
         $(relChart).css('width',leftWidth+'px');
         $(tabPanel).append(relChart);
-        var echart = echarts.init(relChart[0], 'macarons');
+        var echart = echarts.init(relChart[0]);
         histogram.push(echart);
         //set echart option
         echart.setOption({
             tooltip : {
                 trigger: 'axis',
-                axisPointer : {           
-                    type : 'shadow'   
+                axisPointer : {type : 'shadow'},
+                position: function (point, params, dom) {
+                    $(dom).width('200');
+                    return [point[0], point[1]+18];
                 }
             },
             grid: {
@@ -763,18 +766,42 @@ function _renderLeftHistogram(category,data,index,color,id) {
             },
             color: [color],
             legend: {
-                data: [index]
+                data: [index],
+                x: 'right',
+                textStyle: {
+                    fontFamily : '微软雅黑', 
+                    fontSize : 12,
+                    color: 'black'
+                }
             },
             xAxis:  {
                 type: 'value',
                 position:'top',
-                // inverse: true
+                axisLine: {show: false}, 
+                splitNumber: 10,
+                splitLine: {show: true, 
+                    lineStyle:{
+                        type:'dashed', 
+                        width: 1
+                    }
+                },
+                axisLabel: {
+                    textStyle: {
+                        fontFamily : '微软雅黑', 
+                        fontSize : 12,
+                        color: 'black'
+                    }
+                },
+                axisTick: false
             },
             yAxis: {
                 type: 'category',
                 data: category,
                 position: 'left',
-                inverse: true
+                inverse: true,
+                axisTick: false,
+                axisLine: {show: false}, 
+                splitLine: {show: false}
             },
             series: [
                 {
@@ -782,7 +809,7 @@ function _renderLeftHistogram(category,data,index,color,id) {
                     type: 'bar',
                     label: {
                         normal: {
-                            show: true,
+                            show: false,
                             position: 'insideRight'
                         }
                     },
@@ -804,25 +831,49 @@ function _renderRightHistogram(category,data,index,color,id) {
         }
         $(relChart).css('width',rightWidth+'px');
         $(tabPanel).append(relChart);
-        var echart = echarts.init(relChart[0], 'macarons');
+        var echart = echarts.init(relChart[0]);
         histogram.push(echart);
         //set echart option
         echart.setOption({
             tooltip : {
                 trigger: 'axis',
-                axisPointer : {           
-                    type : 'shadow'   
+                axisPointer : {type : 'shadow'},
+                position: function (point, params, dom) {
+                    $(dom).width('200');
+                    return [point[0], point[1]+18];
                 }
             },
             grid: {
                 containLabel: true
             },
             legend: {
-                data: [index]
+                data: [index],
+                x: 'left',
+                textStyle: {
+                    fontFamily : '微软雅黑', 
+                    fontSize : 12,
+                    color: 'black'
+                }
             },
             xAxis:  {
                 type: 'value',
-                position:'top'
+                position:'top',
+                axisLine: {show: false}, 
+                splitNumber: 10,
+                splitLine: {show: true, 
+                    lineStyle:{
+                        type:'dashed', 
+                        width: 1
+                    }
+                },
+                axisLabel: {
+                    textStyle: {
+                        fontFamily : '微软雅黑', 
+                        fontSize : 12,
+                        color: 'black'
+                    }
+                },
+                axisTick: false
             },
             yAxis: {
                 type: 'category',
@@ -832,7 +883,10 @@ function _renderRightHistogram(category,data,index,color,id) {
                 axisLabel: {
                     show: false,
                     inside: true
-                }
+                },
+                axisTick: false,
+                axisLine: {show: false}, 
+                splitLine: {show: false}
             },
             color: [color],
             series: [
@@ -841,7 +895,7 @@ function _renderRightHistogram(category,data,index,color,id) {
                     type: 'bar',
                     label: {
                         normal: {
-                            show: true,
+                            show: false,
                             position: 'insideRight'
                         }
                     },

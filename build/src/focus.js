@@ -1,5 +1,7 @@
 'use strict';
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //global
 var method = 0;
 var methodRange = ['auto', 'h', 'i'];
@@ -159,15 +161,20 @@ function _renderCharts(concepts) {
 	//create element
 	concepts.forEach(function (cur, idx) {
 		//get heat data
-		var heatUrl = HEATURL + 'concept=' + cur + '&src=' + sourceName[source] + '&response=application/json';
+		var heatUrl = HEATURL + 'userId=' + loginfo.username + '&concepts=' + cur + '&sources=' + source;
 		$.ajax({
 			url: heatUrl,
 			type: 'GET',
 			async: true,
 			dataType: 'json',
 			success: function success(data) {
-				var entry = JSON.parse(data).getHeatResponse.return.entry;
-				if (!jQuery.isEmptyObject(entry)) {
+				var d = JSON.parse(data);
+				d = JSON.parse(d);
+
+				if (d[0].flag !== -1) {
+					var _xAxis;
+
+					var entry = d[1];
 					var legend = [];
 					var category = [];
 					var series = [];
@@ -175,23 +182,43 @@ function _renderCharts(concepts) {
 					var index = [];
 
 					var serieH = {
-						name: 'H-' + entry.key,
+						name: entry.concept + ' H',
 						type: 'line',
-						yAxisIndex: 0
+						yAxisIndex: 0,
+						itemStyle: {
+							normal: {
+								areaStyle: {
+									type: 'default',
+									color: 'rgba(239,243,246,.6)'
+								},
+								color: 'rgb(50,70,90)'
+							}
+						},
+						symbol: 'none'
 					};
 					var serieI = {
-						name: 'I-' + entry.key,
+						name: entry.concept + ' I',
 						type: 'line',
-						yAxisIndex: 1
+						yAxisIndex: 1,
+						itemStyle: {
+							normal: {
+								areaStyle: {
+									type: 'default',
+									color: 'rgba(250,225,222,.6)'
+								},
+								color: 'rgb(235,85,30)'
+							}
+						},
+						symbol: 'none'
 					};
 
-					legend.push('H-' + entry.key);
-					legend.push('I-' + entry.key);
+					legend.push({ name: entry.concept + ' H', icon: 'line' });
+					legend.push({ name: entry.concept + ' I', icon: 'line' });
 
-					entry.value.entry.forEach(function (cur) {
-						heat.push(cur.value[0]);
-						index.push(cur.value[1]);
-						category.push(cur.key);
+					entry.heat.forEach(function (cur) {
+						heat.push(cur.heat);
+						index.push(cur.index);
+						category.push(cur.date);
 					});
 					serieH.data = heat;
 					series.push(serieH);
@@ -204,20 +231,24 @@ function _renderCharts(concepts) {
 					var chartId = 'c' + (conceptIdx * CHARTNUM + idx);
 					$(chartDiv).attr('id', chartId).addClass('focus-chart');
 					$('.focus-charts>div.container').append(chartDiv);
-					var chart = echarts.init(document.getElementById(chartId), 'macarons');
+					var chart = echarts.init(document.getElementById(chartId));
 					chart.setOption({
 						baseOption: {
 							title: {
-								text: sourceShowName[source]
+								// text: sourceShowName[source]
 							},
 							tooltip: {
 								trigger: 'axis'
 							},
 							dataZoom: [{
-								type: 'slider',
+								handleColor: 'rgb(75,188,208)',
+								fillerColor: 'rgb(75,188,208)',
+								borderWidth: 0,
 								show: true,
-								start: 5,
-								end: 25
+								realtime: true,
+								start: 75.5,
+								end: 100,
+								height: 15
 							}, {
 								type: 'inside',
 								start: 5,
@@ -231,22 +262,86 @@ function _renderCharts(concepts) {
 									saveAsImage: {}
 								}
 							},
-							xAxis: {
+							xAxis: (_xAxis = {
 								type: 'category',
-								data: category
-							},
+								data: category,
+								axisTick: false,
+								splitLine: { show: false },
+								axisLine: {
+									show: true,
+									lineStyle: {
+										type: 'solid',
+										width: 1,
+										color: 'rgb(75,188,208)'
+									}
+								},
+								boundaryGap: false
+							}, _defineProperty(_xAxis, 'axisTick', false), _defineProperty(_xAxis, 'axisLabel', {
+								textStyle: {
+									fontFamily: '微软雅黑',
+									fontSize: 12,
+									color: 'black'
+								},
+								show: true
+							}), _xAxis),
 							yAxis: [{
 								name: '关注度(H)',
 								type: 'value',
-								min: 'auto',
-								max: 'auto',
-								splitNumber: 8
+								splitNumber: 7,
+								splitLine: {
+									show: true,
+									lineStyle: { type: 'dashed', width: 1 }
+								},
+								nameTextStyle: {
+									fontFamily: '微软雅黑',
+									fontSize: 12,
+									color: 'black'
+								},
+								axisLine: {
+									show: true,
+									lineStyle: {
+										type: 'solid',
+										width: 1,
+										color: 'rgb(75,188,208)'
+									}
+								},
+								axisLabel: {
+									textStyle: {
+										fontFamily: '微软雅黑',
+										fontSize: 12,
+										color: 'black'
+									},
+									show: true
+								}
 							}, {
 								name: '指数(I)',
 								type: 'value',
-								min: 'auto',
-								max: 'auto',
-								splitNumber: 8
+								splitNumber: 7,
+								splitLine: {
+									show: false,
+									lineStyle: { type: 'dashed', width: 1 }
+								},
+								nameTextStyle: {
+									fontFamily: '微软雅黑',
+									fontSize: 12,
+									color: 'black'
+								},
+								axisLine: {
+									show: true,
+									lineStyle: {
+										type: 'solid',
+										width: 1,
+										color: 'rgb(75,188,208)'
+									}
+								},
+								axisLabel: {
+									textStyle: {
+										fontFamily: '微软雅黑',
+										fontSize: 12,
+										color: 'black'
+									},
+									show: true
+								}
 							}],
 							series: series
 						}

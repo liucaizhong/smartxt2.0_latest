@@ -145,6 +145,7 @@ li.btn.nav-item.nav-li {
 .footer {
   min-height: 150px;
   background-color: rgba(20,34,69,1);
+  width: 100%;
 }
 
 .footer .links {
@@ -353,8 +354,8 @@ i[class*='fa-angle-double-up']:hover {
 }
 
 .btn-submit-topic {
-  margin-left: 5%;
-  width: 120px;
+  margin-left: 20px;
+  width: 100px;
   height: 30px;
   padding-top: 4px;
   margin-bottom: 15px;
@@ -1140,7 +1141,7 @@ span[class*="item-2"]>strong {
 
 .topic-chart {
   width: 100%;
-  height: 600px;
+  height: 500px;
 }
 
 /*.charts span {
@@ -1152,7 +1153,7 @@ span[class*="item-2"]>strong {
 }
 
 #form-topic {
-  left: 10%;
+  padding-left: 10%;
   position: relative;
 }
 
@@ -1650,4 +1651,38 @@ span[class*="item-2"]>strong {
 #fade-alert.user-alert {
   left: 50%;
   top: 35%;
+}
+
+.topic-pool {
+  position: absolute;
+  z-index: 30;
+  background-color: rgba(3, 63, 73, 0.3);
+  display: none;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+
+.pool-content {
+  text-align: center;
+  margin-top: 150px;
+  box-shadow: 3px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  padding: 0 20px;
+  padding-bottom: 40px;
+  width: 600px;
+  max-height: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 0.4rem;
+  z-index: 30;
+  background: #fff;
+}
+
+.pool-content .btn-close-pool {
+  padding-bottom: 10px;
+}
+
+#topic-tags {
+  max-height: 500px;
+  overflow-y: auto;
 }

@@ -3,9 +3,9 @@ var http = require('http');
 var url = require('url');
 var querystring = require('querystring');
 
-var urls = ['http://139.196.18.233:8087/axis2/services/smartxtAPI/getHeat?', 
-			'http://139.196.18.233:8087/axis2/services/smartxtAPI/getStocks?',
-			'http://139.196.18.233:8087/axis2/services/smartxtAPI/topicHeat?',
+var urls = ['http://139.196.18.233:8087/smartxtAPI/getConceptHeat?', 
+			'http://139.196.18.233:8087/smartxtAPI/getConceptStocks?',
+			'http://139.196.18.233:8087/smartxtAPI/topicHeat?',
 			'http://139.196.18.233:8087/smartxtAPI/getUserInfo?',
 			'http://139.196.18.233:8087/smartxtAPI/getUserConcept?',
 			'http://139.196.18.233:8087/smartxtAPI/getUserTopic?',
@@ -14,14 +14,20 @@ var urls = ['http://139.196.18.233:8087/axis2/services/smartxtAPI/getHeat?',
 			'http://139.196.18.233:8087/smartxtAPI/stockFollow',
 			'http://139.196.18.233:8087/smartxtAPI/stockRemoval',
 			'http://139.196.18.233:8087/smartxtAPI/conceptSubmit',
-			'http://139.196.18.233:8087/smartxtAPI/getStockMap',
+			'http://139.196.18.233:8087/smartxtAPI/getAllStockMap',
 			'http://139.196.18.233:8087/smartxtAPI/submitStatus?',
 			'http://139.196.18.233:8087/smartxtAPI/conceptFollow',
 			'http://139.196.18.233:8087/smartxtAPI/conceptUnFollow',
 			'http://139.196.18.233:8087/smartxtAPI/topicFollow',
 			'http://139.196.18.233:8087/smartxtAPI/topicUnFollow',
 			'http://139.196.18.233:8087/smartxtAPI/profileUpdate',
-			'http://139.196.18.233:8087/smartxtAPI/visitLog'];
+			'http://139.196.18.233:8087/smartxtAPI/visitLog',
+			'http://139.196.18.233:8087/smartxtAPI/queryAnnounce?',
+			'http://139.196.18.233:8087/smartxtAPI/queryChats?',
+			'http://139.196.18.233:8087/smartxtAPI/surveyList?',
+			'http://139.196.18.233:8087/smartxtAPI/affList',
+			'http://139.196.18.233:8087/smartxtAPI/allConcepts',
+			'http://139.196.18.233:8087/smartxtAPI/topicsOnAir?'];
 
 exports.get = function(req, res) {
 

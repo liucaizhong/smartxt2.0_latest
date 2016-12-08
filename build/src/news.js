@@ -1,25 +1,43 @@
 'use strict';
 
-//set timer for refresh website
-// var newsTimer = setInterval(_renderMoreNews, INTERVAL);
-var INTERVAL = 60 * 10 * 1000;
-var abstract = false;
+var INTERVAL = 30 * 60 * 1000;
+var abstract = true;
 var selfChoice = false;
-var activeCategory = [];
-var categoryRange = ['*', '业绩预报', '业绩快报', '项目收购', '人事变动', '利润分配', '增持减持', '资金用途', '资产重组', '增发预案', '重大合同', '年度报告'];
-var activeIndustry = [];
+var activeCategory = ['0'];
+var categoryRange = ['*', '业绩预报', '业绩快报', '项目收购', '人事变动', '利润分配', '增持减持', '资金用途', '资产重组', '增发预案', '重大合同', '年度报告', '举牌'];
+var activeIndustry = ['0'];
 var industryCategory = ['*', '非银金融', '传媒', '交通运输', '建筑材料', '纺织服装', '房地产', '医药生物', '有色金属', '轻工制造', '采掘', '农林牧渔', '休闲服务', '家用电器', '钢铁', '汽车', '国防军工', '综合', '机械设备', '公用事业', '银行', '化工', '电气设备', '通信', '商业贸易', '计算机', '电子', '食品饮料', '建筑装饰'];
 var keyword = '';
+var URL_NEWS = '/cross?id=19&';
+var loginfo;
+var lastId = -1;
+var MAX_ABS = 500;
 
 $(document).ready(function () {
+	if (window.user) {
+		loginfo = window.user.replace(/&quot;/g, '"');
+		loginfo = JSON.parse(loginfo);
+		delete window.user;
+
+		//first loading
+		_renderMoreNews();
+		var newsTimer = setInterval(_renderMoreNews, INTERVAL);
+	}
 	//loading more
 	$(window).scroll(function () {
 		if ($(window).scrollTop() + $(window).height() == $(document).height()) {
 			$('.more-button span:nth-child(1)').removeClass('active');
 			$('.more-button span:nth-child(2)').addClass('active');
 
-			//to do ajax
+			//loading more
+			_renderMoreNews(true);
+		}
+	});
 
+	$('#newsInput').keydown(function (e) {
+		if (e.keyCode == 13) {
+			e.preventDefault();
+			_renderMoreNews();
 		}
 	});
 
@@ -32,7 +50,6 @@ $(document).ready(function () {
 			$('#search-clear').hide();
 			keyword = '';
 		}
-		$('.news-content').highlight(keyword);
 	});
 
 	$('.auto-refresh > input[name=refresh]').change(function (e) {
@@ -45,11 +62,13 @@ $(document).ready(function () {
 
 	$('.auto-refresh > input[name=abstract]').change(function (e) {
 		abstract = !abstract;
+		_renderMoreNews();
 		console.log('abstract', abstract);
 	});
 
 	$('.auto-refresh > input[name=self]').change(function (e) {
 		selfChoice = !selfChoice;
+		_renderMoreNews();
 		console.log('selfChoice', selfChoice);
 	});
 });
@@ -74,11 +93,7 @@ function clearSearch(that) {
 	$('#newsInput').val('');
 	$(that).hide();
 	keyword = '';
-	$('.news-content').highlight(keyword);
-}
-
-function _renderMoreNews() {
-	console.log('Now the time is', new Date());
+	_renderMoreNews();
 }
 
 function onCategory(event) {
@@ -123,6 +138,7 @@ function onCategory(event) {
 				}
 			}
 		}
+		_renderMoreNews();
 	}
 
 	console.log('activeCategory', activeCategory);
@@ -170,6 +186,7 @@ function onIndustry(event) {
 				}
 			}
 		}
+		_renderMoreNews();
 	}
 
 	console.log('activeIndustry', activeIndustry);
@@ -187,18 +204,19 @@ function _getStrLength(str) {
 	return realLength;
 };
 
-function _cutStr(str, len) {
+function _cutStr(str, len, elem) {
 	var str_len = _getStrLength(str);
 	var str_length = 0;
 	var str_cut = '';
 	if (len >= str_len) {
 		//.short = str
 		//hide button of showing all
-		return;
+		$(elem).find('span.short').html(str);
+		return elem;
 	}
 
 	for (var i = 0; i < str_len; i++) {
-		a = str.charAt(i);
+		var a = str.charAt(i);
 		str_length++;
 		if (escape(a).length > 4) {
 			str_length++;
@@ -207,7 +225,144 @@ function _cutStr(str, len) {
 		if (str_length >= len) {
 			//.short = str_cut + '...'; .long = str;
 			//show button of showing all
-			return;
+			$(elem).find('span.short').html(str_cut + '......');
+			$(elem).find('span.long').html(str);
+			$(elem).find('.expand-btn').removeClass('none');
+			return elem;
 		}
 	}
+}
+
+function _renderMoreNews(f) {
+	console.log('Now the time is', new Date());
+	console.log('lastId', lastId);
+
+	if (!f) {
+		lastId = -1;
+		$('.news-content>ol').empty();
+	}
+
+	var loadUrl = URL_NEWS + 'userId=' + loginfo.username + '&lastId=' + lastId;
+	if (keyword) {
+		loadUrl += '&keyword=' + keyword;
+	} else {
+		loadUrl += '&keyword=';
+	}
+	if (abstract) {
+		loadUrl += '&absOnly=1';
+	} else {
+		loadUrl += '&absOnly=0';
+	}
+	if (selfChoice) {
+		loadUrl += '&selfStocksOnly=1';
+	} else {
+		loadUrl += '&selfStocksOnly=0';
+	}
+	if (activeCategory[0] == '0') {
+		loadUrl += '&types=';
+	} else {
+		loadUrl += '&types=';
+		activeCategory.forEach(function (cur) {
+			loadUrl += '\'' + categoryRange[+cur] + '\'' + ',';
+		});
+		loadUrl = loadUrl.substr(0, loadUrl.length - 1);
+	}
+	if (activeIndustry[0] == '0') {
+		loadUrl += '&indus=';
+	} else {
+		loadUrl += '&indus=';
+		activeIndustry.forEach(function (cur) {
+			loadUrl += '\'' + industryCategory[+cur] + '\'' + ',';
+		});
+		loadUrl = loadUrl.substr(0, loadUrl.length - 1);
+	}
+	$.ajax({
+		url: loadUrl,
+		type: 'GET',
+		async: true,
+		dataType: 'json',
+		success: function success(data) {
+			var d = JSON.parse(data);
+			d = JSON.parse(d);
+			if (d && d.length) {
+				//render
+				d.forEach(function (cur) {
+					_renderNewsContent(cur);
+				});
+				if (keyword) {
+					$('.news-content').highlight(keyword);
+				}
+				$('.more-button').show();
+				$('footer').hide();
+			} else {
+				//show footer
+				$('footer').show();
+				$('.more-button').hide();
+			}
+		},
+		error: function error(err) {
+			console.log(err);
+		}
+	});
+}
+
+function _renderNewsContent(o) {
+
+	var $ol = $('.news-content>ol');
+	var olHasChild = lastId == -1 ? false : true;
+	var newLI = false;
+	var curDate = new Date(o.showtime);
+	var curMon = curDate.getMonth() + 1;
+	var curDay = curDate.getDate();
+
+	if (olHasChild) {
+		var $lastLi = $('#' + lastId);
+		var $lastUl = $lastLi.parent();
+		var lastMonOfLastLi = +$lastUl.parent().find('header>.date em').text();
+		var lastDayOfLastLi = +$lastUl.parent().find('header>.date b').text();
+
+		if (lastMonOfLastLi != curMon || lastDayOfLastLi != curDay) {
+			newLI = true;
+		} else {
+			var fragment = $('<li class="bottom-line">\n                            <div>\n                                <h2 class="title"></h2>\n                                <div>\n                                    <p>\n                                        <span class="short"></span>\n                                        <span class="long none"></span>\n                                        <a class="expand-btn none" href="" onclick="onExpandContent(this,event)">显示全部</a>\n                                        <a class="none" target="_blank">查看原文</a>\n                                    </p>\n                                </div>\n                                <div class="news-footer">\n                                    <span class="tag-date"></span>\n                                    <span>标签：</span>\n                                    <span class="tag-indus"></span>\n                                    <span class="tag-type"></span>\n                                    <button class="collapse-btn none" onclick="onCollapseContent(this)"><i class="fa fa-hand-o-up" aria-hidden="true" style="font-size: 16px;"></i>&nbsp;收起</button>\n                                </div>\n                            </div>\n                        </li>');
+			$(fragment).attr('id', o.increaseId);
+			$(fragment).find('h2').text(o.name + '(' + o.code + ') ' + o.title);
+			if (o.link) {
+				$(fragment).find('a[target=_blank]').attr('href', o.link).removeClass('none');
+			}
+			if (o.abs) {
+				fragment = _cutStr(o.abs, MAX_ABS, fragment);
+			}
+			$(fragment).find('span.tag-date').text(o.showtime.split('.')[0]);
+			$(fragment).find('span.tag-indus').text(o.indus);
+			$(fragment).find('span.tag-type').text(o.type);
+
+			$lastUl.append(fragment);
+		}
+	} else {
+		newLI = true;
+	}
+
+	if (newLI) {
+		var fragment = $('<li class="sameday-news">\n                    <header>\n                        <div class="date">\n                            <span><em></em>月</span>\n                            <b></b>\n                        </div>\n                    </header>\n                    <ul>\n                        <li class="bottom-line">\n                            <div>\n                                <h2 class="title"></h2>\n                                <div>\n                                    <p>\n                                        <span class="short"></span>\n                                        <span class="long none"></span>\n                                        <a class="expand-btn none" href="" onclick="onExpandContent(this,event)">显示全部</a>\n                                        <a class="none" target="_blank">查看原文</a>\n                                    </p>\n                                </div>\n                                <div class="news-footer">\n                                    <span class="tag-date"></span>\n                                    <span>标签：</span>\n                                    <span class="tag-indus"></span>\n                                    <span class="tag-type"></span>\n                                    <button class="collapse-btn none" onclick="onCollapseContent(this)"><i class="fa fa-hand-o-up" aria-hidden="true" style="font-size: 16px;"></i>&nbsp;收起</button>\n                                </div>\n                            </div>\n                        </li>                   \n                    </ul>\n                </li>');
+
+		$(fragment).find('.date em').text(curMon);
+		$(fragment).find('.date b').text(curDay);
+		$(fragment).find('.bottom-line').attr('id', o.increaseId);
+		$(fragment).find('h2').text(o.name + '(' + o.code + ') ' + o.title);
+		if (o.link) {
+			$(fragment).find('a[target=_blank]').attr('href', o.link).removeClass('none');
+		}
+		if (o.abs) {
+			fragment = _cutStr(o.abs, MAX_ABS, fragment);
+		}
+		$(fragment).find('span.tag-date').text(o.showtime.split('.')[0]);
+		$(fragment).find('span.tag-indus').text(o.indus);
+		$(fragment).find('span.tag-type').text(o.type);
+
+		$ol.append(fragment);
+	}
+
+	//record lastId
+	lastId = o.increaseId;
 }

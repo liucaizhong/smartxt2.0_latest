@@ -37,11 +37,14 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="/news">智能公告</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/wx">群聊助手</a>
+                            </li>
                             <li class="nav-item dropdown" data-hover="dropdown">
                                 <a class="nav-link" data-toggle="dropdown" data-close-others="false" href="#" role="button" aria-haspopup="true" aria-expanded="false">智能检索</a>
                                 <div class="dropdown-menu dark">
                                   <a class="dropdown-item" href="/explore/theme">主题搜索</a>
-                                  <a class="dropdown-item" href="/explore/topic">话题探索</a>
+                                  <a class="dropdown-item" href="/explore/topic">预期探索</a>
                                   <a class="dropdown-item" href="/explore/focus">热点观察</a>
                                 </div>
                             </li>
@@ -83,6 +86,7 @@
                     <label for="eventInput" class="col-xs-4 col-lg-2 col-form-label form-label"><i class="fa fa-file-text-o" aria-hidden="true"></i>话题信息</label>
                     <input id="eventInput" name="event" type="text" class="topic-input col-xs-5 col-lg-2 " placeholder="输入话题关键字"></input>
                     <button type="submit" class="btn btn-primary btn-submit-topic">提交事件</button>
+                    <button type="button" class="btn btn-info btn-submit-topic" onclick="onPool(this)">预警池</button>
                 </div>
             </form>
             <div id="error-msg" class="alert alert-danger alert-dismissible none" role="alert">
@@ -110,6 +114,32 @@
         <div>
             <i class="fa fa-check fa-2x" aria-hidden="true"></i>
             <span id="fade-msg"></span>
+        </div>
+    </div>
+
+    <div id="pool" class="topic-pool">
+        <div class="pool-content">
+            <div class="row btn-close-pool">
+                <button type="button" class="close" aria-label="Close" onclick="destroyPool(this)">
+                <span aria-hidden="true" style="font-size: 36px;">&times;</span>
+              </button>
+            </div>
+            <div class="row">
+                <p class="alert alert-danger" style="font-size: 10px;">系统实时采集投资者话题，构成预警池。网站不会主动显示这些话题，除非您确认要求展示。您必须同时确认已经阅读、理解并同意网站<a href="/privacy" target="_blank" style="color: inherit;text-decoration: underline;">免责条款</a>。由此带来的一切后果，本网站不承担任何责任。</p>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-lg-12 search-field">
+                    <label for="topicPoolInput" class="search-label">
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                        <span class="sr-only">Search icons</span>
+                    </label>
+                    <input id="topicPoolInput" class="form-control search-input" placeholder="输入股票代码或股票名称或话题信息" autocomplete="on" spellcheck="false" autocorrect="off" tabindex="1">
+                    <a id="search-clear" class="search-clear none" onclick="clearSearch(this)"><i class="fa fa-times-circle" aria-hidden="true"></i><span class="sr-only">Clear search</span></a>
+                </div>
+            </div>
+            <div id="topic-tags" class="row" onclick="checkTag(event)">
+                
+            </div>
         </div>
     </div>
      
@@ -148,8 +178,8 @@
     <!-- i18n used in future -->
     <!-- <script type="text/javascript" src="/lib/i18n/i18n.min.js"></script> -->
     <!-- echarts -->
-    <script type="text/javascript" src="/lib/echarts/echarts.js"></script>
-    <script type="text/javascript" src="/lib/echarts/macarons.js"></script>
+    <script type="text/javascript" src="/lib/echarts/echarts.min.js"></script>
+    <!-- <script type="text/javascript" src="/lib/echarts/macarons.js"></script> -->
     <!-- custom -->
     <script type="text/javascript" src="/src/common.js"></script>
     <script type="text/javascript" src="/src/topic.js"></script>

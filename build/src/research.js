@@ -2,17 +2,54 @@
 
 //global parameters
 var searchMap = echarts.init(document.getElementById('searchMap'), 'macarons');
-var resBuy = [],
-    resSell = [],
-    resAll = [];
-var resIndus = [],
-    resProv = [];
+var resBuy = {},
+    resSell = {},
+    resAll = {};
+var resIndus = {},
+    resProv = {};
 var mapIndex = -1;
 var $resultItem = null;
-var URL_SURVEY = '/survey.20160929.json';
+var URL_SURVEY = '/cross?id=21&';
+var URL_SURVEY_FILE = [];
+var loginfo;
+var selfChoice = false;
+var curPeriod = 0;
+var selfStock;
 
 $(document).ready(function () {
+    if (window.user) {
+        loginfo = window.user.replace(/&quot;/g, '"');
+        loginfo = JSON.parse(loginfo);
+        delete window.user;
 
+        URL_SURVEY_FILE[0] = URL_SURVEY + 'userId=' + loginfo.username + '&period=10&keyword=&selfStocksOnly=0';
+        URL_SURVEY_FILE[1] = URL_SURVEY + 'userId=' + loginfo.username + '&period=20&keyword=&selfStocksOnly=0';
+        URL_SURVEY_FILE[2] = URL_SURVEY + 'userId=' + loginfo.username + '&period=30&keyword=&selfStocksOnly=0';
+        //get data
+        //default 10days
+        _renderData(0);
+    }
+    $('.auto-refresh > input[name=self]').change(function (e) {
+        selfChoice = !selfChoice;
+        var loadUrl = URL_SURVEY + 'userId=' + loginfo.username + '&period=10&keyword=&selfStocksOnly=1';
+
+        if (selfChoice) {
+            $.ajax({
+                url: loadUrl,
+                method: 'GET',
+                dataType: 'json',
+                success: function success(data) {
+                    var d = JSON.parse(data);
+                    d = JSON.parse(d);
+
+                    _renderSearchResults(d);
+                },
+                error: function error(err) {
+                    console.log(err);
+                }
+            });
+        }
+    });
     //search panel
     $('#stockInput').on('input propertychange', function (e) {
         var value = $(this).val();
@@ -34,70 +71,16 @@ $(document).ready(function () {
         // selector: '[data-toggle="popover"]'
         // template: '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-title"></h3><pre class="popover-content"></pre></div>'
     });
-
-    //hover handler:aria-describedby
-    // $('[data-toggle="popover"]').hover(function(e) {   
-    //     var $tar = $(e.target);
-    //     $tar.popover('show');
-
-    // }, function(e) {
-    //     var $tar = $(e.target);
-    //     var popId = $tar.attr('aria-describedby');
-    //     if(popId) {
-    //         var pop = $('#'+popId)[0];
-    //         var $pop = $(pop);
-    //         //set value for target
-    //         $resultItem = $tar;
-
-    //         //mouseleave listener for popover
-    //         $pop.hover(function(e) {
-    //             if($resultItem) {
-    //                 if(!$resultItem.hasClass('hover-item-content')) {
-    //                     $resultItem.addClass('hover-item-content');
-    //                 }
-    //             }
-    //         }, function(e) {
-    //             //get mouse position
-    //             var clientX = e.pageX;
-    //             var clientY = e.pageY;
-
-    //             if($resultItem) {
-    //                 //get $resultItem info
-    //                 var width = $resultItem.width();
-    //                 var height = $resultItem.height();
-    //                 var X = $resultItem.offset().left;
-    //                 var Y = $resultItem.offset().top;
-
-    //                 if(clientX > X && clientY > Y && clientX < X + width + 10 && clientY < Y + height) {
-    //                 } else {
-    //                     $resultItem.removeClass('hover-item-content');
-    //                     $resultItem.popover('hide');
-    //                     $resultItem = null;
-    //                 }
-    //             }
-    //         });
-    //     }
-    // });
-
-    //get data
-    //default 10days
-    $.ajax({
-        url: URL_SURVEY,
-        method: 'GET',
-        dataType: 'json',
-        success: function success(data) {
-            _renderData(data);
-        },
-        error: function error(err) {
-            console.log(err);
-        }
-    });
 });
 
 function clearSearch(that) {
     $('#stockInput').val('');
     $(that).hide();
     _hideStockList();
+
+    //get data
+    //default 10days
+    _renderData(0);
 }
 
 function customOpStock(li) {
@@ -109,29 +92,68 @@ function customOpStock(li) {
     var code = $li.find('span[class*="item-1"]').text();
     var name = $li.find('span[class*="item-2"]').text();
     $('#stockInput').val('');
+    $('#search-clear').hide();
     console.log(code, name);
+    console.log('selfChoice', selfChoice);
     //ajax get data
     //to do later
+    var loadUrl = URL_SURVEY + 'userId=' + loginfo.username + '&period=10&keyword=' + code + '&selfStocksOnly=' + (selfChoice ? 1 : 0);
+    $.ajax({
+        url: loadUrl,
+        method: 'GET',
+        dataType: 'json',
+        success: function success(data) {
+            var d = JSON.parse(data);
+            d = JSON.parse(d);
 
-    $("html, body").animate({ scrollTop: $('section#research-list').offset().top - 100 }, 800);
+            _renderSearchResults(d);
+        },
+        error: function error(err) {
+            console.log(err);
+        }
+    });
 }
 
-function _renderData(data) {
-    console.log(data);
-    resBuy = data.all[0].codes;
-    resSell = data.all[1].codes;
-    resAll = resBuy.concat(resSell);
-    resIndus = data.industry;
-    resProv = data.province;
+function _renderData(p) {
 
-    //render industry list
-    _renderTheme(resIndus);
+    if (resAll[p] && resAll[p].length) {
+        //render industry list
+        _renderTheme(resIndus[p]);
 
-    //render map
-    _renderMap(searchMap, resProv);
+        //render map
+        _renderMap(searchMap, resProv[p]);
 
-    //render results
-    _renderResults(resAll);
+        //render results
+        _renderResults(resAll[p]);
+    } else {
+        $.ajax({
+            url: URL_SURVEY_FILE[p],
+            method: 'GET',
+            dataType: 'json',
+            success: function success(data) {
+                var d = JSON.parse(data);
+                d = JSON.parse(d);
+
+                resBuy[p] = d.all[0].codes;
+                resSell[p] = d.all[1].codes;
+                resAll[p] = resBuy[p].concat(resSell[p]);
+                resIndus[p] = d.industry;
+                resProv[p] = d.province;
+
+                //render industry list
+                _renderTheme(resIndus[p]);
+
+                //render map
+                _renderMap(searchMap, resProv[p]);
+
+                //render results
+                _renderResults(resAll[p]);
+            },
+            error: function error(err) {
+                console.log(err);
+            }
+        });
+    }
 }
 
 function onPeriod(that) {
@@ -147,8 +169,11 @@ function onPeriod(that) {
         _clearTheme();
 
         $btn.removeClass('btn-invalid').addClass('btn-valid');
+
+        curPeriod = $btn.attr('id').substring(1);
         //get json
         //to do later
+        _renderData(curPeriod);
     }
 }
 
@@ -170,13 +195,13 @@ function onSource(that) {
         var renderId = $btn.attr('id')[1];
         switch (renderId) {
             case '0':
-                _renderResults(resAll);
+                _renderResults(resAll[curPeriod]);
                 break;
             case '1':
-                _renderResults(resBuy);
+                _renderResults(resBuy[curPeriod]);
                 break;
             case '2':
-                _renderResults(resSell);
+                _renderResults(resSell[curPeriod]);
                 break;
         }
     }
@@ -190,6 +215,11 @@ function _clearSource() {
 }
 
 function _renderTheme(indus) {
+    var $btnTheme = $('#btnTheme');
+    //clear all of its content
+    if ($btnTheme.children() || $btnTheme.children().length) {
+        $btnTheme.empty();
+    }
     var fragment = document.createDocumentFragment();
 
     indus.forEach(function (cur, index) {
@@ -198,7 +228,7 @@ function _renderTheme(indus) {
         $(fragment).append(tag);
     });
 
-    $('#btnTheme').append(fragment);
+    $btnTheme.append(fragment);
 }
 
 function onTheme(that, event) {
@@ -213,7 +243,7 @@ function onTheme(that, event) {
         _clearSource();
         _clearMap(searchMap);
         $target.removeClass('research-tag-invalid').addClass('research-tag-valid');
-        var themeObj = resIndus[$target.attr('id')[1]];
+        var themeObj = resIndus[curPeriod][$target.attr('id')[1]];
         console.log('themeObj', themeObj);
         //render results
         _renderResults(themeObj);
@@ -250,7 +280,7 @@ function _renderResults(data) {
         var code = data.code;
 
         code.forEach(function (code) {
-            resAll.forEach(function (cur) {
+            resAll[curPeriod].forEach(function (cur) {
                 if (cur.code[0] === code) {
                     res.push(cur);
                 }
@@ -369,6 +399,7 @@ function _renderResults(data) {
 
                 //set popover content
                 if (aff.persons.report) {
+                    $spanContent.append($('<i class="fa fa-bookmark" aria-hidden="true" style="color:#F6310D;"></i>'));
                     //set popover title
                     $spanContent.attr('title', '相关研报:');
                     var repContent = '';
@@ -397,6 +428,7 @@ function _renderResults(data) {
 
 function _renderMap(chart, data) {
 
+    // chart = echarts.init(document.getElementById('searchMap'), 'macarons');
     //filter show data
     var max = 0;
     var showData = data.map(function (cur) {
@@ -488,4 +520,150 @@ function _clearMap(chart) {
         });
         mapIndex = -1;
     }
+}
+
+function _renderSearchResults(data) {
+    var $resultList = $('#result-list');
+
+    //clear all of its content
+    if ($resultList.children() || $resultList.children().length) {
+        $resultList.empty();
+    }
+
+    //if data is null
+    if (!data || !data.length) {
+        $resultList.append($('<p>没有相关的调研记录</p>'));
+        return;
+    }
+
+    data.forEach(function (curTab) {
+        //create element
+        var fragment = document.createElement('DIV');
+        var $fragment = $(fragment);
+        $fragment.addClass('col-xs-6').addClass('col-lg-3');
+        var card = document.createElement('DIV');
+        var $card = $(card);
+        $card.addClass('research-card');
+        //render card header
+        var header = document.createElement('DIV');
+        $(header).addClass('card-header');
+        //create h5
+        var h5 = document.createElement('H5');
+        $(h5).addClass('research-card-title').text(curTab.dytime);
+        $(header).append(h5);
+        //create p
+        var p = document.createElement('P');
+        $(p).addClass('research-card-text').text(curTab.name + '(' + curTab.code + ')');
+        $(header).append(p);
+        //append header to card
+        $card.append(header);
+
+        //render card content
+        var content = document.createElement('DIV');
+        $(content).addClass('card-content');
+        //create item
+        var item = document.createElement('DIV');
+        var $item = $(item);
+        $item.addClass('card-item');
+        //create span
+        var span = document.createElement('SPAN');
+        $(span).addClass('item-title').text('调查机构/研究员:');
+        $item.append(span);
+
+        curTab.reportList.forEach(function (curRep) {
+            //create item content
+            var spanContent = document.createElement('SPAN');
+            var $spanContent = $(spanContent);
+            $spanContent.addClass('item-content').attr('data-toggle', 'popover');
+            // //hover handler:aria-describedby
+            $spanContent.hover(function (e) {
+                var $tar = $(e.target);
+                $tar.popover('show');
+                var popId = $tar.attr('aria-describedby');
+                var pop = $('#' + popId)[0];
+                var oldContent = $(pop).find('div.popover-content')[0];
+                var newContent = document.createElement('PRE');
+                $(newContent).text($(oldContent).text());
+                $(oldContent).text('').append(newContent);
+            }, function (e) {
+                var $tar = $(e.target);
+                var popId = $tar.attr('aria-describedby');
+                if (popId) {
+                    var pop = $('#' + popId)[0];
+                    var $pop = $(pop);
+                    //set value for target
+                    $resultItem = $tar;
+                    //get mouse position
+                    var clientX = e.pageX;
+                    var clientY = e.pageY;
+                    //get $resultItem info
+                    var width = $resultItem.width();
+                    var height = $resultItem.height();
+                    var X = $resultItem.offset().left;
+                    var Y = $resultItem.offset().top;
+                    if (clientX > X && clientX < X + width + 10 && (clientY > Y + height || clientY < Y)) {
+                        $resultItem.removeClass('hover-item-content');
+                        $resultItem.popover('hide');
+                        $resultItem = null;
+                    }
+                    //mouseleave listener for popover
+                    $pop.hover(function (e) {
+                        if ($resultItem) {
+                            if (!$resultItem.hasClass('hover-item-content')) {
+                                $resultItem.addClass('hover-item-content');
+                            }
+                        }
+                    }, function (e) {
+                        //get mouse position
+                        var clientX = e.pageX;
+                        var clientY = e.pageY;
+
+                        if ($resultItem) {
+                            //get $resultItem info
+                            var width = $resultItem.width();
+                            var height = $resultItem.height();
+                            var X = $resultItem.offset().left;
+                            var Y = $resultItem.offset().top;
+
+                            if (clientX > X && clientY > Y && clientX < X + width + 10 && clientY < Y + height) {} else {
+                                $resultItem.removeClass('hover-item-content');
+                                $resultItem.popover('hide');
+                                $resultItem = null;
+                            }
+                        }
+                    });
+                }
+            });
+
+            //set text
+            var repAuthor = curRep.aff + '/' + curRep.analyst;
+            $spanContent.text(repAuthor);
+
+            //set popover content
+            if (!jQuery.isEmptyObject(curRep.reports[0])) {
+                $spanContent.append($('<i class="fa fa-bookmark" aria-hidden="true" style="color:#F6310D;"></i>'));
+                //set popover title
+                $spanContent.attr('title', '相关研报:');
+                var repContent = '';
+                curRep.reports.forEach(function (name) {
+                    repContent += name.pubDate + ':' + name.title + '\n';
+                });
+                $spanContent.attr('data-content', repContent);
+            }
+            //append to item
+            $item.append(spanContent);
+        });
+
+        //append to card content
+        $(content).append(item);
+        //append to card 
+        $card.append(content);
+        //append to fragment
+        $fragment.append(card);
+        //append fragment to DOM
+        $resultList.append(fragment);
+    });
+
+    //scroll to result list
+    $("html, body").animate({ scrollTop: $('section#research-list').offset().top - 100 }, 800);
 }

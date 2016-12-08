@@ -39,11 +39,14 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="/news">智能公告</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/wx">群聊助手</a>
+                            </li>
                             <li class="nav-item dropdown" data-hover="dropdown">
                                 <a class="nav-link" data-toggle="dropdown" data-close-others="false" href="#" role="button" aria-haspopup="true" aria-expanded="false">智能检索</a>
                                 <div class="dropdown-menu dark">
                                   <a class="dropdown-item" href="/explore/theme">主题搜索</a>
-                                  <a class="dropdown-item" href="/explore/topic">话题探索</a>
+                                  <a class="dropdown-item" href="/explore/topic">预期探索</a>
                                   <a class="dropdown-item" href="/explore/focus">热点观察</a>
                                 </div>
                             </li>
@@ -122,7 +125,9 @@
                 <div class="form-group row">
                     <label for="theme" class="col-xs-4 col-lg-2 col-form-label form-label theme-label"><i class="fa fa-file-text-o" aria-hidden="true"></i>主题信息</label>
                     <div id="theme" class="col-xs-8 col-lg-10">
-                        <input id="theme-input" type="text" class="theme-input" placeholder="输入关键字用于描述要查询的主题信息,例如 “钢铁”" onkeypress="onEnterTheme(event)"></input>
+                        <input id="theme-input" type="text" class="theme-input" placeholder="输入关键字用于描述要查询的主题信息,例如 “钢铁”" onkeypress="onEnterTheme(event)" list="allConcepts"></input>
+                        <datalist id="allConcepts">
+                        </datalist>
                         <span>
                           <i class="fa fa-plus-circle fa-2x" aria-hidden="true" onclick="addTheme(this)"></i>
                         </span>
@@ -234,8 +239,8 @@
     <!-- i18n used in future -->
     <!-- <script type="text/javascript" src="/lib/i18n/i18n.min.js"></script> -->
     <!-- echarts -->
-    <script type="text/javascript" src="/lib/echarts/echarts.js"></script>
-    <script type="text/javascript" src="/lib/echarts/macarons.js"></script>
+    <script type="text/javascript" src="/lib/echarts/echarts.min.js"></script>
+    <!-- <script type="text/javascript" src="/lib/echarts/macarons.js"></script> -->
     <!-- custom -->
     <script type="text/javascript" src="/src/common.js"></script>
     <script type="text/javascript" src="/src/theme.js"></script>

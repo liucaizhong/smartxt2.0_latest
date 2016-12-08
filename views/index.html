@@ -38,11 +38,14 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="/news">智能公告</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/wx">群聊助手</a>
+                            </li>
                             <li class="nav-item dropdown" data-hover="dropdown">
                                 <a class="nav-link" data-toggle="dropdown" data-close-others="false" href="#" role="button" aria-haspopup="true" aria-expanded="false">智能检索</a>
                                 <div class="dropdown-menu dark">
                                   <a class="dropdown-item" href="/explore/theme">主题搜索</a>
-                                  <a class="dropdown-item" href="/explore/topic">话题探索</a>
+                                  <a class="dropdown-item" href="/explore/topic">预期探索</a>
                                   <a class="dropdown-item" href="/explore/focus">热点观察</a>
                                 </div>
                             </li>
@@ -76,7 +79,9 @@
             <p class="subtitle">证券投资专用的智能搜索引擎</p>
             <div class="search col-md-6 offset-md-3 col-lg-6 offset-lg-3">
                 <form class="input-group" action="/explore/theme" method="POST">
-                    <input id="searchKeyword" name="keyword" type="text" class="form-control" placeholder="输入任意词查股票" autocomplete="off">
+                    <input id="searchKeyword" name="keyword" type="text" class="form-control" placeholder="输入任意股票、主题或关键字" autocomplete="on" list="allConcepts">
+                    <datalist id="allConcepts">
+                    </datalist>
                     <span class="input-group-btn">
                         <button id="goBtn" class="btn btn-primary" disabled="true" aria-disabled="true" type="submit">Go!</button>
                     </span>

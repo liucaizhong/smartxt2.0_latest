@@ -1,9 +1,11 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET research page. */
+/* GET login page. */
 router.get('/', (req, res, next) => {
-  res.render('research', { user: JSON.stringify(req.user) });
+  res.render('wx', {
+		user: JSON.stringify(req.user)
+  });
 });
 
 module.exports = router;

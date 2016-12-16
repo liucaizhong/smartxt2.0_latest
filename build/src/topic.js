@@ -35,7 +35,7 @@ $(document).ready(function () {
 				d = JSON.parse(d);
 
 				if (d && d.length) {
-					var idx = Math.floor(Math.random() * (d.length > 10 ? 10 : d.length));
+					var idx = Math.floor(Math.random() * (d.length > 5 ? 5 : d.length));
 					cond.topic = d[idx].event;
 					cond.stock = d[idx].name;
 

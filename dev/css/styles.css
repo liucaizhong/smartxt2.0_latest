@@ -15,6 +15,19 @@ a:link {
   background-color: rgba(20,34,69,1);
 }
 
+.index-dropdown-menu {
+  background: none;
+}
+
+.index-dropdown-menu>a{
+  color: #fff;
+}
+
+.index-dropdown-menu>a:hover {
+  background: none;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+}
+
 .dropdown-menu {
   text-align: center;
   min-width: 100px;
@@ -50,6 +63,48 @@ a:link {
   font-size: 16px;
   /*font-weight: bold;*/
   font-family: Raleway,Segoe UI,Lucida Grande,Helvetica,Arial,Microsoft YaHei,FreeSans,Arimo,Droid Sans,wenquanyi micro hei,Hiragino Sans GB,Hiragino Sans GB W3,sans-serif;
+}
+
+.index-container {
+    border-bottom: .2px solid rgba(255, 255, 255, 0.5);
+    padding-bottom: 20px;
+    padding-top: 20px;
+}
+
+.index-body {
+  height:100%; 
+  overflow-y: hidden;
+}
+
+.header .index-li-hover:hover {
+  background: none;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.index-li-logon{
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 5px;
+  margin-left: 10px !important;
+  background: none;
+}
+.header li.index-li-logon:hover {
+  background: none;
+}
+
+.index-go-btn {
+  text-decoration: none;
+  padding: 5px 20px;
+  width: 80px;
+  height: 60px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 5px;
+  text-align: center;
+  margin: 0 auto;
+  height: 40px;
+}
+
+.index-go-btn>a:hover {
+  text-decoration: none;
 }
 
 a.nav-me {
@@ -113,18 +168,72 @@ li.btn.nav-item.nav-li {
 /* ======= Banner ======*/
 .banner {
   width: 100%;
-  height: 700px;
+  height: 100%;
   overflow: hidden;
-  background-image: url('../img/background/banner.jpg');
+  background-image: url('../img/background/bg_all.png');
   background-size: 100% 100%;
   background-repeat: no-repeat;
+  position: absolute;
+  top:0;
+  -webkit-transition: transform .8s ease;
+  -moz-transition: transform .8s ease;
+  -ms-transition: transform .8s ease;
+  transition: transform .8s ease;
+}
+
+.banner img {
+    width: 100%;
+    max-width: 900px;
+    max-height: 540px;
+    margin-bottom: 30px;
+}
+
+.banner.section-1 {
+  background-image: url('../img/background/index_gb.jpg');
+  /*background-color: #33f;*/
+  z-index: 40;
+}
+
+.banner.section-2 {
+  background-color: #DE9204;
+  z-index: 39;
+}
+
+.banner.section-3 {
+  background-color: #DE5D04;
+  z-index: 38;
+}
+
+.banner.section-4 {
+  background-color: #C8AD02;
+  z-index: 37;
+}
+
+.banner.section-5 {
+  background-color: #0DC2D5;
+  z-index: 36;
+}
+
+.banner.section-6 {
+  background-color: #14638E;
+  z-index: 35;
+}
+
+.banner.section-7 {
+  background-color: #E47112;
+  z-index: 34;
 }
 
 .banner>.container {
-  margin-top: 200px;
+  /*margin-top: 200px;*/
+  top: 18%;
   text-align: center;
   color: #fff;
   position: relative;
+}
+
+.banner.section-1>.container {
+    top: 30%;
 }
 
 .banner .title {
@@ -143,9 +252,19 @@ li.btn.nav-item.nav-li {
 
 /* ====== Footer ======*/
 .footer {
+  z-index: 30;
   min-height: 150px;
   background-color: rgba(20,34,69,1);
   width: 100%;
+}
+
+.footer.section-8 {
+  position: absolute;
+  /*bottom: 0;*/
+  -webkit-transition: transform .8s ease;
+  -moz-transition: transform .8s ease;
+  -ms-transition: transform .8s ease;
+  transition: transform .8s ease;
 }
 
 .footer .links {
@@ -680,7 +799,7 @@ span[class*="item-content"]:hover,
 /*update later*/
 /*change image*/
 .logo-big {
-  background-image: url('../img/icon/logo_fake.png');
+  background-image: url('../img/background/login_icon.png');
   background-size: 91px;
   background-repeat: no-repeat;
   display: block;
@@ -1396,6 +1515,48 @@ span[class*="item-2"]>strong {
  .news-filter {
   margin-top: 80px;
  }
+
+.alert-section {
+  padding-top: 80px;
+  background-color: #F1F1F1;
+}
+
+ .alert-section .help_blk {
+    float: left;
+    text-align: left;
+    background-color: #fff;
+    /*width: 250px;*/
+    /*height: 380px;*/
+    font: 15px 微软雅黑, Arial, Helvetica, sans-serif;
+/*    margin: 20px;
+    margin-top: 50px;*/
+    line-height: 22px;
+    overflow: hidden;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #EEF0E5;
+    min-height: 460px;
+    margin: 35px;
+ }
+
+.alert-section .help_blk:hover {
+  color: #fff;
+  background-color: #082C6B;
+  /*cursor: pointer;*/
+}
+
+.alert-section .help_blk img{
+  width: 100%;
+  border-radius: 10px;
+}
+
+.alert-section .help_blk .download {
+  color: red;
+}
+
+.alert-section .help_blk .download:hover {
+  text-decoration: none;
+}
 
  .refresh-field {
     margin-top: 18px;

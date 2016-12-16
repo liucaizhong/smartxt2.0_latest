@@ -24,6 +24,7 @@ var about = require('./routes/about');
 var privacy = require('./routes/privacy');
 var help = require('./routes/help');
 var wx = require('./routes/wx');
+var prediction = require('./routes/prediction');
 //solve cross client problem
 //for the purpose of development
 var cross = require('./routes/cross');
@@ -100,7 +101,7 @@ app.use(express.static(path.join(__dirname, 'build')));
 app.use('/index', index);
 // app.use('/signup', signup);
 app.use('/login', login);
-app.all(/^\/(explore|research|news|user|about|privacy|help|logout|wx)/, auth.isAuthenticated);
+app.all(/^\/(explore|research|news|user|about|privacy|help|logout|wx|prediction)/, auth.isAuthenticated);
 // app.use('/pricing', pricing);
 app.use('/explore', explore);
 app.use('/news', news);
@@ -110,6 +111,7 @@ app.use('/about', about);
 app.use('/privacy', privacy);
 app.use('/help', help);
 app.use('/wx', wx);
+app.use('/prediction', prediction);
 //logout
 app.get('/logout', (req, res, next) => {
     req.logout();

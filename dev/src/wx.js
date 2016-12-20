@@ -227,7 +227,9 @@ function _renderNewsContent(o) {
                                 <div class="news-footer">
                                     <span class="tag-date"></span>
                                     <span>来源：</span>
-                                    <span class="tag-type"></span>
+                                    <span id="tag-source" class="tag-type"></span>
+                                    <span>相关股票：</span>
+                                    <span id="tag-stock" class="tag-type"></span>
                                     <button class="collapse-btn none" onclick="onCollapseContent(this)"><i class="fa fa-hand-o-up" aria-hidden="true" style="font-size: 16px;"></i>&nbsp;收起</button>
                                 </div>
                             </div>
@@ -238,7 +240,8 @@ function _renderNewsContent(o) {
 				fragment = _cutStr(o.txt, MAX_ABS, fragment);
 			}
 			$(fragment).find('span.tag-date').text(o.pubTime.split('.')[0]);
-			$(fragment).find('span.tag-type').text(o.aff);
+			$(fragment).find('span#tag-source').text(o.aff);
+			$(fragment).find('span#tag-stock').text(o.code);
 
 			$lastUl.append(fragment);
 		}
@@ -269,7 +272,9 @@ function _renderNewsContent(o) {
                                 <div class="news-footer">
                                     <span class="tag-date"></span>
                                     <span>来源：</span>
-                                    <span class="tag-type"></span>
+                                    <span id="tag-source" class="tag-type"></span>
+                                    <span>相关股票：</span>
+                                    <span id="tag-stock" class="tag-type"></span>
                                     <button class="collapse-btn none" onclick="onCollapseContent(this)"><i class="fa fa-hand-o-up" aria-hidden="true" style="font-size: 16px;"></i>&nbsp;收起</button>
                                 </div>
                             </div>
@@ -285,7 +290,8 @@ function _renderNewsContent(o) {
 			fragment = _cutStr(o.txt, MAX_ABS, fragment);
 		}
 		$(fragment).find('span.tag-date').text(o.pubTime.split('.')[0]);
-		$(fragment).find('span.tag-type').text(o.aff);
+		$(fragment).find('span#tag-source').text(o.aff);
+		$(fragment).find('span#tag-stock').text(o.code);
 
 		$ol.append(fragment);
 	}

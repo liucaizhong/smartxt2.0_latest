@@ -56,7 +56,7 @@ a:link {
 .scrolled {
   height: 60px;
   top: 0;
-  background-color: rgba(20,34,69,1);
+  background-color: #232d37;
 }
 
 .header a {
@@ -376,8 +376,8 @@ li.btn.nav-item.nav-li {
 }
 
 .btn-valid {
-  color: #96f;
-  border-color: #96f;
+  color: #E6551E;
+  border-color: #E6551E;
 }
 
 [class*="btn-valid"]::after {
@@ -1876,7 +1876,7 @@ span[class*="item-2"]>strong {
 .btn-updown {
   position: absolute;
   right: 13%;
-  bottom: 50%;
+  bottom: 35%;
   z-index: 698;
   color: #fff;
   font-size: 50px;

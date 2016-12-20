@@ -61,7 +61,7 @@ exports.findByUsername = function(username, cb) {
 		      	if(data.pwd) {
 					user.password = data.pwd;
 
-					return cb(null, user);
+					// return cb(null, user);
 				}
 
 				//callback

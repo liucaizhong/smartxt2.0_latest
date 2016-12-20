@@ -10,12 +10,14 @@ var cond = {
 	stock: ''
 };
 var loginfo;
+var jump = false;
 //echarts
 var chartAttention = echarts.init(document.getElementById('chart-attention'));
 var chartPrice = echarts.init(document.getElementById('chart-price'));
 echarts.connect([chartAttention, chartPrice]);
 
 $(document).ready(() => {
+
 	//get user
     if(window.user) {
         loginfo = window.user.replace(/&quot;/g,'"');
@@ -34,11 +36,9 @@ $(document).ready(() => {
 
 	            if(d && d.length) {
 	                var idx = Math.floor(Math.random() * (d.length>5?5:d.length));
-	                cond.topic = d[idx].event;
-			        cond.stock = d[idx].name;
+	          //       cond.topic = d[idx].event;
+			        // cond.stock = d[idx].name;
 
-			        var url = URL_TOPICHEAT + 'userId=' + loginfo.username + '&stock=' + cond.stock + '&topic=' + cond.topic;
-			        _renderChart(url);
 			        _renderTopicTags(d);
 	            } else {
 	                //show message
@@ -49,12 +49,7 @@ $(document).ready(() => {
 	        }
 	    });
     } 
-	
-	//echart resize
-	$(window).on('resize',()=>{
-		chartAttention.resize();
-		chartPrice.resize();
-	});
+
 	//deal with jump search
 	if(window.topic && window.stock) {
         var topic = unescape(decodeURIComponent(window.topic));
@@ -65,10 +60,23 @@ $(document).ready(() => {
 
         cond.topic = topic;
         cond.stock = stock;
+        jump = true;
 
         var url = URL_TOPICHEAT + 'userId=' + loginfo.username + '&stock=' + stock + '&topic=' + topic;
         _renderChart(url);
+    }else {
+    	cond.topic = '举牌';
+        cond.stock = '金科股份';
+    	var url = URL_TOPICHEAT + 'userId=' + loginfo.username + '&stock=' + cond.stock + '&topic=' + cond.topic;
+		if(!jump)
+			_renderChart(url);
     }
+	
+	//echart resize
+	$(window).on('resize',()=>{
+		chartAttention.resize();
+		chartPrice.resize();
+	});
 
 	//form submit 
 	$('#form-topic').submit(function(e) {
@@ -180,7 +188,7 @@ function _renderChart(url) {
 			$('#eventInput').val('');
             $('.charts .topic-collect').show();
 			//scroll to result list
-    		$("html, body").animate({scrollTop: $('section.charts').offset().top-60}, 800);
+    		// $("html, body").animate({scrollTop: $('section.charts').offset().top-60}, 800);
 
             entry.forEach(function(cur) {
             	category.push(cur.date);
@@ -466,6 +474,10 @@ function checkTag(e) {
 	e.stopPropagation();
 	if(e.target.tagName === 'LABEL') {
 		destroyPool();
+		var $btnCollect = $('.charts .topic-collect .btn-star');
+		if($btnCollect.hasClass('collect')) {
+            $btnCollect.removeClass('collect');
+        }
 		var value = $(e.target).attr('data-value').split('|');
 		cond.topic = value[2];
         cond.stock = value[1];

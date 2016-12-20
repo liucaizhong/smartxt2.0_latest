@@ -1,3 +1,7 @@
+* {
+  /*font-size: 16px;*/
+  font-family: 微软雅黑, Arial, Helvetica, sans-serif;
+}
 
 a:visited {
   color: #fff;
@@ -60,15 +64,15 @@ a:link {
   padding-top: 15px !important;
 /*  padding-left: 10px;
   padding-right: 10px;*/
-  font-size: 16px;
+  /*font-size: 16px;*/
   /*font-weight: bold;*/
-  font-family: Raleway,Segoe UI,Lucida Grande,Helvetica,Arial,Microsoft YaHei,FreeSans,Arimo,Droid Sans,wenquanyi micro hei,Hiragino Sans GB,Hiragino Sans GB W3,sans-serif;
+  /*font-family: Raleway,Segoe UI,Lucida Grande,Helvetica,Arial,Microsoft YaHei,FreeSans,Arimo,Droid Sans,wenquanyi micro hei,Hiragino Sans GB,Hiragino Sans GB W3,sans-serif;*/
 }
 
 .index-container {
     border-bottom: .2px solid rgba(255, 255, 255, 0.5);
-    padding-bottom: 20px;
-    padding-top: 20px;
+    padding-bottom: 15px;
+    padding-top: 15px;
 }
 
 .index-body {
@@ -160,6 +164,15 @@ li.btn.nav-item.nav-li {
   height: 40px;
 }
 
+.header div.logo-dfzq a {
+  background-image: url('../img/icon/logo-dfzq.png');
+  background-size: 50px;
+  background-repeat: no-repeat;
+  display: block;
+  width: 50px;
+  height: 50px;
+}
+
 .header .nav-item {
   padding: 0 10px;
   text-align: center;
@@ -182,10 +195,11 @@ li.btn.nav-item.nav-li {
 }
 
 .banner img {
-    width: 100%;
+    width: 90%;
     max-width: 900px;
-    max-height: 540px;
-    margin-bottom: 30px;
+    /*max-height: 540px;*/
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .banner.section-1 {
@@ -233,21 +247,28 @@ li.btn.nav-item.nav-li {
 }
 
 .banner.section-1>.container {
-    top: 30%;
+    top: 26%;
+}
+
+.banner .logo {
+  background-image: url('../img/icon/bg_all_dark.png');
+  background-size: 260px;
+  background-repeat: no-repeat;
+  display: block;
+  width: 260px;
+  height: 60px;
+  margin: 0 auto;
 }
 
 .banner .title {
-  font-size: 2.5rem;
+  font-size: 1rem;
   font-weight: 300;
-}
-
-.banner .subtitle {
-  font-size: 3rem;
-  font-weight: 300;
+  letter-spacing: 5px;
+  color: #0C0101;
 }
 
 .banner .search {
-  margin-top: 100px;
+  margin-top: 0;
 }
 
 /* ====== Footer ======*/
@@ -429,14 +450,14 @@ i[class*='fa-angle-double-up']:hover {
 
 #line-chart {
   width: 100%;
-  height: 600px;
+  height: 360px;
 }
 
 #tab-content div[class*='rel-chart-l'] {
   width: 55%;
-  height: 450px;
+  height: 400px;
   float: left;
-  margin-top: 20px;
+  /*margin-bottom: 10px;*/
 }
 
 #tab-content div[class*='rel-chart-l'] > div {
@@ -445,9 +466,9 @@ i[class*='fa-angle-double-up']:hover {
 
 #tab-content div[class*='rel-chart-r'] {
   width: 45%;
-  height: 450px;
+  height: 400px;
   float: left;
-  margin-top: 20px;
+  /*margin-bottom: 10px;*/
 }
 
 #tab-content div[class*='rel-chart-r'] > div {
@@ -557,10 +578,11 @@ i[class*='fa-angle-double-up']:hover {
   margin-top: 90px;
 }
 
-.charts {
-  padding-bottom: 20px;
+.charts * {
+/*  padding-bottom: 20px;
   padding-top: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 20px;*/
+  font-size: .8rem;
 }
 
 /*.focus-chart-lg,
@@ -743,7 +765,7 @@ span[class*="item-content"]:hover,
 
 .login-content {
   text-align: center;
-  margin-top: 200px;
+  margin-top: 6%;
   box-shadow: 3px 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   padding: 40px 20px;
   width: 400px;
@@ -799,12 +821,12 @@ span[class*="item-content"]:hover,
 /*update later*/
 /*change image*/
 .logo-big {
-  background-image: url('../img/background/login_icon.png');
+  background-image: url('../img/icon/logo-dfzq.png');
   background-size: 91px;
   background-repeat: no-repeat;
   display: block;
-  width: 91px;
-  height: 91px;
+  width: 90px;
+  height: 90px;
   margin: 0 auto;
   margin-bottom: 30px;
 }
@@ -1260,15 +1282,18 @@ span[class*="item-2"]>strong {
 
 .topic-chart {
   width: 100%;
-  height: 500px;
+  height: 400px;
 }
 
 /*.charts span {
   float: right;
 }*/
+.topic-charts {
+  margin-top: 10px;
+}
 
 .topic-charts .container div:nth-child(2){
-  margin-bottom: 50px;
+  /*margin-bottom: 50px;*/
 }
 
 #form-topic {
@@ -1846,4 +1871,41 @@ span[class*="item-2"]>strong {
 #topic-tags {
   max-height: 500px;
   overflow-y: auto;
+}
+
+.btn-updown {
+  position: absolute;
+  right: 13%;
+  bottom: 50%;
+  z-index: 698;
+  color: #fff;
+  font-size: 50px;
+  opacity: .4;
+  text-align: center;
+}
+
+.btn-updown > span {
+  display: block;
+}
+
+.btn-updown i:hover {
+  cursor: pointer;
+  font-size: 60px;
+}
+
+.research-left-header {
+  display: inline-block;
+  position: relative;
+  padding-right: 20px;
+}
+
+.research-left-header > h6 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #A39C9C;
+}
+
+.research-right-header {
+  display: inline-block;
+  position: relative;
 }

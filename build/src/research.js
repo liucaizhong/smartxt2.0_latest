@@ -302,14 +302,25 @@ function _renderResults(data) {
             //render card header
             var header = document.createElement('DIV');
             $(header).addClass('card-header');
+            //create number
+            //rep.affs.length
+            var lDiv = document.createElement('DIV');
+            $(lDiv).addClass('research-left-header');
+            var h6 = document.createElement('H6');
+            $(h6).text(rep.affs.length);
+            $(lDiv).append(h6);
+            $(header).append(lDiv);
             //create h5
+            var rDiv = document.createElement('DIV');
+            $(rDiv).addClass('research-right-header');
             var h5 = document.createElement('H5');
             $(h5).addClass('research-card-title').text(rep.date[0]);
-            $(header).append(h5);
+            $(rDiv).append(h5);
             //create p
             var p = document.createElement('P');
             $(p).addClass('research-card-text').text(cur.name[0] + '(' + cur.code[0] + ')');
-            $(header).append(p);
+            $(rDiv).append(p);
+            $(header).append(rDiv);
             //append header to card
             $card.append(header);
 
@@ -404,7 +415,7 @@ function _renderResults(data) {
                     $spanContent.attr('title', '相关研报:');
                     var repContent = '';
                     aff.persons.report.forEach(function (name) {
-                        repContent += name.reportDate + ':' + name.reportName + '\n';
+                        repContent += name.reportDate + ':\n' + _newLine(name.reportName) + '\n';
                     });
                     $spanContent.attr('data-content', repContent);
                 }
@@ -547,14 +558,24 @@ function _renderSearchResults(data) {
         //render card header
         var header = document.createElement('DIV');
         $(header).addClass('card-header');
+        //rep.affs.length
+        var lDiv = document.createElement('DIV');
+        $(lDiv).addClass('research-left-header');
+        var h6 = document.createElement('H6');
+        $(h6).text(curTab.reportList.length);
+        $(lDiv).append(h6);
+        $(header).append(lDiv);
         //create h5
+        var rDiv = document.createElement('DIV');
+        $(rDiv).addClass('research-right-header');
         var h5 = document.createElement('H5');
         $(h5).addClass('research-card-title').text(curTab.dytime);
-        $(header).append(h5);
+        $(rDiv).append(h5);
         //create p
         var p = document.createElement('P');
         $(p).addClass('research-card-text').text(curTab.name + '(' + curTab.code + ')');
-        $(header).append(p);
+        $(rDiv).append(p);
+        $(header).append(rDiv);
         //append header to card
         $card.append(header);
 
@@ -646,7 +667,7 @@ function _renderSearchResults(data) {
                 $spanContent.attr('title', '相关研报:');
                 var repContent = '';
                 curRep.reports.forEach(function (name) {
-                    repContent += name.pubDate + ':' + name.title + '\n';
+                    repContent += name.pubDate + ':\n' + _newLine(name.title) + '\n';
                 });
                 $spanContent.attr('data-content', repContent);
             }
@@ -666,4 +687,33 @@ function _renderSearchResults(data) {
 
     //scroll to result list
     $("html, body").animate({ scrollTop: $('section#research-list').offset().top - 100 }, 800);
+}
+
+function _newLine(str) {
+
+    var strRes = '';
+    var str_len = 0,
+        str_length = 0,
+        len = 35,
+        charCode = -1;
+
+    for (var i = 0; i < str.length; i++) {
+        charCode = str.charCodeAt(i);
+        if (charCode >= 0 && charCode <= 128) str_len += 1;else str_len += 2;
+    }
+
+    for (var i = 0; i < str_len; i++) {
+        var a = str.charAt(i);
+        str_length++;
+        if (escape(a).length > 4) {
+            str_length++;
+        }
+        strRes = strRes.concat(a);
+        if (str_length >= len) {
+            strRes = strRes.concat('\n');
+            str_length = 0;
+        }
+    }
+
+    return strRes;
 }

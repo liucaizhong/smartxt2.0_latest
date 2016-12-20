@@ -46,7 +46,7 @@ gulp.task('es6', () => {
 	.pipe(babel({
 		presets: ['es2015']
 	}))
-	//.pipe(uglify())
+	.pipe(uglify())
 	.pipe(gulp.dest(appProd + 'src'))
   .pipe(bs.stream());
 });

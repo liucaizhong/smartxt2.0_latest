@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 // var http = require('http');
 var url = require('url');
-var auth = require('./auth');
 
 /* GET explore pages. */
 // theme search
@@ -10,12 +9,14 @@ router.get('/theme', (req, res, next) => {
 	//http module invoke java api to get JSON
 	//http.get to do....
 	var query = url.parse(req.url).query;
+
 	if(query) {
 		var keywords = query.split('&');
 		var themes = keywords[0].split('=')[1];
 		var sources = keywords[1].split('=')[1];
 	}
-	var concept = auth.getLoginBefore().keyword;
+	var concept = req.flash('word')[0];
+	console.log('concept', concept);
 	
 	res.render('theme', {
 		concept: concept,

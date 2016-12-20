@@ -1,3 +1,5 @@
+var loginLink;
+var loginKeyword;
 
 $(document).ready(function() {
 	$('#form-login').submit(function(e) {
@@ -16,12 +18,17 @@ $(document).ready(function() {
 			return;
 		}
 
+        console.log('loginLink', loginLink);
+        console.log('loginKeyword', loginKeyword);
+
 		//post
 		//username+password
 		$.StandardPost('/login', {
 			username: $account.val(),
 			password: $password.val(),
-            remember: rememberMe
+            remember: rememberMe,
+            link: loginLink,
+            keyword: loginKeyword
 		});
 
     });
@@ -32,12 +39,12 @@ $(document).ready(function() {
     		$('#form-login').submit();
     	}
     });
-
-    if(window.error && window.error != '[]') {
+    
+    if(window.error) {
     	var error = window.error;
     	delete window.error;
     	error = error.replace(/&quot;/g,'"');
-    	error = JSON.parse(error)[0];
+    	error = JSON.parse(error);
 
     	if(0 == error.message) {
     		$('#account-err').show();
@@ -64,6 +71,24 @@ $(document).ready(function() {
 
         console.log('user', user);
         console.log('error', error);
+    }
+
+    if(window.link) {
+        var linkTemp = window.link;
+        delete window.link;
+        linkTemp = linkTemp.replace(/&quot;/g, '');
+        linkTemp = linkTemp.replace(/&#x2F;/g, '\\');
+        loginLink = linkTemp;
+
+        console.log('loginLink', loginLink);
+    } 
+    if(window.word) {
+        var wordTemp = window.word;
+        delete window.word;
+        wordTemp = wordTemp.replace(/&quot;/g, '');
+        loginKeyword = wordTemp;
+
+        console.log('loginKeyword', loginKeyword);
     }
 
     $('#account').on('input propertychange', function(e) {

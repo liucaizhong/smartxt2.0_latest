@@ -22,7 +22,7 @@
 <body class="login-body">     
     
     <!-- ******LOGIN******* -->
-    <section class="login-section">
+    <section>
         <div class="container">
             <div class="login-content">
                 <header>
@@ -40,7 +40,7 @@
                         <input id="password" type="password" class="form-control" placeholder="密码">
                         <h6 id="password-err" class="login-err">密码错误</h6>
                     </div>
-                    <div class="login-panel">
+                    <div class="login-panel none">
                         <div class="remember-me" onclick="rememberMe(event)">
                             <input id="rememberMe" type="checkbox">
                             <a>记住我</a>
@@ -67,6 +67,8 @@
     <script>
         window.user = '{{user}}';
         window.error = '{{error}}';
+        window.link = '{{link}}';
+        window.word = '{{word}}';
     </script>
     <script type="text/javascript" src="/lib/jquery/js/jquery.min.js"></script>
     <script type="text/javascript" src="/lib/jquery/plugins/jquery.placeholder.min.js"></script>

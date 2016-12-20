@@ -3,7 +3,7 @@
 //define global params
 var method = 0;
 var methodRange = [0, 1];
-var period = 0;
+var period = 1;
 var periodRange = [10, 30, 60, 90, 120];
 var source = [0];
 var sourceRange = ['*', 'guba', '(report OR announce)', 'news'];
@@ -45,7 +45,7 @@ $(document).ready(function () {
     $.ajax({
         url: URL_ALLCONCEPTS,
         type: 'GET',
-        async: true,
+        async: false,
         dataType: 'json',
         success: function success(data) {
             var d = JSON.parse(data);
@@ -53,9 +53,8 @@ $(document).ready(function () {
 
             if (d && d.length) {
                 var idx = Math.floor(Math.random() * (d.length > 10 ? 10 : d.length));
-                theme.push(d[idx]);
-                jump = true;
-                _renderCharts();
+                theme[0] = d[idx];
+                // $('input#theme-input').val(d[idx]);
                 _renderDatalist(d);
             } else {
                 //show message
@@ -71,6 +70,7 @@ $(document).ready(function () {
         loginfo = JSON.parse(loginfo);
         delete window.user;
     }
+
     $('#fresh-word').on('input propertychange', function (e) {
         var input = $(this)[0];
 
@@ -93,19 +93,26 @@ $(document).ready(function () {
     var picker = $('#datepicker').data('datetimepicker');
     picker.setLocalDate(new Date());
     //echart resize handler
-    $(window).on('resize', function () {
+    $(window).on('load resize', function () {
         lineChart.resize();
+        // var h = $('#line-chart').width()*0.618;
+        // $('#line-chart').height(h);
+
         // histogram.forEach(function(cur) {
         //     cur.resize();
         // })
     });
+    // $(window).resize();
+
     //transfer data to json object
     if (window.concept) {
         var concept = window.concept;
         delete window['concept'];
 
-        theme.push(concept);
         jump = true;
+        // $('input#theme-input').val(concept);
+        theme[0] = concept;
+        _setCondition(theme);
 
         // var heatUrl = HEATURL + 'concept=' + concept + '&src=*&response=application/json';
         // var date = new Date();
@@ -129,8 +136,16 @@ $(document).ready(function () {
         if (source.length > 1) {
             method = 1;
         }
+        _setCondition(theme, source);
         _renderCharts();
     }
+
+    if (!jump) {
+        jump = true;
+        _setCondition(theme);
+        _renderCharts();
+    }
+
     //#form-theme submit handler
     $('#form-theme').submit(function (e) {
         e.preventDefault();
@@ -235,6 +250,7 @@ function _renderCharts(heatUrl, stockUrl) {
                 _renderHistogram(d);
             } else {
                 //show message
+                // $('#tab-content').text('不存在股票相关指数！');
             }
         },
         error: function error(err) {
@@ -289,9 +305,9 @@ function onTriggerSlide(that) {
     }
     $('.theme-conditions .container').slideToggle(1000);
 
-    if (jump) {
-        _setDefault();
-    }
+    // if(jump) {
+    //     _setDefault();
+    // }
 }
 
 function onMethod(that) {
@@ -442,17 +458,23 @@ function _renderLineChart(data) {
     var flag = data[0].flag;
     if (flag == -1) {
         lineChart.hideLoading();
+        $('#fresh-word').val('');
+        $('#btnFresh').attr('disabled', true);
         return false;
     } else if (flag == 0) {
         var $btnStar = $('.btn-theme-collect>i.btn-star');
         if ($btnStar.hasClass('collect')) {
             $btnStar.removeClass('collect');
         }
+        $('#fresh-word').val(theme[0]);
+        $('#btnFresh').attr('disabled', false);
     } else if (flag == 1) {
         var $btnStar = $('.btn-theme-collect>i.btn-star');
         if (!$btnStar.hasClass('collect')) {
             $btnStar.addClass('collect');
         }
+        $('#fresh-word').val(theme[0]);
+        $('#btnFresh').attr('disabled', false);
     }
     var entry = data.splice(1);
 
@@ -652,6 +674,7 @@ function _renderHistogram(data) {
     if (flag == -1) {
         return false;
     }
+
     //data preprocess
     var entry = data.splice(1);
 
@@ -723,8 +746,8 @@ function _renderHistogram(data) {
         }
         $tabContent.append(tabPanel);
 
-        var isEmpty = jQuery.isEmptyObject(chartData[0]);
-        if (chartData.length && !isEmpty) {
+        var isEmpty = jQuery.isEmptyObject(chartData[i]);
+        if (!isEmpty) {
             var l = chartIndex.length;
             //render charts
             for (var n = 0; n < l; ++n) {
@@ -738,6 +761,11 @@ function _renderHistogram(data) {
             }
         } else {
             //show message
+            $('#tab-content').text('不存在股票相关指数！').css({
+                'padding-top': '100px',
+                'padding-bottom': '100px',
+                'text-align': 'center'
+            });
         }
     }
 }
@@ -1018,4 +1046,31 @@ function onAddFreshWord(that) {
             console.log(err);
         }
     });
+}
+
+function _setCondition(t, s) {
+    if (t && t.length != 0) {
+        t.forEach(function (cur) {
+            var themeTag = $('<div class="theme-tag alert alert-success col-xs-3 col-lg-2"></div>')[0];
+            var $themeTag = $(themeTag);
+            //theme text
+            var themeTxt = $('<span class="theme-txt"></span>')[0];
+            $(themeTxt).text(cur);
+            $themeTag.append(themeTxt);
+            //theme button
+            var themeBtn = $('<button type="button" class="close" aria-label="Close" onclick="delThemeTag(this)"><span aria-hidden="true">&times;</span></button>')[0];
+            $themeTag.append(themeBtn);
+            //append to theme-tags
+            $('#theme-tags').append(themeTag);
+        });
+    }
+
+    if (s && s.length != 0) {
+        var $btn = $('#btnSource');
+        $btn.find('button[class*="btn-valid"]').removeClass('btn-valid').addClass('btn-invalid');
+
+        s.forEach(function (cur) {
+            $('#s' + cur).addClass('btn-valid');
+        });
+    }
 }

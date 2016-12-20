@@ -40,21 +40,30 @@ passport.use(new LocalStrategy({
 function(username, password, cb) {
     auth.findByUsername(username, function(err, user) {
       //store user info
-      auth.setUser({
-          username: username,
-          password: password
-      });
+      // req.session.user = {
+      //     username: username,
+      //     password: password
+      // };
+
+      // auth.setUser({
+      //     username: username,
+      //     password: password
+      // });
       if (err) { 
         console.log('出现错误.');
         return cb(err); 
       }
-      if (!user) { 
+      console.log('user', user);
+
+      if (!user.password) { 
         console.log('没有找到对应的用户名.');
-        return cb(null, false, {message: '0'}); 
+        return cb(null, user, {message: '0'}); 
       }
+
       if (user.password != md5(password)) { 
         console.log('密码匹配有误.');
-        return cb(null, false, {message: '1'}); 
+        user.password = password;
+        return cb(null, user, {message: '1'}); 
       }
       return cb(null, user);
     });
@@ -89,7 +98,8 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    maxAge: 30*60*1000
+    maxAge: 7*24*60*60*1000,
+    expires: new Date(Date.now() + 7*24*60*60*1000)
   }
 }));
 app.use(passport.initialize());

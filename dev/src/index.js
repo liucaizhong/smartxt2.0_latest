@@ -39,7 +39,16 @@ $(document).ready(function() {
     /* ======= Fixed header when scrolled ======= */   
     $(window).on('load resize', function() {
         $('footer').css('transform','translateY('+$(window).height()+'px)');
-    }); 
+
+        //img adjust
+        var imgWidth = Math.max($('.banner img').width(), $(this).width() * 0.9);
+        var imgHeight = Math.min(imgWidth * 0.618, $(this).height() * 0.5);
+        imgWidth = imgHeight / 0.618;
+        $('.banner img').width(imgWidth).height(imgHeight);
+
+    });
+
+    $(window).resize();
     toggleBind();
 
     $('#searchKeyword').on('input propertychange', function(e) {
@@ -111,9 +120,10 @@ function toggleBind() {
 function sectionOnScroll(e) {
     fixBind();
 
-    if(e.type === 'mousewheel') {
+    if(e.type === 'mousewheel' || e.type === 'DOMMouseScroll') {
+        var deltaY = e.deltaY || -e.wheelDelta || e.detail;
         // scroll down
-        if(e.deltaY > 0) {
+        if(deltaY > 0) {
             if(curPage == LASTPAGE) {
                 return;
             }
@@ -129,7 +139,7 @@ function sectionOnScroll(e) {
                     }else{
                         $('#topcontrol').css({'opacity':0});
                     }
-                }, 600);
+                }, 300);
                 
                 return;
             }
@@ -140,10 +150,10 @@ function sectionOnScroll(e) {
                 }else{
                         $('#topcontrol').css({'opacity':0});
                 }
-            }, 600);
+            }, 300);
         }
         // scroll up
-        if(e.deltaY < 0) {
+        if(deltaY < 0) {
             if(curPage == 1) {
                 return;
             }
@@ -159,7 +169,7 @@ function sectionOnScroll(e) {
                     }else{
                         $('#topcontrol').css({'opacity':0});
                     }
-                }, 600);
+                }, 300);
                 return;
             }
             setTimeout(function() {
@@ -169,7 +179,7 @@ function sectionOnScroll(e) {
                     }else{
                         $('#topcontrol').css({'opacity':0});
                     }
-            }, 600);           
+            }, 300);           
         }
 
     }
@@ -180,4 +190,71 @@ function fixBind() {
     setTimeout(function () {
       toggleBind();
     }, 600);
+}
+
+function scrollUp() {
+    fixBind();
+    if(curPage == 1) {
+        return;
+    }
+            
+    if(curPage == LASTPAGE) {
+        var windowHeight = $(window).height();
+        // var footerHeight = $('footer').height();
+        // var delta = windowHeight - footerHeight;
+        setTimeout(function() {
+            $('section[class*=section-' + --curPage + ']').css('transform','translateY(0%)');
+            $('footer').css('transform','translateY('+windowHeight+'px)');
+            if(curPage > 1) {
+                $('#topcontrol').css({'opacity':1,'z-index':999});
+            }else{
+                $('#topcontrol').css({'opacity':0});
+            }
+        }, 300);
+        
+        return;
+    }
+            
+    setTimeout(function() {
+        $('section[class*=section-' + --curPage + ']').css('transform','translateY(0%)'); 
+        if(curPage > 1) {
+            $('#topcontrol').css({'opacity':1,'z-index':999});
+        }else{
+            $('#topcontrol').css({'opacity':0});
+        }
+    }, 300);  
+}
+
+function scrollDown() {
+    fixBind();
+    if(curPage == LASTPAGE) {
+        return;
+    }
+            
+    if(curPage == (LASTPAGE-1)) {
+        var windowHeight = $(window).height();
+        var footerHeight = $('footer').height();
+        var delta = windowHeight - footerHeight;
+                
+        setTimeout(function() {
+            $('section[class*=section-' + curPage++ + ']').css('transform','translateY(-'+footerHeight+'px)');
+            $('footer').css('transform','translateY('+delta+'px)');
+            if(curPage > 1) {
+                $('#topcontrol').css({'opacity':1,'z-index':999});
+            }else{
+                $('#topcontrol').css({'opacity':0});
+            }
+        }, 300);
+                
+        return;
+    }
+            
+    setTimeout(function() {
+        $('section[class*=section-' + curPage++ + ']').css('transform','translateY(-100%)');
+        if(curPage > 1) {
+            $('#topcontrol').css({'opacity':1,'z-index':999});
+        }else{
+            $('#topcontrol').css({'opacity':0});
+        }
+    }, 300);
 }

@@ -218,12 +218,12 @@ function _renderNewsContent(o) {
 		} else {
 			var fragment = $('<li class="bottom-line">\n                            <div>\n                                <h2 class="title"></h2>\n                                <div>\n                                    <p>\n                                        <span class="short"></span>\n                                        <span class="long none"></span>\n                                        <a class="expand-btn none" href="" onclick="onExpandContent(this,event)">显示全部</a>\n                                    </p>\n                                </div>\n                                <div class="news-footer">\n                                    <span class="tag-date"></span>\n                                    <span>来源：</span>\n                                    <span class="tag-type"></span>\n                                    <button class="collapse-btn none" onclick="onCollapseContent(this)"><i class="fa fa-hand-o-up" aria-hidden="true" style="font-size: 16px;"></i>&nbsp;收起</button>\n                                </div>\n                            </div>\n                        </li>');
 			$(fragment).attr('id', o.increaseId);
-			$(fragment).find('h2').text(o.author + '(' + o.aff + ') ');
+			$(fragment).find('h2').text(o.author);
 			if (o.txt) {
 				fragment = _cutStr(o.txt, MAX_ABS, fragment);
 			}
 			$(fragment).find('span.tag-date').text(o.pubTime.split('.')[0]);
-			$(fragment).find('span.tag-type').text(o.wxGroup);
+			$(fragment).find('span.tag-type').text(o.aff);
 
 			$lastUl.append(fragment);
 		}
@@ -237,12 +237,12 @@ function _renderNewsContent(o) {
 		$(fragment).find('.date em').text(curMon);
 		$(fragment).find('.date b').text(curDay);
 		$(fragment).find('.bottom-line').attr('id', o.increaseId);
-		$(fragment).find('h2').text(o.author + '(' + o.aff + ') ');
+		$(fragment).find('h2').text(o.author);
 		if (o.txt) {
 			fragment = _cutStr(o.txt, MAX_ABS, fragment);
 		}
 		$(fragment).find('span.tag-date').text(o.pubTime.split('.')[0]);
-		$(fragment).find('span.tag-type').text(o.wxGroup);
+		$(fragment).find('span.tag-type').text(o.aff);
 
 		$ol.append(fragment);
 	}

@@ -733,12 +733,12 @@ i[class*='fa-angle-double-up']:hover {
 }
 .research-tag-invalid:hover {
   cursor: pointer;
-  color: #4cbcd0;
+  color: rgb(230,85,30);
 }
 .research-tag-valid {
 /*  border: 1px solid #96f;
   color: #96f;*/
-  background-color: #4cbcd0;
+  background-color: rgb(230,85,30);
   color: #fff;
   border-radius: 14px;
 }

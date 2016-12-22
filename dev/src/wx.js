@@ -40,6 +40,7 @@ $(document).ready(() => {
         delete window.user;
 
         //first loading
+        $('footer').hide();
         _renderMoreNews();
         var newsTimer = setInterval(_renderMoreNews, INTERVAL);
     }
@@ -57,6 +58,8 @@ $(document).ready(() => {
 	$('#newsInput').keydown(function(e) {
 		if(e.keyCode == 13) {
 			e.preventDefault();
+			$('footer').hide();
+			$('.more-button').find('[class*=active]').removeClass('active');
 			_renderMoreNews();
 		}
     });
@@ -74,12 +77,16 @@ $(document).ready(() => {
 
     $('.auto-refresh > input[name=self]').change(function(e) {
 		selfChoice = !selfChoice;
+		$('footer').hide();
+ 		$('.more-button').find('[class*=active]').removeClass('active');
 		_renderMoreNews();
-		console.log('selfChoice',selfChoice);
+		// console.log('selfChoice',selfChoice);
     });
 });
 
 function onCategory(event) {
+	$('footer').hide();
+	$('.more-button').find('[class*=active]').removeClass('active');
 	event.stopPropagation();
 
 	var target = event.target;
@@ -124,12 +131,13 @@ function onCategory(event) {
 		_renderMoreNews();
 	}
 
-	console.log('activeCategory', activeCategory);
+	// console.log('activeCategory', activeCategory);
 }
 
 function _renderMoreNews(f) {
-	console.log('Now the time is', new Date());
-	console.log('lastId', lastId);
+	// console.log('Now the time is', new Date());
+	// console.log('lastId', lastId);
+	$('div.focus-loading').show();
 
 	if(!f) {
 		lastId = -1;
@@ -168,14 +176,17 @@ function _renderMoreNews(f) {
 		    if(d && d.length) {
 		    	$('#error-msg').hide();
 		    	if(d[0].flag != 0) {
+		    		$('.more-button').find('[class*=active]').removeClass('active');
 		    		$('#error-msg strong').text(d[0].msg);
 		    		$('#error-msg').show();
-		    		$('.more-button').hide();
 		    	}else {
 		    		if(d.length == 1) {
 				         //show footer
-				        $('footer').show();
-				        $('.more-button').hide();
+				        if(f)
+		        			$('footer').show();
+				        else {
+				        	$('.news-content>ol').html('<li style="font-size:2rem;">未找到相关消息</li>');
+				        }
 		    		}else {
 				        //render
 				        d.slice(1,d.length).forEach(function(cur) {
@@ -184,10 +195,13 @@ function _renderMoreNews(f) {
 				        if(keyword) {
 				        	$('.news-content').highlight(keyword);
 				        }
-				        $('.more-button').show();
-				        $('footer').hide();
+				        if($('.more-button span:nth-child(2)').hasClass('active')) {
+				        	$('.more-button span:nth-child(2)').removeClass('active');
+				        }
+				        $('.more-button span:nth-child(1)').addClass('active');
 		    		}
 			    }
+			    $('div.focus-loading').hide();
 		    }
 		},
 		error: (err) => {
@@ -201,9 +215,9 @@ function _renderNewsContent(o) {
 	var $ol = $('.news-content>ol');
 	var olHasChild = lastId == -1 ? false : true;
 	var newLI = false;
-	var curDate = new Date(o.pubTime);
-	var curMon = curDate.getMonth()+1;
-	var curDay = curDate.getDate();
+	var curDate = o.pubTime.split(' ')[0].split('-');
+	var curMon = curDate[1];
+	var curDay = curDate[2];
 
 	if(olHasChild){
 		var $lastLi = $('#'+lastId);
@@ -228,7 +242,7 @@ function _renderNewsContent(o) {
                                     <span class="tag-date"></span>
                                     <span>来源：</span>
                                     <span id="tag-source" class="tag-type"></span>
-                                    <span>相关股票：</span>
+                                    <span id="label-stock">相关股票：</span>
                                     <span id="tag-stock" class="tag-type"></span>
                                     <button class="collapse-btn none" onclick="onCollapseContent(this)"><i class="fa fa-hand-o-up" aria-hidden="true" style="font-size: 16px;"></i>&nbsp;收起</button>
                                 </div>
@@ -241,7 +255,12 @@ function _renderNewsContent(o) {
 			}
 			$(fragment).find('span.tag-date').text(o.pubTime.split('.')[0]);
 			$(fragment).find('span#tag-source').text(o.aff);
-			$(fragment).find('span#tag-stock').text(o.code);
+			if(o.code)
+				$(fragment).find('span#tag-stock').text(o.code);
+			else {
+				$(fragment).find('span#label-stock').addClass('none');
+				$(fragment).find('span#tag-stock').addClass('none');
+			}
 
 			$lastUl.append(fragment);
 		}
@@ -273,7 +292,7 @@ function _renderNewsContent(o) {
                                     <span class="tag-date"></span>
                                     <span>来源：</span>
                                     <span id="tag-source" class="tag-type"></span>
-                                    <span>相关股票：</span>
+                                    <span id="label-stock">相关股票：</span>
                                     <span id="tag-stock" class="tag-type"></span>
                                     <button class="collapse-btn none" onclick="onCollapseContent(this)"><i class="fa fa-hand-o-up" aria-hidden="true" style="font-size: 16px;"></i>&nbsp;收起</button>
                                 </div>
@@ -291,7 +310,12 @@ function _renderNewsContent(o) {
 		}
 		$(fragment).find('span.tag-date').text(o.pubTime.split('.')[0]);
 		$(fragment).find('span#tag-source').text(o.aff);
-		$(fragment).find('span#tag-stock').text(o.code);
+		if(o.code)
+			$(fragment).find('span#tag-stock').text(o.code);
+		else {
+			$(fragment).find('span#label-stock').addClass('none');
+			$(fragment).find('span#tag-stock').addClass('none');
+		}
 
 		$ol.append(fragment);
 	}
@@ -362,6 +386,8 @@ function onCollapseContent(that) {
 
 function clearSearch(that) {
     $('#newsInput').val('');
+    $('footer').hide();
+	$('.more-button').find('[class*=active]').removeClass('active');
     $(that).hide();
     keyword = '';
     _renderMoreNews();

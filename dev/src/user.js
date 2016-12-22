@@ -351,11 +351,14 @@ function onCheckStock(event) {
 		var stockChecked = $('div#stockTableContent input:checked').length;
 		if(stockChecked) {
 			if(!checkAll.checked) {
-				checkAll.checked = true;
+				if(stockAll == stockChecked)
+					checkAll.checked = true;
 				$('#stockChecked').text(stockChecked);
 				$('#stockAll').text(stockAll);
 				$('#del-all-stock').show(500);
 			} else {
+				if(stockAll != stockChecked)
+					checkAll.checked = false;
 				$('#stockChecked').text(stockChecked);
 				$('#stockAll').text(stockAll);
 			}
@@ -610,11 +613,14 @@ function onCheckTheme(event) {
 		var themeChecked = $('div#themeTableContent input:checked').length;
 		if(themeChecked) {
 			if(!checkAll.checked) {
-				checkAll.checked = true;
+				if(themeAll == themeChecked)
+					checkAll.checked = true;
 				$('#themeChecked').text(themeChecked);
 				$('#themeAll').text(themeAll);
 				$('#del-all-theme').show(500);
 			} else {
+				if(themeAll != themeChecked)
+					checkAll.checked = false;
 				$('#themeChecked').text(themeChecked);
 				$('#themeAll').text(themeAll);
 			}
@@ -705,11 +711,14 @@ function onCheckTopic(event) {
 		var topicChecked = $('div#topicTableContent input:checked').length;
 		if(topicChecked) {
 			if(!checkAll.checked) {
-				checkAll.checked = true;
+				if(topicAll == topicChecked)
+					checkAll.checked = true;
 				$('#topicChecked').text(topicChecked);
 				$('#topicAll').text(topicAll);
 				$('#del-all-topic').show(500);
 			} else {
+				if(topicAll != topicChecked)
+					checkAll.checked = false;
 				$('#topicChecked').text(topicChecked);
 				$('#topicAll').text(topicAll);
 			}

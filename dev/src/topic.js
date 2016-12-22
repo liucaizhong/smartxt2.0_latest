@@ -149,13 +149,14 @@ function onStar(that) {
 }
 
 function _renderChart(url) {
-	
+	$('div.focus-loading').show();
+
 	chartAttention = echarts.init(document.getElementById('chart-attention'));
 	chartPrice = echarts.init(document.getElementById('chart-price'));
 	echarts.connect([chartAttention, chartPrice]);
 	// configure echart
-	chartAttention.showLoading();
-	chartPrice.showLoading();
+	// chartAttention.showLoading();
+	// chartPrice.showLoading();
 	$.ajax({
 		url: url,
 		success: (data) => {
@@ -168,9 +169,10 @@ function _renderChart(url) {
             d= JSON.parse(d);
             var entry = d.topicHeat;
             if(!entry || !entry.length) {
-            	chartAttention.hideLoading();
-            	chartPrice.hideLoading();
+            	// chartAttention.hideLoading();
+            	// chartPrice.hideLoading();
             	_showErr('找不到相关信息');
+            	$('div.focus-loading').hide();
             	return false;
             }
             var flag = d.flag;
@@ -294,7 +296,7 @@ function _renderChart(url) {
 					}]
 				}
 			});
-			chartAttention.hideLoading();
+			// chartAttention.hideLoading();
 
 			//price
 			chartPrice.setOption({
@@ -395,7 +397,8 @@ function _renderChart(url) {
 					}]
 				}
 			});
-			chartPrice.hideLoading();
+			// chartPrice.hideLoading();
+			$('div.focus-loading').hide();
 		},
 		error: (err) => {
 			console.log(err);

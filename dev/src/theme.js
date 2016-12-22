@@ -179,15 +179,11 @@ function _renderDatalist(d) {
     });
 }
 
-function _loadingChart(chart) {
-	chart.showLoading();
-
-	//scroll to result list
-    $("html, body").animate({scrollTop: $('#charts').offset().top - 100}, 800);
-}
-
 function _renderCharts(heatUrl, stockUrl) {
-    
+    //scroll to result list
+    $("html, body").animate({scrollTop: $('#charts').offset().top - 100}, 800);
+    $('div.focus-loading').show();
+
     if(method != 1) {
         var sourceId = 'sn' + source[0];
         var $source = $('#'+sourceId);
@@ -210,7 +206,6 @@ function _renderCharts(heatUrl, stockUrl) {
         stockUrl = _genUrl(STOCKURL, true);
     }
 
-    _loadingChart(lineChart);
     //ajax get request
     $.ajax({
         url: heatUrl,
@@ -454,7 +449,7 @@ function _renderLineChart(data) {
 
     var flag = data[0].flag;
     if(flag == -1) {
-        lineChart.hideLoading();
+        // lineChart.hideLoading();
         $('#fresh-word').val('');
         $('#btnFresh').attr('disabled', true);
         return false;
@@ -663,7 +658,7 @@ function _renderLineChart(data) {
             series: series
         }
     });
-    lineChart.hideLoading();
+    // lineChart.hideLoading();
 }
 
 function _renderHistogram(data) {
@@ -760,9 +755,16 @@ function _renderHistogram(data) {
             //show message
             $('#tab-content').text('不存在股票相关指数！').css({
                 'padding-top': '100px',
-                'padding-bottom': '100px',
+                'padding-bottom': '120px',
                 'text-align': 'center',
+                'font-size': '2rem'
             });
+        }
+
+        $('div.focus-loading').hide();
+        //whether show footer
+        if($('footer').hasClass('none')) {
+            $('footer').show();
         }
     }
 

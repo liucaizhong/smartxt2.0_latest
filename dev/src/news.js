@@ -18,6 +18,7 @@ $(document).ready(() => {
         delete window.user;
 
         //first loading
+        $('footer').hide();
         _renderMoreNews();
         var newsTimer = setInterval(_renderMoreNews, INTERVAL);
     }
@@ -35,6 +36,8 @@ $(document).ready(() => {
 	$('#newsInput').keydown(function(e) {
 		if(e.keyCode == 13) {
 			e.preventDefault();
+			$('footer').hide();
+			$('.more-button').find('[class*=active]').removeClass('active');
 			_renderMoreNews();
 		}
     });
@@ -60,14 +63,18 @@ $(document).ready(() => {
 
     $('.auto-refresh > input[name=abstract]').change(function(e) {
  		abstract = !abstract;
+ 		$('footer').hide();
+ 		$('.more-button').find('[class*=active]').removeClass('active');
  		_renderMoreNews();
- 		console.log('abstract',abstract);
+ 		// console.log('abstract',abstract);
     });
 
     $('.auto-refresh > input[name=self]').change(function(e) {
 		selfChoice = !selfChoice;
+		$('footer').hide();
+		$('.more-button').find('[class*=active]').removeClass('active');
 		_renderMoreNews();
-		console.log('selfChoice',selfChoice);
+		// console.log('selfChoice',selfChoice);
     });
     
 });
@@ -90,12 +97,16 @@ function onCollapseContent(that) {
 
 function clearSearch(that) {
     $('#newsInput').val('');
+    $('footer').hide();
+ 	$('.more-button').find('[class*=active]').removeClass('active');
     $(that).hide();
     keyword = '';
     _renderMoreNews();
 }
 
 function onCategory(event) {
+	$('footer').hide();
+	$('.more-button').find('[class*=active]').removeClass('active');
 	event.stopPropagation();
 
 	var target = event.target;
@@ -144,6 +155,8 @@ function onCategory(event) {
 }
 
 function onIndustry(event) {
+	$('footer').hide();
+	$('.more-button').find('[class*=active]').removeClass('active');
 	event.stopPropagation();
 
 	var target = event.target;
@@ -232,8 +245,9 @@ function _cutStr(str, len, elem) {
 }
 
 function _renderMoreNews(f) {
-	console.log('Now the time is', new Date());
-	console.log('lastId', lastId);
+	// console.log('Now the time is', new Date());
+	// console.log('lastId', lastId);
+	$('div.focus-loading').show();
 
 	if(!f) {
 		lastId = -1;
@@ -290,13 +304,22 @@ function _renderMoreNews(f) {
 		        if(keyword) {
 		        	$('.news-content').highlight(keyword);
 		        }
-		        $('.more-button').show();
-		        $('footer').hide();
+		        
+		        if($('.more-button span:nth-child(2)').hasClass('active')) {
+		        	$('.more-button span:nth-child(2)').removeClass('active');
+		        }
+		        $('.more-button span:nth-child(1)').addClass('active');
+		        // $('footer').hide();
 		    } else {
+		    	$('.more-button').find('[class*=active]').removeClass('active');
 		        //show footer
-		        $('footer').show();
-		        $('.more-button').hide();
+		        if(f)
+		        	$('footer').show();
+		        else {
+		        	$('.news-content>ol').html('<li style="font-size:2rem;">未找到相关公告</li>');
+		        }
 		    }
+		    $('div.focus-loading').hide();
 		},
 		error: (err) => {
 		    console.log(err);

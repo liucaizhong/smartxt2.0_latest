@@ -7,7 +7,7 @@ var $resultItem = null;
 var URL_SURVEY = '/cross?id=21&';
 var URL_SURVEY_FILE = [];
 var loginfo;
-var selfChoice = false;
+// var selfChoice = false;
 var curPeriod = 0;
 var selfStock;
 
@@ -25,10 +25,17 @@ $(document).ready(() => {
         _renderData(0);
     }
     $('.auto-refresh > input[name=self]').change(function(e) {
-        selfChoice = !selfChoice;
+        $('.focus-loading').show();
+        // selfChoice = !selfChoice;
         var loadUrl = URL_SURVEY + 'userId=' + loginfo.username + '&period=10&keyword=&selfStocksOnly=1'; 
 
-        if(selfChoice) {
+        _clearSource();
+        _clearTheme();
+        _clearMap(searchMap);
+        $('#stockInput').val('');
+        $('#search-clear').hide();
+        _hideStockList();
+        if($(this)[0].checked) {
             $.ajax({
                 url: loadUrl,
                 method: 'GET',
@@ -43,6 +50,9 @@ $(document).ready(() => {
                     console.log(err);
                 }
             });
+        }else {
+            $('#s1').removeClass('btn-invalid').addClass('btn-valid');
+            _renderData(0);
         }
     });
     //search panel
@@ -89,11 +99,17 @@ function customOpStock(li) {
     var name = $li.find('span[class*="item-2"]').text();
     $('#stockInput').val('');
     $('#search-clear').hide();
-    console.log(code, name);
-    console.log('selfChoice', selfChoice);
+    $('.auto-refresh input')[0].checked = false;
+    _clearSource();
+    _clearTheme();
+    _clearMap(searchMap);
+    // console.log(code, name);
+    // console.log('selfChoice', selfChoice);
     //ajax get data
     //to do later
-    var loadUrl = URL_SURVEY + 'userId=' + loginfo.username + '&period=10&keyword=' + code + '&selfStocksOnly=' + (selfChoice?1:0); 
+    $('.focus-loading').show();
+    var loadUrl = URL_SURVEY + 'userId=' + loginfo.username + '&period=10&keyword=' + code + '&selfStocksOnly=0'; 
+
     $.ajax({
         url: loadUrl,
         method: 'GET',
@@ -112,7 +128,8 @@ function customOpStock(li) {
 
 function _renderData(p) {
 
-    if(resAll[p] && resAll[p].length) {
+    $('div.focus-loading').show();
+    if(resBuy[p] && resBuy[p].length) {
         //render industry list
         _renderTheme(resIndus[p]);
 
@@ -120,7 +137,7 @@ function _renderData(p) {
         _renderMap(searchMap,resProv[p]);
 
         //render results
-        _renderResults(resAll[p]);
+        _renderResults(resBuy[p]);
     }else {
         $.ajax({
             url: URL_SURVEY_FILE[p],
@@ -143,7 +160,7 @@ function _renderData(p) {
                 _renderMap(searchMap,resProv[p]);
 
                 //render results
-                _renderResults(resAll[p]);
+                _renderResults(resBuy[p]);
             },
             error: (err) => {
                 console.log(err);
@@ -155,6 +172,10 @@ function _renderData(p) {
 function onPeriod(that) {
     var $btn = $(that);
     if($btn.hasClass('btn-invalid')) {
+        $('.auto-refresh input')[0].checked = false;
+        $('#stockInput').val('');
+        $('#search-clear').hide();
+        _hideStockList();
         //clear valid period button
         _clearPeriod();
         //clear valid source button
@@ -183,6 +204,10 @@ function _clearPeriod() {
 function onSource(that) {
     var $btn = $(that);
     if($btn.hasClass('btn-invalid')) {
+        $('.auto-refresh input')[0].checked = false;
+        $('#stockInput').val('');
+        $('#search-clear').hide();
+        _hideStockList();
         _clearSource();
         _clearTheme();
         _clearMap(searchMap);
@@ -219,7 +244,7 @@ function _renderTheme(indus) {
     var fragment = document.createDocumentFragment();
 
     indus.forEach((cur, index) => {
-        var tag = document.createElement('SPAN');
+        var tag = document.createElement('LABEL');
         $(tag).attr('id','t'+index).addClass('research-tag-invalid').text(cur.indus[0]);
         $(fragment).append(tag);
     });
@@ -235,7 +260,11 @@ function onTheme(that, event) {
     var $target = $(event.target);
     var tagName = event.target.tagName;
 
-    if(tagName === 'SPAN' && $target.hasClass('research-tag-invalid')) {
+    if(tagName === 'LABEL' && $target.hasClass('research-tag-invalid')) {
+        $('.auto-refresh input')[0].checked = false;
+        $('#stockInput').val('');
+        $('#search-clear').hide();
+        _hideStockList();
         _clearTheme();
         _clearSource();
         _clearMap(searchMap);
@@ -248,14 +277,19 @@ function onTheme(that, event) {
 }
 
 function _clearTheme() {
-    var children = $('#btnTheme').children('span.research-tag-valid');
+    var children = $('#btnTheme').children('label.research-tag-valid');
     Array.prototype.forEach.call(children, function(cur) {
         $(cur).removeClass('research-tag-valid').addClass('research-tag-invalid');
     });
 }
 
 function _renderResults(data) {
+    //scroll to result list
+    $("html, body").animate({scrollTop: $('section#research-list').offset().top - 100}, 800);
 
+    if($('.focus-loading').css('display') && $('.focus-loading').css('display') === 'none') {
+        $('.focus-loading').show();
+    }
     var $resultList = $('#result-list');
 
     //clear all of its content
@@ -265,7 +299,8 @@ function _renderResults(data) {
 
     //if data is null
     if(!data) {
-        $resultList.append($('<p>没有相关的调研记录</p>'));
+        $resultList.append($('<p style="font-size:2rem;">没有相关的调研记录</p>'));
+        $('div.focus-loading').hide();
         return;
     }
 
@@ -329,7 +364,7 @@ function _renderResults(data) {
                     $item.addClass('card-item');
                     //create span
                     var span = document.createElement('SPAN');
-                    $(span).addClass('item-title').text('调查机构/研究员:');
+                    $(span).addClass('item-title').text('调研机构/研究员:');
                     $item.append(span);
 
                     rep.affs.forEach((aff) => {
@@ -430,9 +465,7 @@ function _renderResults(data) {
                     $resultList.append(fragment);
             });
 	});
-
-    //scroll to result list
-    $("html, body").animate({scrollTop: $('section#research-list').offset().top - 100}, 800);
+    $('.focus-loading').hide();
 }
 
 function _renderMap(chart, data) {
@@ -450,7 +483,7 @@ function _renderMap(chart, data) {
     });
 
     // configure echart
-    chart.showLoading();
+    // chart.showLoading();
 
     chart.setOption({
         baseOption: {
@@ -461,10 +494,7 @@ function _renderMap(chart, data) {
         		min: 0,
         		max: max,
         		splitNumber: 20,
-        		color: ['#d94e5d','#50a3ba','#eac736'],
-		        textStyle: {
-		            color: '#fff'
-		        },
+                color: ['#D0243E', '#F75D5D', '#FFB0B0'],
 		        show: false
         	},
         	series: [{
@@ -481,7 +511,7 @@ function _renderMap(chart, data) {
             	},
             	itemStyle: {
 	                emphasis: {
-	                    borderColor: '#9900ff'
+	                    // borderColor: '#9900ff'
 	                }
             	},
             	data: showData
@@ -517,7 +547,7 @@ function _renderMap(chart, data) {
         }
     });
 
-    chart.hideLoading();
+    // chart.hideLoading();
 }
 
 function _clearMap(chart) {
@@ -532,6 +562,10 @@ function _clearMap(chart) {
 }
 
 function _renderSearchResults(data) {
+    //scroll to result list
+    $("html, body").animate({scrollTop: $('section#research-list').offset().top - 100}, 800);
+    $('.focus-loading').show();
+
     var $resultList = $('#result-list');
 
     //clear all of its content
@@ -541,7 +575,8 @@ function _renderSearchResults(data) {
 
     //if data is null
     if(!data || !data.length) {
-        $resultList.append($('<p>没有相关的调研记录</p>'));
+        $resultList.append($('<p style="font-size:2rem;">没有相关的调研记录</p>'));
+        $('.focus-loading').hide();
         return;
     }
 
@@ -586,7 +621,7 @@ function _renderSearchResults(data) {
         $item.addClass('card-item');
         //create span
         var span = document.createElement('SPAN');
-        $(span).addClass('item-title').text('调查机构/研究员:');
+        $(span).addClass('item-title').text('调研机构/研究员:');
         $item.append(span);
 
         curTab.reportList.forEach(function(curRep) {
@@ -685,8 +720,7 @@ function _renderSearchResults(data) {
         $resultList.append(fragment);
     });
 
-    //scroll to result list
-    $("html, body").animate({scrollTop: $('section#research-list').offset().top - 100}, 800);
+    $('.focus-loading').hide();
 }
 
 function _newLine(str) {

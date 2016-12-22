@@ -33,6 +33,7 @@ $(document).ready(() => {
         console.log('user', loginfo);
        	//get concept list
 		//render echarts
+		$('footer.footer').hide();
 		_renderConceptList();
     }
 
@@ -47,7 +48,7 @@ $(document).ready(() => {
 	});
 });
 
-function onForm(that) {
+function onForm(that, event) {
 	event.stopPropagation();
 
 	var target = event.target;
@@ -102,6 +103,8 @@ function onForm(that) {
 		}
 		
 		if(update) {
+			$('footer.footer').hide();
+			$('.more-button').find('[class*=active]').removeClass('active');
 			//change button style
 			var btnSiblings = $btn.siblings('button[class*="btn-valid"]');
 			Array.prototype.forEach.call(btnSiblings, function(cur) {
@@ -114,12 +117,15 @@ function onForm(that) {
 			//to do later
 			console.log('ajax get focus data!');
 			console.log(method, period, source);
+
 			_renderConceptList();
 		}
 	}
 }
 
 function _renderConceptList() {
+	$('div.focus-loading').show();
+	// $('.loading-more').hide();
 	var typeUrl; 
 	if(!method) {
 		typeUrl = methodRange[method];
@@ -138,11 +144,12 @@ function _renderConceptList() {
 		    if(d.length) {
 		        conceptList = d;  
 		        _renderCharts(conceptList.splice(0,CHARTNUM)); 
-		        $('.loading-more').show();
+		        // $('.loading-more').show();
 		    } else {
+		    	// $('.loading-more').hide();
+		    	$('div.focus-loading').hide();
 		        //show message
-			    $('.focus-charts>div.container').empty().html('<div>未找到相关记录</div>');
-			    $('.loading-more').hide();
+			    $('.focus-charts>div.container').empty().html('<div style="font-size:2rem">未找到相关记录</div>');
 		    }
 		},
 		error: (err) => {
@@ -254,7 +261,8 @@ function _renderCharts(concepts) {
 				            toolbox: {
 				                feature: {
 				                    saveAsImage: {}
-				                }
+				                },
+				                right: '7%'
 				            },
 				            xAxis: {
 				            	type: 'category',
@@ -345,14 +353,15 @@ function _renderCharts(concepts) {
 
 				    charts.push(chart);
 					// console.log('charts', charts);
+					if(!$('.more-button span:nth-child(1)').hasClass('active')) {
+						$('.more-button span:nth-child(1)').addClass('active');
+					}
 					if($('.more-button span:nth-child(2)').hasClass('active')) {
 						$('.more-button span:nth-child(1)').addClass('active');
 	  					$('.more-button span:nth-child(2)').removeClass('active');
 					}
-			    } else {
-			        //show message
-			        $('.focus-charts>div.container').empty().text('未找到相关记录');
-			    }
+			    } 
+			    $('div.focus-loading').hide();
 			},
 			error: (err) => {
 			    console.log(err);
@@ -361,8 +370,8 @@ function _renderCharts(concepts) {
 	});
 
 	if(concepts.length < CHARTNUM) {
-		$('footer.footer').show();
 		$('.more-button').hide();
+		$('footer.footer').show();
 	}
 }
 

@@ -32,7 +32,7 @@
                     <div class="collapse navbar-toggleable-md" id="main-nav">
                         <ul class="nav navbar-nav">
                             <li class="nav-item">
-                                <a class="nav-link" href="/explore/focus">热点观察</a>
+                                <a class="nav-link" href="/explore/focus">市场热点</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="/news">智能公告</a>
@@ -80,7 +80,7 @@
             <form id="form-theme" onclick="onForm(this,event)">
                 <!-- method -->
                 <div class="form-group row">
-                    <label for="btnMethod" class="col-xs-4 col-lg-2 col-form-label form-label"><i class="fa fa-search" aria-hidden="true"></i>热点分类</label>
+                    <label for="btnMethod" class="col-xs-4 col-lg-2 col-form-label form-label"><i class="fa fa-search" aria-hidden="true"></i>&nbsp;&nbsp;热点分类</label>
                     <div id="btnMethod" class="col-xs-8 col-lg-10">
                         <button id="m0" type="button" class="btn btn-valid">智能排序</button>
                         <button id="m1" type="button" class="btn btn-invalid">关注度</button>
@@ -89,7 +89,7 @@
                 </div>
                 <!-- period -->
                 <div class="form-group row">
-                    <label for="btnPeriod" class="col-xs-4 col-lg-2 col-form-label form-label"><i class="fa fa-clock-o" aria-hidden="true"></i>样本天数</label>
+                    <label for="btnPeriod" class="col-xs-4 col-lg-2 col-form-label form-label"><i class="fa fa-clock-o" aria-hidden="true"></i>&nbsp;&nbsp;样本天数</label>
                     <div id="btnPeriod" class="col-xs-8 col-lg-10">
                         <button id="p0" type="button" class="btn btn-invalid" disabled>1天</button>
                         <button id="p1" type="button" class="btn btn-invalid" disabled>5天</button>
@@ -99,7 +99,7 @@
                 </div>
                 <!-- source -->
                 <div class="form-group row">
-                    <label for="btnSource" class="col-xs-4 col-lg-2 col-form-label form-label"><i class="fa fa-users" aria-hidden="true"></i>关注人群</label>
+                    <label for="btnSource" class="col-xs-4 col-lg-2 col-form-label form-label"><i class="fa fa-users" aria-hidden="true"></i>&nbsp;&nbsp;关注人群</label>
                     <div id="btnSource" class="col-xs-8 col-lg-10">
                         <button id="s0" type="button" class="btn btn-invalid">投资者总体</button>
                         <button id="s1" type="button" class="btn btn-invalid">散户群体</button>
@@ -121,7 +121,7 @@
     <section>
         <div class="container loading-more">
             <div class="more-button">
-                <span role="button" class="btn-more active">浏览更多</span>
+                <span role="button" class="btn-more">浏览更多</span>
                 <span role="button" class="btn-more">正在加载</span>
             </div>
         </div>
@@ -142,6 +142,21 @@
             </div>
         </div>       
     </footer><!--//footer-->
+
+    <!-- loading animation -->
+    <div class="focus-loading">
+        <div class="loading-container">
+          <div class="stick"></div>
+          <div class="stick"></div>
+          <div class="stick"></div>
+          <div class="stick"></div>
+          <div class="stick"></div>
+          <div class="stick"></div>
+          
+          <h1>Loading...</h1>
+          
+        </div>
+    </div>
  
     <!-- Javascript -->   
     <!-- get data from nodejs -->

@@ -5,6 +5,8 @@ var resIndus = {}, resProv = {};
 var mapIndex = -1;
 var $resultItem = null;
 var URL_SURVEY = '/cross?id=21&';
+//for test
+// var URL_SURVEY_TEST = './survey.today.10_fix.json';
 var URL_SURVEY_FILE = [];
 var loginfo;
 // var selfChoice = false;
@@ -23,6 +25,10 @@ $(document).ready(() => {
         //get data
         //default 10days
         _renderData(0);
+
+        //for test
+        // URL_SURVEY_FILE[3] = URL_SURVEY_TEST;
+        //  _renderData(3);
     }
     $('.auto-refresh > input[name=self]').change(function(e) {
         $('.focus-loading').show();
@@ -146,6 +152,7 @@ function _renderData(p) {
             success: (data) => {
                 var d = JSON.parse(data);
                 d = JSON.parse(d);
+                // var d = data;
 
                 resBuy[p] = d.all[0].codes;
                 resSell[p] = d.all[1].codes;
@@ -323,6 +330,7 @@ function _renderResults(data) {
 
 	res.forEach((cur, n) => {
             cur.dates.forEach((rep, i)=>{
+                    var personNumber = 0; 
                     //create element
                     var fragment = document.createElement('DIV');
                     var $fragment = $(fragment);
@@ -338,7 +346,7 @@ function _renderResults(data) {
                     var lDiv = document.createElement('DIV');
                     $(lDiv).addClass('research-left-header');
                     var h6 = document.createElement('H6');
-                    $(h6).text(rep.affs.length);
+                    // $(h6).text(rep.affs.length);
                     $(lDiv).append(h6);
                     $(header).append(lDiv);
                     //create h5
@@ -364,97 +372,115 @@ function _renderResults(data) {
                     $item.addClass('card-item');
                     //create span
                     var span = document.createElement('SPAN');
-                    $(span).addClass('item-title').text('调研机构/研究员:');
+                    $(span).addClass('item-title').text('调研机构：研究员');
                     $item.append(span);
 
                     rep.affs.forEach((aff) => {
-                        //create item content
-                        var spanContent = document.createElement('SPAN');
-                        var $spanContent = $(spanContent);
-                        $spanContent.addClass('item-content').attr('data-toggle','popover');
-                        //hover handler:aria-describedby
-                        $spanContent.hover(function(e) {   
-                            var $tar = $(e.target);
-                            $tar.popover('show');
-                            var popId = $tar.attr('aria-describedby');
-                            var pop = $('#'+popId)[0];
-                            var oldContent = $(pop).find('div.popover-content')[0];
-                            var newContent = document.createElement('PRE');
-                            $(newContent).text($(oldContent).text());
-                            $(oldContent).text('').append(newContent);
+                        var affName = aff.aff[0]+'：';
+                        var lenAff = (affName.length+4)*2-1;
 
-                        }, function(e) {
-                            var $tar = $(e.target);
-                            var popId = $tar.attr('aria-describedby');
-                            if(popId) {
-                                var pop = $('#'+popId)[0];
-                                var $pop = $(pop);
-                                //set value for target
-                                $resultItem = $tar;
-                                //get mouse position
-                                var clientX = e.pageX;
-                                var clientY = e.pageY;
-                                //get $resultItem info
-                                var width = $resultItem.width();
-                                var height = $resultItem.height();
-                                var X = $resultItem.offset().left;
-                                var Y = $resultItem.offset().top;
-                                if(clientX > X && clientX < X + width + 10 && (clientY > Y + height || clientY < Y)) {
-                                    $resultItem.removeClass('hover-item-content');
-                                    $resultItem.popover('hide');
-                                    $resultItem = null;
+                        aff.persons.forEach((per, perIdx) => {
+                            if(perIdx == 1) {
+                                affName = '';
+                                while(lenAff--) {
+                                    affName += ' ';
                                 }
+                            }
+                            personNumber++;
+                            //create item content
+                            var spanContent = document.createElement('SPAN');
+                            var $spanContent = $(spanContent);
+                            $spanContent.addClass('item-content').attr('data-toggle','popover');
+                            //hover handler:aria-describedby
+                            $spanContent.hover(function(e) {   
+                                var $tar = $(e.target);
+                                $tar.popover('show');
+                                var popId = $tar.attr('aria-describedby');
+                                var pop = $('#'+popId)[0];
+                                var oldContent = $(pop).find('div.popover-content')[0];
+                                var newContent = document.createElement('PRE');
+                                $(newContent).text($(oldContent).text());
+                                $(oldContent).text('').append(newContent);
 
-                                //mouseleave listener for popover
-                                $pop.hover(function(e) {
-                                    if($resultItem) {
-                                        if(!$resultItem.hasClass('hover-item-content')) {
-                                            $resultItem.addClass('hover-item-content');
-                                        }
-                                    }
-                                }, function(e) {
+                            }, function(e) {
+                                var $tar = $(e.target);
+                                var popId = $tar.attr('aria-describedby');
+                                if(popId) {
+                                    var pop = $('#'+popId)[0];
+                                    var $pop = $(pop);
+                                    //set value for target
+                                    $resultItem = $tar;
                                     //get mouse position
                                     var clientX = e.pageX;
                                     var clientY = e.pageY;
-
-                                    if($resultItem) {
-                                        //get $resultItem info
-                                        var width = $resultItem.width();
-                                        var height = $resultItem.height();
-                                        var X = $resultItem.offset().left;
-                                        var Y = $resultItem.offset().top;
-
-                                        if(clientX > X && clientY > Y && clientX < X + width + 10 && clientY < Y + height) {
-                                        } else {
-                                            $resultItem.removeClass('hover-item-content');
-                                            $resultItem.popover('hide');
-                                            $resultItem = null;
-                                        }
+                                    //get $resultItem info
+                                    var width = $resultItem.width();
+                                    var height = $resultItem.height();
+                                    var X = $resultItem.offset().left;
+                                    var Y = $resultItem.offset().top;
+                                    if(clientX > X && clientX < X + width + 10 && (clientY > Y + height || clientY < Y)) {
+                                        $resultItem.removeClass('hover-item-content');
+                                        $resultItem.popover('hide');
+                                        $resultItem = null;
                                     }
-                                });
-                            }
-                        });
-                        //set text
-                        var repAuthor = aff.aff[0]+'/';
-                        aff.persons.person.forEach((per) => {
-                            repAuthor += per + ' ';
-                        });
-                        $spanContent.text(repAuthor);
 
-                        //set popover content
-                        if(aff.persons.report) {
-                            $spanContent.append($('<i class="fa fa-bookmark" aria-hidden="true" style="color:#F6310D;"></i>'));
-                            //set popover title
-                            $spanContent.attr('title','相关研报:');
-                            var repContent = '';
-                            aff.persons.report.forEach((name) => {
-                                repContent += name.reportDate + ':\n' + _newLine(name.reportName) + '\n';
+                                    //mouseleave listener for popover
+                                    $pop.hover(function(e) {
+                                        if($resultItem) {
+                                            if(!$resultItem.hasClass('hover-item-content')) {
+                                                $resultItem.addClass('hover-item-content');
+                                            }
+                                        }
+                                    }, function(e) {
+                                        //get mouse position
+                                        var clientX = e.pageX;
+                                        var clientY = e.pageY;
+
+                                        if($resultItem) {
+                                            //get $resultItem info
+                                            var width = $resultItem.width();
+                                            var height = $resultItem.height();
+                                            var X = $resultItem.offset().left;
+                                            var Y = $resultItem.offset().top;
+
+                                            if(clientX > X && clientY > Y && clientX < X + width + 10 && clientY < Y + height) {
+                                            } else {
+                                                $resultItem.removeClass('hover-item-content');
+                                                $resultItem.popover('hide');
+                                                $resultItem = null;
+                                            }
+                                        }
+                                    });
+                                }
                             });
-                            $spanContent.attr('data-content', repContent);
-                        }
-                        //append to item
-                        $item.append(spanContent);
+                            //set text
+                            // var repAuthor = aff.aff[0]+'：';
+                            // aff.persons.forEach((per) => {
+                            //     repAuthor += per + ' ';
+                            // });
+                            // $spanContent.text(repAuthor);
+
+                            var repAuthor = affName;
+                            per.person.forEach((per) => {
+                                repAuthor += per + ' ';
+                            });
+                            $spanContent.text(repAuthor);
+                            //set popover content
+                            if(per.report) {
+                                $spanContent.append($('<i class="fa fa-bookmark" aria-hidden="true" style="color:#F6310D;"></i>'));
+                                //set popover title
+                                $spanContent.attr('title','相关研报:');
+                                var repContent = '';
+                                per.report.forEach((name) => {
+                                    repContent += name.reportDate + ':\n' + _newLine(name.reportName) + '\n';
+                                });
+                                $spanContent.attr('data-content', repContent);
+                            }
+                            //append to item
+                            $item.append(spanContent);
+                        });
                     });
+                    $(h6).text(personNumber);
                     //append to card content
                     $(content).append(item);
                     //append to card 
@@ -621,7 +647,7 @@ function _renderSearchResults(data) {
         $item.addClass('card-item');
         //create span
         var span = document.createElement('SPAN');
-        $(span).addClass('item-title').text('调研机构/研究员:');
+        $(span).addClass('item-title').text('调研机构：研究员');
         $item.append(span);
 
         curTab.reportList.forEach(function(curRep) {
@@ -692,7 +718,7 @@ function _renderSearchResults(data) {
             });
 
             //set text
-            var repAuthor = curRep.aff + '/' + curRep.analyst;
+            var repAuthor = curRep.aff + '：' + curRep.analyst;
             $spanContent.text(repAuthor);
 
             //set popover content

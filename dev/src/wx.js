@@ -22,10 +22,12 @@ $(document).ready(() => {
 
 		    if(d && d.length) {
 		    	d.forEach(function(cur) {
-		    		var elem = $('<label class="label-category" style="margin-right: 5px;"></label>');
-		    		$(elem).attr('data-id', categoryRange.length+'').text(cur);
-		    		categoryRange.push(cur);
-		    		$('#sources').append(elem);
+		    		if(cur.localeCompare('其他')) {
+			    		var elem = $('<label class="label-category" style="margin-right: 5px;"></label>');
+			    		$(elem).attr('data-id', categoryRange.length+'').text(cur);
+			    		categoryRange.push(cur);
+			    		$('#sources').append(elem);
+			    	}	
 		    	});
 		    } 
 		},
@@ -82,6 +84,7 @@ $(document).ready(() => {
 		_renderMoreNews();
 		// console.log('selfChoice',selfChoice);
     });
+
 });
 
 function onCategory(event) {

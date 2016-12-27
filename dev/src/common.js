@@ -45,6 +45,14 @@ $(document).ready(() => {
     
     /* ======= jQuery Placeholder ======= */
     /* Ref: https://github.com/mathiasbynens/jquery-placeholder */
+
+    $(window).resize(function(e) {
+        if($(this).width() > 991) {
+            var $mainNav = $('#main-nav');
+            if($mainNav.hasClass('my-navbar'))
+                $mainNav.removeClass('my-navbar');
+        }
+    });
     
     $('input, textarea').placeholder();  
 
@@ -61,7 +69,8 @@ $(document).ready(() => {
             'display':'block',
             'position': 'absolute',
             'top': top,
-            'left': left
+            'left': left,
+            'z-index': 999
         });
         
         $('body').append(qrCode);
@@ -356,4 +365,15 @@ function _addHandlerToLI(li) {
             }
         }
     });
+}
+
+function expandNavbar(e, f) {
+    e.preventDefault();
+
+    var $mainNav = $('#main-nav');
+
+    if(f)
+        $mainNav.addClass('my-index-navbar');
+    else 
+        $mainNav.addClass('my-navbar');
 }

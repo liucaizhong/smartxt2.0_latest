@@ -5,6 +5,7 @@ var URL_COLLECT = '/crosspost?id=15';
 //http://139.196.18.233:8087/smartxtAPI/topicUnFollow
 var URL_UNCOLLECT = '/crosspost?id=16';
 var URL_ALLTOPICS = '/cross?id=24&';
+var URL_TOPICLIST = '/cross?id=25';
 var cond = {
 	topic: '',
 	stock: ''
@@ -71,6 +72,27 @@ $(document).ready(() => {
 		if(!jump)
 			_renderChart(url);
     }
+
+    //load topiclist
+    $.ajax({
+	    url: URL_TOPICLIST,
+	    type: 'GET',
+	    async: true,
+	    dataType: 'json',
+	    success: (data) => {
+	        var d = JSON.parse(data);
+	        d = JSON.parse(d);
+
+	        if(d && d.length) {
+				_renderDatalist(d);
+	        } else {
+	            //show message
+	        }
+	    },
+	    error: (err) => {
+	        console.log(err);
+	    }
+	});
 	
 	//echart resize
 	$(window).on('resize',()=>{
@@ -78,20 +100,43 @@ $(document).ready(() => {
 		chartPrice.resize();
 	});
 
+	$('#stockInput').on('input propertychange', function(e) {
+		if($(this).val()) {
+			if($(this).hasClass('error')) {
+				$(this).removeClass('error');
+			}
+		}
+	});
+
+	$('#eventInput').on('input propertychange', function(e) {
+		if($(this).val()) {
+			if($(this).hasClass('error')) {
+				$(this).removeClass('error');
+			}
+		}
+	});
 	//form submit 
 	$('#form-topic').submit(function(e) {
 		e.preventDefault();
 		_hideErr();
 		var stock = $('#stockInput').val();
 		var topic = $('#eventInput').val();
-		if(stock && topic && !$('#stockInput').hasClass('error')) {
 
-			cond.topic = topic;
-	        cond.stock = stock;
-			
-			var url = URL_TOPICHEAT + 'userId=' + loginfo.username + '&stock=' + stock + '&topic=' + topic;
-	        _renderChart(url);
+		if(!stock) {
+			$('#stockInput').addClass('error');
+			return false;
 		}
+
+		if(!topic) {
+			$('#eventInput').addClass('error');
+			return false;
+		}
+
+		cond.topic = topic;
+	    cond.stock = stock;
+			
+		var url = URL_TOPICHEAT + 'userId=' + loginfo.username + '&stock=' + stock + '&topic=' + topic;
+	    _renderChart(url);
 	});
 
 	$('#topicPoolInput').on('input propertychange', function(e) {
@@ -145,6 +190,15 @@ function onStar(that) {
         error: (err) => {
             console.log(err);
         }
+    });
+}
+
+function _renderDatalist(d) {
+    var all = $('#topicList');
+    d.forEach(function(cur) {
+        var option = document.createElement('OPTION');
+        $(option).val(cur);
+        all.append(option);
     });
 }
 

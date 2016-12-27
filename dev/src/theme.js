@@ -118,7 +118,7 @@ $(document).ready(() => {
         _renderCharts();
     }
     if(window.themes && window.sources) {
-        theme = unescape(decodeURIComponent(window.themes)).split(';');
+        theme = unescape(decodeURIComponent(window.themes)).split(',');
         source = [];
         var jumpSource = unescape(decodeURIComponent(window.sources)).split(';');
         jumpSource.forEach(function(cur) {
@@ -137,7 +137,7 @@ $(document).ready(() => {
     }
 
     if(!jump) {
-        jump = true;
+        // jump = true;
         _setCondition(theme);
         _renderCharts();
     }
@@ -260,11 +260,18 @@ function _genUrl(url, flag) {
 
     url += 'userId=' + loginfo.username;
     //add theme to url
-    theme.forEach(function(cur) {
-    	urlTheme += cur.trim() + ';';
-    });
+    if(method == 0) {
+        theme.forEach(function(cur) {
+        	urlTheme += cur.trim() + ',';
+        });
+    }else if(method == 2) {
+        theme.forEach(function(cur) {
+            urlTheme += cur.trim() + ';';
+        });
+    }
     //remove comma at the end of str
     urlTheme = urlTheme.substr(0, urlTheme.length-1);
+    // urlTheme = encodeURIComponent(escape(urlTheme));
     //add source to url
     source.forEach(function(cur) {
     	urlSource += cur +';';
@@ -305,8 +312,8 @@ function onTriggerSlide(that) {
 function onMethod(that) {
     var $btn = $(that);
     var curMethod = $btn.attr('id')[1];
-    if (method != curMethod) {
-        method = curMethod;
+    if (method != +curMethod) {
+        method = +curMethod;
         _setDefault();
         var btnSiblings = $btn.siblings('button[class*="btn-valid"]');
         Array.prototype.forEach.call(btnSiblings, function(cur) {
@@ -1075,7 +1082,7 @@ function _setCondition(t, s) {
         $btn.find('button[class*="btn-valid"]').removeClass('btn-valid').addClass('btn-invalid');
 
         s.forEach(function(cur) {
-            $('#s'+cur).addClass('btn-valid');
+            $('#s'+cur).removeClass('btn-invalid').addClass('btn-valid');
         });
     }
 }

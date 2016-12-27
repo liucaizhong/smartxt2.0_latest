@@ -27,7 +27,8 @@ var urls = ['http://139.196.18.233:8087/smartxtAPI/getConceptHeat?',
 			'http://139.196.18.233:8087/smartxtAPI/surveyList?',
 			'http://139.196.18.233:8087/smartxtAPI/affList',
 			'http://139.196.18.233:8087/smartxtAPI/allConcepts',
-			'http://139.196.18.233:8087/smartxtAPI/topicsOnAir?'];
+			'http://139.196.18.233:8087/smartxtAPI/topicsOnAir?',
+			'http://139.196.18.233:8087/smartxtAPI/topicList'];
 
 exports.get = function(req, res) {
 

@@ -43,7 +43,7 @@
                             <li class="nav-item dropdown" data-hover="dropdown">
                                 <a class="nav-link" data-toggle="dropdown" data-close-others="false" href="#" role="button" aria-haspopup="true" aria-expanded="false">智能检索</a>
                                 <div class="dropdown-menu dark">
-                                  <a class="dropdown-item" href="/explore/theme">主题搜索</a>
+                                  <a class="dropdown-item" href="/theme">主题搜索</a>
                                   <a class="dropdown-item" href="/explore/topic">预期探索</a>
 <!--                                   <a class="dropdown-item" href="/explore/focus">市场热点</a> -->
                                 </div>
@@ -79,14 +79,14 @@
             <form id="form-topic" action="">
                 <div class="row">
                     <!-- Stock -->
-                    <label for="stockInput" class="col-xs-4 col-lg-2 col-form-label form-label"><i class="fa fa-rocket" aria-hidden="true"></i>股票名称</label>
+                    <label for="stockInput" class="col-xs-4 col-lg-2 col-form-label form-label"><i class="fa fa-rocket" aria-hidden="true"></i>&nbsp;&nbsp;股票名称</label>
                     <input id="stockInput" name="stock" type="text" class="topic-input col-xs-5 col-lg-2 " placeholder="输入股票代码/名称" autocomplete="off"></input>
                     <div id="stockList" class="stock-list">
                         <ul class="stock-ul">
                         </ul>
                     </div>
                     <!-- Event -->
-                    <label for="eventInput" class="col-xs-4 col-lg-2 col-form-label form-label"><i class="fa fa-file-text-o" aria-hidden="true"></i>预期事件</label>
+                    <label for="eventInput" class="col-xs-4 col-lg-2 col-form-label form-label"><i class="fa fa-file-text-o" aria-hidden="true"></i>&nbsp;&nbsp;预期事件</label>
                     <input id="eventInput" name="event" type="text" class="topic-input col-xs-5 col-lg-2 " placeholder="输入话题关键字" autocomplete="on" list="topicList"></input>
                     <datalist id="topicList">
                     </datalist>
@@ -107,13 +107,24 @@
     <!-- ******CHARTS****** -->
     <section class="charts topic-charts">
         <div class="container">
-            <div class="topic-collect">
+<!--             <div class="topic-collect">
                 <span><i class="fa fa-star-o fa-2x btn-star" title="收藏" onclick="onStar(this)" aria-hidden="true" style="font-size: 2rem;"></i></span>
-            </div>
+            </div> -->
             <div class="topic-chart" id="chart-attention"></div>
             <div class="topic-chart" id="chart-price"></div>
         </div>
     </section>
+
+    <!-- suspending toolbar -->
+    <div class="suspending-toolbar">
+        <a title="收藏" onclick="onStar(this)">
+            <i class="icon-collect"></i>
+        </a>
+
+        <a href="/help" title="帮助" target="_blank">
+            <i class="icon-help"></i>
+        </a>
+    </div>
 
     <div id="fade-alert">
         <div>

@@ -5,10 +5,10 @@ var LASTPAGE = 8;
 
 $(document).ready(function() {
     $.ajax({
-        url: URL_ALLCONCEPTS,
+        url: encodeURI(URL_ALLCONCEPTS),
         type: 'GET',
         async: true,
-        dataType: 'json',
+        cache: false,
         success: (data) => {
             var d = JSON.parse(data);
             d = JSON.parse(d);

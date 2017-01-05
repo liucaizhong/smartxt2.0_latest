@@ -46,6 +46,7 @@ $(document).ready(() => {
 	  		_renderCharts(conceptList.splice(0,CHARTNUM)); 
 	  	}
 	});
+
 });
 
 function onForm(that, event) {
@@ -60,43 +61,43 @@ function onForm(that, event) {
 
 		switch(category[0]) {
 			case 'm':
-				if(method != category[1]) {
-					method = category[1];
+				if(method != +category[1]) {
+					method = +category[1];
 					update = true;
 					switch(method) {
-						case '0':
+						case 0:
 							$('#btnPeriod').find('button[class*="btn-valid"]').removeClass('btn-valid').addClass('btn-invalid');
 							$('#btnPeriod').children().attr('disabled',true);
 							period = undefined;
 							break;
-						case '1':
+						case 1:
 							$('#btnPeriod').find('button[class*="btn-valid"]').removeClass('btn-valid').addClass('btn-invalid');
 							$('#p0').attr('disabled',true);
 							$('#p1').attr('disabled',false).addClass('btn-valid');
 							$('#p2').attr('disabled',false);
 							$('#p3').attr('disabled',false);
-							period = '1';
+							period = 1;
 							break;
-						case '2':
+						case 2:
 							$('#btnPeriod').find('button[class*="btn-valid"]').removeClass('btn-valid').addClass('btn-invalid');
 							$('#p0').attr('disabled',false).addClass('btn-valid');
 							$('#p1').attr('disabled',false);
 							$('#p2').attr('disabled',false);
 							$('#p3').attr('disabled',true);
-							period = '0';
+							period = 0;
 							break;
 					}
 				}
 				break;
 			case 'p':
-				if(period != category[1]) {
-					period = category[1];
+				if(period != +category[1]) {
+					period = +category[1];
 					update = true;
 				}
 				break;
 			case 's':
-				if(source != category[1]) {
-					source = category[1];
+				if(source != +category[1]) {
+					source = +category[1];
 					update = true;
 				}
 				break;
@@ -115,8 +116,8 @@ function onForm(that, event) {
 			$('.focus-charts>div.container').empty();
 			//ajax get and render charts
 			//to do later
-			console.log('ajax get focus data!');
-			console.log(method, period, source);
+			// console.log('ajax get focus data!');
+			// console.log(method, period, source);
 
 			_renderConceptList();
 		}
@@ -134,10 +135,10 @@ function _renderConceptList() {
 	}
 	var conceptUrl = CONCEPTURL + 'userId=' + loginfo.username + '&source='+ sourceRange[source] + '&type=' + typeUrl;
 	$.ajax({
-		url: conceptUrl,
+		url: encodeURI(conceptUrl),
 		type: 'GET',
 		async: true,
-		dataType: 'json',
+		cache: false,
 		success: (data) => {
 			var d = JSON.parse(data);
 			d = JSON.parse(d);
@@ -166,10 +167,10 @@ function _renderCharts(concepts) {
 		//get heat data
 		var heatUrl = HEATURL + 'userId=' + loginfo.username + '&concepts=' + cur + '&sources=' + source;
 		$.ajax({
-			url: heatUrl,
+			url: encodeURI(heatUrl),
 			type: 'GET',
-			async: true,
-			dataType: 'json',
+			async: false,
+			cache: false,
 			success: (data) => {
 				var d = JSON.parse(data);
 				d = JSON.parse(d);
@@ -230,7 +231,8 @@ function _renderCharts(concepts) {
 			        //set echart option
 			        var chartDiv = document.createElement('div');
 					var chartId = 'c'+ (conceptIdx*CHARTNUM+idx);
-					$(chartDiv).attr('id', chartId).addClass('focus-chart');
+					$(chartDiv).attr('id', chartId).addClass('focus-chart').attr('data-word', entry.concept);
+					$(chartDiv).attr('onclick', 'onJumpTheme(this)');
 					$('.focus-charts>div.container').append(chartDiv);
 					var chart = echarts.init(document.getElementById(chartId));
 					chart.setOption({
@@ -262,7 +264,7 @@ function _renderCharts(concepts) {
 				                feature: {
 				                    saveAsImage: {}
 				                },
-				                right: '7%'
+				                right: '15%'
 				            },
 				            xAxis: {
 				            	type: 'category',
@@ -278,7 +280,6 @@ function _renderCharts(concepts) {
 				                	}
 				                },
 				                boundaryGap: false,
-				                axisTick: false,
 				                axisLabel: {
 				                	textStyle: {
 				                		fontFamily : '微软雅黑', 
@@ -351,6 +352,12 @@ function _renderCharts(concepts) {
 				        }
 				    });
 
+					//click:jump to theme page
+				 //    chart.on('click', function (params) {
+				 //    	console.log('params', params);
+					//     // window.open('/theme','_blank');
+					// });
+
 				    charts.push(chart);
 					// console.log('charts', charts);
 					if(!$('.more-button span:nth-child(1)').hasClass('active')) {
@@ -375,3 +382,8 @@ function _renderCharts(concepts) {
 	}
 }
 
+function onJumpTheme(that) {
+	var concept = $(that).attr('data-word');
+	var href = '/theme?keyword=' + encodeURIComponent(escape(concept));
+	window.open(href, '_blank');
+}

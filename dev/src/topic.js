@@ -27,10 +27,10 @@ $(document).ready(() => {
 
         var loadUrl = URL_ALLTOPICS + 'userId=' + loginfo.username + '&keyword=';
         $.ajax({
-	        url: loadUrl,
+	        url: encodeURI(loadUrl),
 	        type: 'GET',
 	        async: true,
-	        dataType: 'json',
+	        cache: false,
 	        success: (data) => {
 	            var d = JSON.parse(data);
 	            d = JSON.parse(d);
@@ -75,10 +75,10 @@ $(document).ready(() => {
 
     //load topiclist
     $.ajax({
-	    url: URL_TOPICLIST,
+	    url: encodeURI(URL_TOPICLIST),
 	    type: 'GET',
 	    async: true,
-	    dataType: 'json',
+	    cache: false,
 	    success: (data) => {
 	        var d = JSON.parse(data);
 	        d = JSON.parse(d);
@@ -98,7 +98,23 @@ $(document).ready(() => {
 	$(window).on('resize',()=>{
 		chartAttention.resize();
 		chartPrice.resize();
+		var w = $(window).width();
+        if(w < 1520 && w > 795) {
+            $('.suspending-toolbar').css({
+                'right': '8%'
+            });
+        }else if(w < 795) {
+            $('.suspending-toolbar').css({
+                'right': '5%'
+            });
+        }else {
+            $('.suspending-toolbar').css({
+                'right': '15%'
+            });
+        }
 	});
+
+	$(window).resize();
 
 	$('#stockInput').on('input propertychange', function(e) {
 		if($(this).val()) {
@@ -152,8 +168,8 @@ $(document).ready(() => {
 });
 
 function onStar(that) {
-	var $btn = $(that);
-	if(!$btn.hasClass('collect')) {
+	var $btn = $(that).find('i');
+	if(!$btn.hasClass('icon-collected')) {
         var path = URL_COLLECT;
         var msg = '已收藏';
         var postData = {
@@ -181,7 +197,7 @@ function onStar(that) {
             d = JSON.parse(d);
 
             if(d.flag || d[0].status) {
-                $btn.toggleClass('collect');
+                $btn.toggleClass('icon-collected');
                 _showFadeMsg(msg);
             }else {
                 _showFadeMsg(d.msg);
@@ -212,7 +228,8 @@ function _renderChart(url) {
 	// chartAttention.showLoading();
 	// chartPrice.showLoading();
 	$.ajax({
-		url: url,
+		url: encodeURI(url),
+		cache: false,
 		success: (data) => {
 				
             var heat = [];
@@ -230,19 +247,19 @@ function _renderChart(url) {
             	return false;
             }
             var flag = d.flag;
-            var $btnCollect = $('.charts .topic-collect .btn-star');
+            var $btnCollect = $('i[class*=icon-collect]');
             if(0 == flag || -1 == flag) {
-            	if($btnCollect.hasClass('collect')) {
-            		$btnCollect.removeClass('collect');
+            	if($btnCollect.hasClass('icon-collected')) {
+            		$btnCollect.removeClass('icon-collected');
             	}
             }else if(1 == flag) {
-            	if(!$btnCollect.hasClass('collect')) {
-            		$btnCollect.addClass('collect');
+            	if(!$btnCollect.hasClass('icon-collected')) {
+            		$btnCollect.addClass('icon-collected');
             	}
             }
             $('#stockInput').val('');
 			$('#eventInput').val('');
-            $('.charts .topic-collect').show();
+            // $('.charts .topic-collect').show();
 			//scroll to result list
     		// $("html, body").animate({scrollTop: $('section.charts').offset().top-60}, 800);
 
@@ -487,8 +504,8 @@ function delAlert(that) {
 
 function _showFadeMsg(text) {
 
-	var l = $('.topic-collect>span').offset().left - 50;
-    var t = $('.topic-collect>span').offset().top + 50;
+	var l = $('.suspending-toolbar').offset().left - 50;
+    var t = $('.suspending-toolbar').offset().top + 100;
 	$('#fade-msg').text(text);
 
 	$('#fade-alert').css({'left':l,'top':t}).fadeIn(function() {

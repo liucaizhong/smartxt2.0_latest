@@ -14,7 +14,7 @@ var urls = ['http://139.196.18.233:8087/smartxtAPI/getConceptHeat?',
 			'http://139.196.18.233:8087/smartxtAPI/stockFollow',
 			'http://139.196.18.233:8087/smartxtAPI/stockRemoval',
 			'http://139.196.18.233:8087/smartxtAPI/conceptSubmit',
-			'http://139.196.18.233:8087/smartxtAPI/getAllStockMap',
+			'http://139.196.18.233:8087/smartxtAPI/getAllStockMap?',
 			'http://139.196.18.233:8087/smartxtAPI/submitStatus?',
 			'http://139.196.18.233:8087/smartxtAPI/conceptFollow',
 			'http://139.196.18.233:8087/smartxtAPI/conceptUnFollow',
@@ -25,10 +25,10 @@ var urls = ['http://139.196.18.233:8087/smartxtAPI/getConceptHeat?',
 			'http://139.196.18.233:8087/smartxtAPI/queryAnnounce?',
 			'http://139.196.18.233:8087/smartxtAPI/queryChats?',
 			'http://139.196.18.233:8087/smartxtAPI/surveyList?',
-			'http://139.196.18.233:8087/smartxtAPI/affList',
-			'http://139.196.18.233:8087/smartxtAPI/allConcepts',
+			'http://139.196.18.233:8087/smartxtAPI/affList?',
+			'http://139.196.18.233:8087/smartxtAPI/allConcepts?',
 			'http://139.196.18.233:8087/smartxtAPI/topicsOnAir?',
-			'http://139.196.18.233:8087/smartxtAPI/topicList'];
+			'http://139.196.18.233:8087/smartxtAPI/topicList?'];
 
 exports.get = function(req, res) {
 

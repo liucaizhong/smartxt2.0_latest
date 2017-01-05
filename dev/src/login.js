@@ -111,3 +111,11 @@ function rememberMe(e) {
 		}
 	}
 }
+
+function createUser() {
+    $('.register-note').toggle();
+}
+
+function collapseInfo() {
+    $('.register-note').hide();
+}

@@ -289,10 +289,10 @@ function _renderMoreNews(f) {
 		loadUrl = loadUrl.substr(0, loadUrl.length-1);
 	}
 	$.ajax({
-		url: loadUrl,
+		url: encodeURI(loadUrl),
 		type: 'GET',
 		async: true,
-		dataType: 'json',
+		cache: false,
 		success: (data) => {
 		    var d = JSON.parse(data);
 		    d = JSON.parse(d);

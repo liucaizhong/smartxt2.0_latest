@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>智能中文-调研寻踪</title>
+    <title>智能中文-关于我们</title>
     <!-- Meta -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -72,73 +72,67 @@
                 </nav><!-- //nav -->
             </div><!-- //nav-right  -->       
         </div><!--//container-->
-    </header><!--//header-->      
+    </header><!--//header-->     
     
-    <!-- ******CONDITIONS****** -->
-    <section class="research-conditions">
-        <div class="container bottom-line">
-            <div class="row bottom-line">
-                <!-- Search Input -->
-                <div class="col-xs-12 col-lg-6 search-field">
-                    <label for="stockInput" class="search-label">
-                        <i class="fa fa-search" aria-hidden="true"></i>
-                        <span class="sr-only">Search icons</span>
-                    </label>
-                    <input id="stockInput" class="form-control search-input" placeholder="输入股票代码或股票名称" autocomplete="off" spellcheck="false" autocorrect="off" tabindex="1">
-                    <a id="search-clear" class="search-clear none" onclick="clearSearch(this)"><i class="fa fa-times-circle" aria-hidden="true"></i><span class="sr-only">Clear search</span></a>
-                </div>
-                <div id="stockList" class="stock-list">
-                    <ul class="stock-ul">
-                    </ul>
-                </div>
-                <div class="col-xs-5 col-lg-3 refresh-field">
-                    <label class="auto-refresh">
-                        <span>只看自选股</span>
-                        <input type="checkbox" name="self">
-                        <span class="box"></span>
-                    </label>
+    <!-- ******ABOUTUS****** --> 
+    <section class="about-section">
+        <div class="container">
+            <div class="about-content push-xs-0 push-lg-6 col-xs-12 col-lg-6">
+                <h2 class="about-title">关于我们</h2>
+                <div>
+                    <p>
+                Smartxt.cn由东方创新制作及发布，感谢您的关注！
+                </p>
+                <p>
+                金融工程和量化的研究源于金融、数学、统计和计算机等学科的交叉融合，是近20年来发展得最快的金融领域之一。但是目前绝大多数研究都专注于数值型信息，对于文本型信息却几乎处于空白。诚然，数值型信息是计算机处理的强项，但文本型信息却是人工智能的必由之路。
+                </p>
+                <p>
+                金融工程和量化的研究源于金融、数学、统计和计算机等学科的交叉融合，是近20年来发展得最快的金融领域之一。但是目前绝大多数研究都专注于数值型信息，对于文本型信息却几乎处于空白。诚然，数值型信息是计算机处理的强项，但文本型信息却是人工智能的必由之路。 
+                </p>
+                <p>
+                我们自2009年开始涉及文本研究，是目前国内投研群体中最早的金融文本专业研究者。我们将这个创新性的系统命名为Smartxt.cn（“智能中文”），在金融领域的人工智能方向贡献力量。
+                </p>
+                <p>
+                近年间，人工智能正在加速进入我们的生活。许多原来幻想中的东西，现在已经实现量产。我们必须面对的一个现实是，如果人工智能是下一个足以改变人类生存生活方式的革命的话，实体产业已经远远走在了前面。如何跟上时代的脚步，更多更深入地运用科技的力量，进一步提高金融投研的生产力，这个问题应当引起全行业的重视。
+                </p>
+                因为，金融市场是面向未来的市场，金融研究是面向未来的研究，对于自身的未来，我们本应看得更远一些。
+                </p>
                 </div>
             </div>
-            <div class="row">
-                <form class="form-research">
-                    <!-- period -->
-                    <div class="form-group row">
-                        <label for="btnPeriod" class="col-xs-4 col-lg-2 col-form-label form-label"><i class="fa fa-clock-o" aria-hidden="true"></i>&nbsp;&nbsp;调研时间</label>
-                        <div id="btnPeriod" class="col-xs-8 col-lg-10">
-                            <button id="p0" type="button" class="btn btn-valid" onclick="onPeriod(this)">最近10天</button>
-                            <button id="p1" type="button" class="btn btn-invalid" onclick="onPeriod(this)">最近20天</button>
-                            <button id="p2" type="button" class="btn btn-invalid" onclick="onPeriod(this)">最近1个月</button>
-                        </div>
-                    </div>
-                    <!-- source -->
-                    <div class="form-group row">
-                        <label for="btnSource" class="col-xs-4 col-lg-2 col-form-label form-label"><i class="fa fa-users" aria-hidden="true"></i>&nbsp;&nbsp;调研人群</label>
-                        <div id="btnSource" class="col-xs-8 col-lg-10">
-                            <button id="s0" type="button" class="btn btn-invalid" onclick="onSource(this)">全体</button>
-                            <button id="s1" type="button" class="btn btn-valid" onclick="onSource(this)">买方</button>
-                            <button id="s2" type="button" class="btn btn-invalid" onclick="onSource(this)">卖方</button>
-                        </div>
-                    </div>
-                    <!-- theme -->
-                    <div class="form-group row">
-                        <label for="btnTheme" class="col-xs-4 col-lg-2 col-form-label form-label"><i class="fa fa-file-text-o" aria-hidden="true"></i>&nbsp;&nbsp;调研主题</label>
-                        <div id="btnTheme" class="col-xs-8 col-lg-10 btnTheme" onclick="onTheme(this,event)"></div>
-                    </div>
-                    <!-- map -->
-                    <div class="form-group row">
-                    <label for="searchMap" class="col-xs-4 col-lg-2 col-form-label form-label"><i class="fa fa-map-o" aria-hidden="true"></i>&nbsp;&nbsp;调研地图</label>
-                    </div>
-                    <div id="searchMap" class="col-xs-12 col-lg-12 searchmap-lg searchmap-xs"></div>
-                </form>
-            </div>
-        </div> 
-    </section>     
-
-    <!-- ******RESULTS****** -->
-    <section id="research-list" class="research-list">
-        <div id="result-list" class="container">
         </div>
-    </section>  
+    </section>
+     
+    <!-- ******ABOUTUS****** --> 
+    <section class="disclaimer">
+        <div class="container">
+            <div class="col-xs-12 col-lg-5">
+                <h2 class="dis-title">版权声明</h2>
+                <div>
+                <p>
+                    本网站主要以网页分发，版权归东方创新所有。未经东方创新事先书面授权，任何机构或个人不得以任何形式复制、转发或公开传播本网站，不得将本网站作为诉讼、仲裁、传媒所引用之证明或依据，不得用于营利或用于未经允许的其它用途。如需引用、刊发或转载本网站，需注明出处为
+                    <strong>“智能中文 - www.smartxt.cn”</strong>，且不得对本网站进行任何有悖原意的引用、删节和修改。
+                </p>
+                <p>
+                    智能中文系统采集互联网公开文本进行深度学习，如果您发现您的网站被智能中文采集，并且不希望您的网站被智能中文采集，请联系我们。
+                </p>
+                </div>
+            </div>
+            <div class="col-xs-12 col-lg-5 push-xs-0 push-lg-2">
+                <h2 class="dis-title">联系方式</h2>
+                <div>
+                <p>
+                    邮箱：<strong>webmaster@txtwin.com</strong>
+                </p>
+                <p>
+                    地址：上海市中山南路318号东方国际金融广场
+                </p>
+                <p>
+                    <strong>因涉及商业机密，来访未经预约恕不接待，敬请谅解。</strong>
+                </p>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- ******FOOTER****** --> 
     <footer class="footer">
@@ -155,27 +149,8 @@
             </div>
         </div>       
     </footer><!--//footer-->
-
-    <!-- loading animation -->
-    <div class="focus-loading">
-        <div class="loading-container">
-          <div class="stick"></div>
-          <div class="stick"></div>
-          <div class="stick"></div>
-          <div class="stick"></div>
-          <div class="stick"></div>
-          <div class="stick"></div>
-          
-          <h1>Loading...</h1>
-          
-        </div>
-    </div>
  
     <!-- Javascript -->   
-    <!-- get data from nodejs -->
-    <script>
-        window.user = '{{user}}';
-    </script>
     <!-- jquery -->
     <script type="text/javascript" src="/lib/jquery/js/jquery.min.js"></script>
     <script type="text/javascript" src="/lib/jquery/plugins/jquery.placeholder.min.js"></script>
@@ -188,13 +163,11 @@
     <!-- i18n used in future -->
     <!-- <script type="text/javascript" src="/lib/i18n/i18n.min.js"></script> -->
     <!-- echarts -->
-    <script type="text/javascript" src="/lib/echarts/echarts.js"></script>
-    <script type="text/javascript" src="/lib/echarts/macarons.js"></script>
-    <script type="text/javascript" src="/lib/echarts/china.js"></script>
+<!--     <script type="text/javascript" src="/lib/echarts/echarts.js"></script>
+    <script type="text/javascript" src="/lib/echarts/macarons.js"></script> -->
     <!-- custom -->
-    <script type="text/javascript" src="/src/common.js"></script>
-    <script type="text/javascript" src="/src/research.js"></script>
-            
+    <!-- <script type="text/javascript" src="/src/common.js"></script> -->
+    <script type="text/javascript" src="/src/common.js"></script>         
 </body>
 </html> 
 

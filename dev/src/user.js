@@ -34,9 +34,10 @@ $(document).ready(function() {
         delete window.user;
         //get user profile
 	    $.ajax({
-	    	url: URL_PROFILE + 'userId=' + loginfo.username,
+	    	url: encodeURI(URL_PROFILE + 'userId=' + loginfo.username),
 	        method: 'GET',
 	        dataType: 'json',
+	        cache: false,
 	    	success: (data) => {
 	    		var d = JSON.parse(data);
 	    		d = JSON.parse(d);
@@ -49,9 +50,10 @@ $(document).ready(function() {
 	    });
 	    //get self-selected stocks
 	    $.ajax({
-	    	url: URL_STOCKS + 'userId=' + loginfo.username,
+	    	url: encodeURI(URL_STOCKS + 'userId=' + loginfo.username),
 	        method: 'GET',
 	        dataType: 'json',
+	        cache: false,
 	    	success: (data) => {
 	    		var d = JSON.parse(data);
 	    		d = JSON.parse(d);
@@ -66,9 +68,10 @@ $(document).ready(function() {
 	    });
 	    //get fresh words
 	    $.ajax({
-	    	url: URL_FRESHWORD + 'userId=' + loginfo.username,
+	    	url: encodeURI(URL_FRESHWORD + 'userId=' + loginfo.username),
 	        method: 'GET',
 	        dataType: 'json',
+	        cache: false,
 	    	success: (data) => {
 	    		var d = JSON.parse(data);
 	    		d = JSON.parse(d);
@@ -83,9 +86,10 @@ $(document).ready(function() {
 	    });
 	    //get concept 
 	    $.ajax({
-	    	url: URL_CONCEPT + 'userId=' + loginfo.username,
+	    	url: encodeURI(URL_CONCEPT + 'userId=' + loginfo.username),
 	        method: 'GET',
 	        dataType: 'json',
+	        cache: false,
 	    	success: (data) => {
 	    		var d = JSON.parse(data);
 	    		d = JSON.parse(d);
@@ -99,9 +103,10 @@ $(document).ready(function() {
 	    });
 	    //get topic
 	    $.ajax({
-	    	url: URL_TOPIC + 'userId=' + loginfo.username,
+	    	url: encodeURI(URL_TOPIC + 'userId=' + loginfo.username),
 	        method: 'GET',
 	        dataType: 'json',
+	        cache: false,
 	    	success: (data) => {
 	    		var d = JSON.parse(data);
 	    		d = JSON.parse(d);
@@ -654,7 +659,7 @@ function onLoadTheme(that) {
 	// });
 	var themeUrl = encodeURIComponent(escape(themes));
 	var sourceUrl = encodeURIComponent(escape(sources));
-	var href = '/explore/theme?themes='+themeUrl+'&sources='+sourceUrl;
+	var href = '/theme?themes='+themeUrl+'&sources='+sourceUrl;
 	window.open(href, '_blank');
 }
 

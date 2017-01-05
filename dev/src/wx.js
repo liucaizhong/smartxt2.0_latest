@@ -12,15 +12,23 @@ var MAX_ABS = 500;
 
 $(document).ready(() => {
 	$.ajax({
-		url: URL_AFFLIST,
+		url: encodeURI(URL_AFFLIST),
 		type: 'GET',
 		async: true,
-		dataType: 'json',
+		cache: false,
 		success: (data) => {
 		    var d = JSON.parse(data);
 		    d = JSON.parse(d);
 
 		    if(d && d.length) {
+		    	d.sort(function(a, b) {
+		    		return a.localeCompare(b);
+		    	});
+		    	var i = d.indexOf('东方证券');
+		    	if(i != -1) {
+		    		d.splice(i,1);
+		    		d.unshift('东方证券');
+		    	}
 		    	d.forEach(function(cur) {
 		    		if(cur.localeCompare('其他')) {
 			    		var elem = $('<label class="label-category" style="margin-right: 5px;"></label>');
@@ -168,10 +176,10 @@ function _renderMoreNews(f) {
 		loadUrl = loadUrl.substr(0, loadUrl.length-1);
 	}
 	$.ajax({
-		url: loadUrl,
+		url: encodeURI(loadUrl),
 		type: 'GET',
 		async: true,
-		dataType: 'json',
+		cache: false,
 		success: (data) => {
 		    var d = JSON.parse(data);
 		    d = JSON.parse(d);

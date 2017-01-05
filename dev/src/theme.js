@@ -38,28 +38,6 @@ var URL_UNCOLLECT = '/crosspost?id=14';
 var URL_ALLCONCEPTS = '/cross?id=23';
 
 $(document).ready(() => {
-    $.ajax({
-        url: URL_ALLCONCEPTS,
-        type: 'GET',
-        async: false,
-        dataType: 'json',
-        success: (data) => {
-            var d = JSON.parse(data);
-            d = JSON.parse(d);
-
-            if(d && d.length) {
-                var idx = Math.floor(Math.random() * (d.length>10?10:d.length)); 
-                theme[0] = d[idx];
-                // $('input#theme-input').val(d[idx]);
-                _renderDatalist(d);
-            } else {
-                //show message
-            }
-        },
-        error: (err) => {
-            console.log(err);
-        }
-    });
     //get user
     if(window.user) {
         loginfo = window.user.replace(/&quot;/g,'"');
@@ -81,7 +59,7 @@ $(document).ready(() => {
         var keycode = e.keyCode;
         if(keycode == 13) {
             e.preventDefault();
-            onAddFreshWord();
+            onSearchWord();
         }
     });
     //datepicker initialization
@@ -97,8 +75,23 @@ $(document).ready(() => {
         // histogram.forEach(function(cur) {
         //     cur.resize();
         // })
+        
+        var w = $(window).width();
+        if(w < 1520 && w > 795) {
+            $('.suspending-toolbar').css({
+                'right': '8%'
+            });
+        }else if(w < 795) {
+            $('.suspending-toolbar').css({
+                'right': '5%'
+            });
+        }else {
+            $('.suspending-toolbar').css({
+                'right': '15%'
+            });
+        }
     });
-    // $(window).resize();
+    $(window).resize();
 
     //transfer data to json object
     if(window.concept) {
@@ -106,9 +99,10 @@ $(document).ready(() => {
         delete window['concept'];
 
         jump = true;
+
         // $('input#theme-input').val(concept);
         theme[0] = concept;
-        _setCondition(theme);
+        _setCondition(method,theme);
 
         // var heatUrl = HEATURL + 'concept=' + concept + '&src=*&response=application/json';
         // var date = new Date();
@@ -117,30 +111,73 @@ $(document).ready(() => {
 
         _renderCharts();
     }
+    if(window.word) {
+        var word = unescape(decodeURIComponent(window.word));
+        delete window['word'];
+
+        jump = true;
+        theme[0] = word;
+        _setCondition(method,theme);
+        _renderCharts();
+    }
     if(window.themes && window.sources) {
-        theme = unescape(decodeURIComponent(window.themes)).split(',');
+
+        jump = true;
+
         source = [];
         var jumpSource = unescape(decodeURIComponent(window.sources)).split(';');
         jumpSource.forEach(function(cur) {
             source.push(sourceName.indexOf(cur));
         });
 
+        var themeString = unescape(decodeURIComponent(window.themes));
+        if(themeString.indexOf(';') != -1) {
+            theme = themeString.split(';');
+            method = 2;
+        }else {
+            theme = themeString.split(',');
+            if(source.length > 1) {
+                method = 1;
+            }else {
+                method = 0;
+            }
+        }
+
         delete window['themes'];
         delete window['sources'];
 
-        jump = true;
-        if(source.length > 1) {
-            method = 1;
-        }
-        _setCondition(theme,source);
+        _setCondition(method,theme,source);
         _renderCharts();
     }
 
-    if(!jump) {
-        // jump = true;
-        _setCondition(theme);
-        _renderCharts();
-    }
+        $.ajax({
+            url: URL_ALLCONCEPTS,
+            type: 'GET',
+            async: true,
+            cache: false,
+            success: (data) => {
+                var d = JSON.parse(data);
+                d = JSON.parse(d);
+
+                if(d && d.length) {
+                    // $('input#theme-input').val(d[idx]);
+                    _renderDatalist(d);
+
+                    if(!jump) {
+                        var idx = Math.floor(Math.random() * (d.length>10?10:d.length)); 
+                        theme[0] = d[idx];
+                        // jump = true;
+                        _setCondition(method,theme);
+                        _renderCharts();
+                    }
+                } else {
+                    //show message
+                }
+            },
+            error: (err) => {
+                console.log(err);
+            }
+        });
 
     //#form-theme submit handler
     $('#form-theme').submit(function(e) {
@@ -168,6 +205,7 @@ $(document).ready(() => {
 
         _renderCharts();
     });   
+
 });
 
 function _renderDatalist(d) {
@@ -208,10 +246,10 @@ function _renderCharts(heatUrl, stockUrl) {
 
     //ajax get request
     $.ajax({
-        url: heatUrl,
+        url: encodeURI(heatUrl),
         type: 'GET',
         async: true,
-        dataType: 'json',
+        cache: false,
         success: (data) => {
             var d = JSON.parse(data);
             d = JSON.parse(d);
@@ -229,10 +267,10 @@ function _renderCharts(heatUrl, stockUrl) {
     });
 
     $.ajax({
-        url: stockUrl,
+        url: encodeURI(stockUrl),
         type: 'GET',
         async: true,
-        dataType: 'json',
+        cache: false,
         success: (data) => {
             var d = JSON.parse(data);
             d = JSON.parse(d);
@@ -252,19 +290,22 @@ function _renderCharts(heatUrl, stockUrl) {
 }
 
 function _genUrl(url, flag) {
-	var url = url;
+	var url = url + 'userId=';
     var urlTheme = 'concepts=';
     var urlSource = 'sources=';
     var urlDate = 'date=';
     var urlPeriod = 'period=';
 
-    url += 'userId=' + loginfo.username;
+    if(loginfo) {
+        url += loginfo.username;
+    }
+
     //add theme to url
-    if(method == 0) {
+    if(method != 2) {
         theme.forEach(function(cur) {
         	urlTheme += cur.trim() + ',';
         });
-    }else if(method == 2) {
+    }else {
         theme.forEach(function(cur) {
             urlTheme += cur.trim() + ';';
         });
@@ -274,7 +315,7 @@ function _genUrl(url, flag) {
     // urlTheme = encodeURIComponent(escape(urlTheme));
     //add source to url
     source.forEach(function(cur) {
-    	urlSource += cur +';';
+    	urlSource += cur +',';
     });
 	//remove comma at the end of str
 	urlSource = urlSource.substr(0, urlSource.length-1);
@@ -293,17 +334,23 @@ function _genUrl(url, flag) {
 }
 
 function onTriggerSlide(that) {
-    var $trigger = $(that);
-    var expand = $trigger.find('i.fa-angle-double-down')[0];
-    var collapse = $trigger.find('i.fa-angle-double-up')[0];
-    if (expand) {
-        $(expand).removeClass('fa-angle-double-down').addClass('fa-angle-double-up');
+    if(!loginfo) {
+        $.StandardPost('/login/theme', {
+            link: '/theme',
+            keyword: theme[0]
+        });
+    }else {
+        var $trigger = $(that);
+        var expand = $trigger.find('i.fa-angle-double-down')[0];
+        var collapse = $trigger.find('i.fa-angle-double-up')[0];
+        if (expand) {
+            $(expand).removeClass('fa-angle-double-down').addClass('fa-angle-double-up');
+        }
+        if (collapse) {
+            $(collapse).removeClass('fa-angle-double-up').addClass('fa-angle-double-down');
+        }
+        $('.theme-conditions .container').slideToggle(1000);
     }
-    if (collapse) {
-        $(collapse).removeClass('fa-angle-double-up').addClass('fa-angle-double-down');
-    }
-    $('.theme-conditions .container').slideToggle(1000);
-
     // if(jump) {
     //     _setDefault();
     // }
@@ -325,29 +372,39 @@ function onMethod(that) {
 }
 
 function _setDefault() {
-    if(jump) {
-        jump = !jump;
-        method = 0;
-    }
+    // if(jump) {
+    //     jump = !jump;
+    //     method = 0;
+    // }
     //set source
-    var btnChilds = $('div#btnSource').find('button[class*="btn-valid"]');
-    Array.prototype.forEach.call(btnChilds, function(cur) {
-        $(cur).removeClass('btn-valid').addClass('btn-invalid');
-    });
-    source = [];
-    //modify the display of source
-    $('button#s0').addClass('btn-valid').removeClass('btn-invalid');
-    source[0] = '0';
-    console.log('source:', source);
+    // var btnChilds = $('div#btnSource').find('button[class*="btn-valid"]');
+    // Array.prototype.forEach.call(btnChilds, function(cur) {
+    //     $(cur).removeClass('btn-valid').addClass('btn-invalid');
+    // });
+    // source = [];
+    // //modify the display of source
+    // $('button#s0').addClass('btn-valid').removeClass('btn-invalid');
+    // source[0] = '0';
+    // console.log('source:', source);
     //set theme
     if(method == 2) {
+        $('#btnAddTheme').removeClass('fa-plus-circle').addClass('fa-link');
     	$('#theme-input').attr('placeholder','支持主题交叉搜索(半角分号隔开),例如“钢铁;煤炭”');
     } else {
+        $('#btnAddTheme').removeClass('fa-link').addClass('fa-plus-circle');
     	$('#theme-input').attr('placeholder','输入关键字用于描述要查询的主题信息,例如 “钢铁”');
+
+        if(method == 1) {
+            theme = theme.slice(0,1);
+            $('#theme-tags').find('div:not([data-txt="' + theme[0].trim() + '"])').remove();
+        }else {
+            source = source.slice(0,1);
+            $('#s' + source[0]).siblings('[class*="btn-valid"]').removeClass('btn-valid').addClass('btn-invalid');
+        }
     }
-    var tagChilds = $('div#theme-tags').empty();
-    theme = [];
-    console.log('theme', theme);
+    // var tagChilds = $('div#theme-tags').empty();
+    // theme = [];
+    // console.log('theme', theme);
 }
 
 function onPeriod(that) {
@@ -404,7 +461,7 @@ function addTheme(that) {
     var $input = $('input#theme-input');
     var keyword = $input.val();
 
-    if (method != 0 && theme.length >= 1) {
+    if (method == 1 && theme.length >= 1) {
         $input.val('');
         _showErr('只能输入1个关键字');
         return;
@@ -412,8 +469,20 @@ function addTheme(that) {
 
     if (keyword) {
         $input.val('');
+        theme.push(keyword);
+
         var themeTag = $('<div class="theme-tag alert alert-success col-xs-3 col-lg-2"></div>')[0];
         var $themeTag = $(themeTag);
+        $themeTag.attr('data-txt', keyword);
+        $themeTag.hover(function(e) {
+            $(this).find('.submit-word').show();
+        }, function(e) {
+            $(this).find('.submit-word').hide();
+        });
+        //add btn for submitting new word
+        var subNewWord = $('<div class="submit-word" onclick="onAddFreshWord(this)">新词提交</div>')[0];
+        $(subNewWord).append($('<i class="fa fa-caret-down" aria-hidden="true"></i>'));
+        $themeTag.append(subNewWord);
         //theme text
         var themeTxt = $('<span class="theme-txt"></span>')[0];
         $(themeTxt).text(keyword);
@@ -424,7 +493,6 @@ function addTheme(that) {
     	//append to theme-tags
     	$('#theme-tags').append(themeTag);
 
-    	theme.push(keyword);
     }
     console.log('theme', theme);
 }
@@ -457,23 +525,23 @@ function _renderLineChart(data) {
     var flag = data[0].flag;
     if(flag == -1) {
         // lineChart.hideLoading();
-        $('#fresh-word').val('');
-        $('#btnFresh').attr('disabled', true);
+        // $('#fresh-word').val('');
+        // $('#btnFresh').attr('disabled', true);
         return false;
     }else if(flag == 0) {
-        var $btnStar = $('.btn-theme-collect>i.btn-star');
-        if($btnStar.hasClass('collect')) {
-            $btnStar.removeClass('collect');
+        var $btnStar = $('i[class*=icon-collect]');
+        if($btnStar.hasClass('icon-collected')) {
+            $btnStar.removeClass('icon-collected');
         }
-        $('#fresh-word').val(theme[0]);
-        $('#btnFresh').attr('disabled', false);
+        // $('#fresh-word').val(theme[0]);
+        // $('#btnFresh').attr('disabled', false);
     }else if(flag == 1) {
-        var $btnStar = $('.btn-theme-collect>i.btn-star');
-        if(!$btnStar.hasClass('collect')) {
-            $btnStar.addClass('collect');
+        var $btnStar = $('i[class*=icon-collect]');
+        if(!$btnStar.hasClass('icon-collected')) {
+            $btnStar.addClass('icon-collected');
         }
-        $('#fresh-word').val(theme[0]);
-        $('#btnFresh').attr('disabled', false);
+        // $('#fresh-word').val(theme[0]);
+        // $('#btnFresh').attr('disabled', false);
     }
     var entry = data.splice(1);
 
@@ -844,6 +912,7 @@ function _renderLeftHistogram(category,data,index,color,id) {
                 {
                     name: index,
                     type: 'bar',
+                    barMaxWidth: '30px',
                     label: {
                         normal: {
                             show: false,
@@ -930,6 +999,7 @@ function _renderRightHistogram(category,data,index,color,id) {
                 {
                     name: index,
                     type: 'bar',
+                    barMaxWidth: '30px',
                     label: {
                         normal: {
                             show: false,
@@ -956,11 +1026,28 @@ function onEnterTheme(event) {
     }
 }
 
+function onHelp(that) {
+    if(!loginfo) {
+        $.StandardPost('/login/theme', {
+            link: '/theme',
+            keyword: theme[0]
+        });
+    }
+}
+
 function onStar(that) {
-    var $btn = $(that);
+    if(!loginfo) {
+        $.StandardPost('/login/theme', {
+            link: '/theme',
+            keyword: theme[0]
+        });
+        return;
+    }
+
+    var $btn = $(that).find('i');
     // $btn.toggleClass('collect');
 
-    if(!$btn.hasClass('collect')) {
+    if(!$btn.hasClass('icon-collected')) {
         var path = URL_COLLECT;
         var msg = '已收藏';
         var data = {
@@ -991,8 +1078,8 @@ function onStar(that) {
             d = JSON.parse(d);
 
             if(d.flag || d[0].status) {
-                $btn.toggleClass('collect');
-                _showFadeMsg(msg);
+                $btn.toggleClass('icon-collected');
+                _showFadeMsg(msg, $('.suspending-toolbar').offset().left-100, $('.suspending-toolbar').offset().top+100);
             }else {
                 _showFadeMsg(d.msg);
             }
@@ -1015,13 +1102,19 @@ function onsourceNav(that) {
     _renderCharts();
 }
 
-function _showFadeMsg(text) {
+function _showFadeMsg(text,x ,y) {
 
-    var l = $('.theme-inputbar').offset().left - 50;
-    var t = $('.theme-inputbar').offset().top + 50;
+    // var l = $('.theme-inputbar').offset().left - 50;
+    // var t = $('.theme-inputbar').offset().top + 50;
     $('#fade-msg').text(text);
+    if(!x) {
+        x = '35%';
+    }
+    if(!y) {
+        y = '45%';
+    }
 
-    $('#fade-alert').css({'left':l,'top':t}).fadeIn(function() {
+    $('#fade-alert').css({'left': x,'top': y}).fadeIn(function() {
         setTimeout(function() {
             $('#fade-alert').fadeOut();
         }, 1000);
@@ -1030,8 +1123,7 @@ function _showFadeMsg(text) {
 
 function onAddFreshWord(that) {
     //fresh-word
-    var $freshInput = $('#fresh-word');
-    var value = $freshInput.val();
+    var value = $(that).parent().find('.theme-txt').text();
     //ajax post
     $.ajax({
         url: URL_ADDFRESHWORD,
@@ -1047,8 +1139,7 @@ function onAddFreshWord(that) {
             d = JSON.parse(d);
 
             if(d.flag) {
-                _showFadeMsg('新词提交成功');
-                $freshInput.val('');
+                _showFadeMsg('新词：'+value+' 提交成功');
             }else {
                 _showFadeMsg(d.msg);
             }
@@ -1060,11 +1151,27 @@ function onAddFreshWord(that) {
 
 }
 
-function _setCondition(t, s) {
+function _setCondition(m, t, s) {
+    if(m) {
+        $('#btnMethod').find('button[class*="btn-valid"]').removeClass('btn-valid').addClass('btn-invalid');
+        $('#m'+m).removeClass('btn-invalid').addClass('btn-valid');
+    }
+
     if(t && t.length != 0) {
         t.forEach(function(cur) {
             var themeTag = $('<div class="theme-tag alert alert-success col-xs-3 col-lg-2"></div>')[0];
             var $themeTag = $(themeTag);
+            $themeTag.attr('data-txt', cur);
+            $themeTag.hover(function(e) {
+                $(this).find('.submit-word').show();
+            }, function(e) {
+                $(this).find('.submit-word').hide();
+            });
+            //add submit new word
+            var subNewWord = $('<div class="submit-word" onclick="onAddFreshWord(this)">新词提交</div>')[0];
+            $(subNewWord).append($('<i class="fa fa-caret-down" aria-hidden="true"></i>'));
+            // var subNewWordDiv = $('<div></div>').append(subNewWord);
+            $themeTag.append(subNewWord);
             //theme text
             var themeTxt = $('<span class="theme-txt"></span>')[0];
             $(themeTxt).text(cur);
@@ -1085,4 +1192,14 @@ function _setCondition(t, s) {
             $('#s'+cur).removeClass('btn-invalid').addClass('btn-valid');
         });
     }
+}
+
+function onSearchWord() {
+    $('#theme-tags').empty();
+    theme = [$('#fresh-word').val()];
+    // console.log('theme',theme);
+    $('#fresh-word').val('');
+    $('#btnFresh').attr('disabled', true);
+    _setCondition(method,theme);
+    _renderCharts();
 }

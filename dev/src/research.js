@@ -43,9 +43,9 @@ $(document).ready(() => {
         _hideStockList();
         if($(this)[0].checked) {
             $.ajax({
-                url: loadUrl,
+                url: encodeURI(loadUrl),
                 method: 'GET',
-                dataType: 'json',
+                cache: false,
                 success: (data) => {
                     var d = JSON.parse(data);
                     d = JSON.parse(d);
@@ -117,9 +117,9 @@ function customOpStock(li) {
     var loadUrl = URL_SURVEY + 'userId=' + loginfo.username + '&period=10&keyword=' + code + '&selfStocksOnly=0'; 
 
     $.ajax({
-        url: loadUrl,
+        url: encodeURI(loadUrl),
         method: 'GET',
-        dataType: 'json',
+        cache: false,
         success: (data) => {
             var d = JSON.parse(data);
             d = JSON.parse(d);
@@ -146,9 +146,9 @@ function _renderData(p) {
         _renderResults(resBuy[p]);
     }else {
         $.ajax({
-            url: URL_SURVEY_FILE[p],
+            url: encodeURI(URL_SURVEY_FILE[p]),
             method: 'GET',
-            dataType: 'json',
+            cache: false,
             success: (data) => {
                 var d = JSON.parse(data);
                 d = JSON.parse(d);

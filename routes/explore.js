@@ -3,43 +3,50 @@ var router = express.Router();
 // var http = require('http');
 var url = require('url');
 
-/* GET explore pages. */
-// theme search
-router.get('/theme', (req, res, next) => {
-	//http module invoke java api to get JSON
-	//http.get to do....
-	var query = url.parse(req.url).query;
+// /* GET explore pages. */
+// // theme search
+// router.get('/theme', (req, res, next) => {
+// 	//http module invoke java api to get JSON
+// 	//http.get to do....
+// 	var query = url.parse(req.url).query;
 
-	if(query) {
-		var keywords = query.split('&');
-		var themes = keywords[0].split('=')[1];
-		var sources = keywords[1].split('=')[1];
-	}
-	var concept = req.flash('word')[0];
-	console.log('concept', concept);
+// 	if(query) {
+// 		var keywords = query.split('&');
+// 		var themes = keywords[0].split('=')[1];
+// 		var sources = keywords[1].split('=')[1];
+// 	}
+// 	var concept = req.flash('word')[0];
+// 	console.log('concept', concept);
 	
-	res.render('theme', {
-		concept: concept,
-		themes: themes,
-		sources: sources,
-		user: JSON.stringify(req.user)
-	});
-});
+// 	if(!req.user) {
+// 		res.render('theme', {
+// 			concept: concept
+// 		});
+// 	}else {
+// 		res.render('themeLogined', {
+// 			concept: concept,
+// 			themes: themes,
+// 			sources: sources,
+// 			user: JSON.stringify(req.user)
+// 		});
+// 	}
 
-//handler for post request
-router.post('/theme', (req, res, next) => {
+// });
 
-	var concept = req.body.keyword;
-	var themes = req.body.themes;
-	var sources = req.body.sources;
+// //handler for post request
+// router.post('/theme', (req, res, next) => {
 
-	res.render('theme', {
-		concept: concept,
-		themes: themes,
-		sources: sources,
-		user: JSON.stringify(req.user)
-	});
-});
+// 	var concept = req.body.keyword;
+// 	var themes = req.body.themes;
+// 	var sources = req.body.sources;
+
+// 	res.render('theme', {
+// 		concept: concept,
+// 		themes: themes,
+// 		sources: sources,
+// 		user: JSON.stringify(req.user)
+// 	});
+// });
 
 // focus insights
 router.get('/focus', (req, res, next) => {

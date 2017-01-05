@@ -103,16 +103,18 @@ $(document).ready(() => {
     //stock list
     //ajax get stock list
     $.ajax({
-        url: URL_STOCKLIST,
+        url: encodeURI(URL_STOCKLIST),
         type: 'GET',
         async: true,
-        dataType: 'json',
+        cache: false,
+        // dataType: 'json',
         success: (data) => {
             var d = JSON.parse(data);
             d = JSON.parse(d);
             d.forEach(function(cur) {
                 stocks.push(cur.code+cur.name);
             });
+            _renderIndexStocklist(d);
         },
         error: (err) => {
             console.log(err);
@@ -376,4 +378,13 @@ function expandNavbar(e, f) {
         $mainNav.addClass('my-index-navbar');
     else 
         $mainNav.addClass('my-navbar');
+}
+
+function _renderIndexStocklist(d) {
+    var all = $('#allConcepts');
+    d.forEach(function(cur) {
+        var option = document.createElement('OPTION');
+        $(option).val(cur.name).text('股票代码：'+cur.code);
+        all.append(option);
+    });
 }

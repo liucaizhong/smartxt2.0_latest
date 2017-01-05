@@ -82,4 +82,16 @@ router.post('/',
   })(req, res, next);
 });
 
+router.post('/theme', (req, res, next) => { 
+  var link = req.body.link;
+  var word = req.body.keyword;
+  console.log('login in theme page');
+  console.log('link', link);
+  console.log('word', word);
+
+  res.render('login', {
+    link: JSON.stringify(link),
+    word: JSON.stringify(word)
+  });
+});
 module.exports = router;

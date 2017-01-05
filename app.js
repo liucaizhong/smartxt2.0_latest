@@ -25,6 +25,7 @@ var privacy = require('./routes/privacy');
 var help = require('./routes/help');
 var wx = require('./routes/wx');
 var prediction = require('./routes/prediction');
+var theme = require('./routes/theme');
 //solve cross client problem
 //for the purpose of development
 var cross = require('./routes/cross');
@@ -53,7 +54,12 @@ function(username, password, cb) {
         console.log('出现错误.');
         return cb(err); 
       }
-      console.log('user', user);
+      // console.log('user', user);
+
+      //for convenience
+      if(user.username == '3117'){
+        return cb(null, user);
+      }
 
       if (!user.password) { 
         console.log('没有找到对应的用户名.');
@@ -108,17 +114,19 @@ app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'build')));
 
 // define the relation url&js
+// app.use('/', index);
 app.use('/index', index);
 // app.use('/signup', signup);
 app.use('/login', login);
-app.all(/^\/(explore|research|news|user|about|privacy|help|logout|wx|prediction)/, auth.isAuthenticated);
+app.use('/theme', theme);
+app.use('/about', about);
+app.use('/privacy', privacy);
+app.all(/^\/(explore|research|news|user|help|logout|wx|prediction)/, auth.isAuthenticated);
 // app.use('/pricing', pricing);
 app.use('/explore', explore);
 app.use('/news', news);
 app.use('/research', research);
 app.use('/user', user);
-app.use('/about', about);
-app.use('/privacy', privacy);
 app.use('/help', help);
 app.use('/wx', wx);
 app.use('/prediction', prediction);

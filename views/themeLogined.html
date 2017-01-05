@@ -63,16 +63,13 @@
 <!--                             <li id="loginTab" class="nav-item btn btn-primary nav-li">
                                 <a class="nav-link nav-me" href="/login">登录</a>
                             </li> -->
-                            <li class="nav-item index-li-logon" style="margin-top: 5px;margin-bottom: 5px;height: 50px;">
-                                <a class="nav-link" href="/login" style="padding-top: 12px !important;">登&nbsp;&nbsp;录</a>
-                            </li>
-<!--                             <li id="userTab" class="nav-item dropdown" data-hover="dropdown">
+                            <li id="userTab" class="nav-item dropdown" data-hover="dropdown">
                                 <a class="nav-link" data-toggle="dropdown" data-close-others="false" href="#" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user fa-2x" aria-hidden="true"></i></a>
                                 <div class="dropdown-menu dark">
                                     <a class="dropdown-item" href="/user">用户中心</a>
                                     <a class="dropdown-item" href="/logout">注销登录</a>
                                 </div>
-                            </li> -->
+                            </li>
 <!--                             <li class="nav-item btn btn-success">
                                 <a class="nav-link" href="/signup">注册</a>
                             </li> -->
@@ -243,7 +240,7 @@
             <i class="icon-collect"></i>
         </a>
 
-        <a title="帮助" onclick="onHelp(this)">
+        <a href="/help" title="帮助" target="_blank">
             <i class="icon-help"></i>
         </a>
     </div>
@@ -254,6 +251,7 @@
         window.concept = '{{concept}}';
         window.themes = '{{themes}}';
         window.sources = '{{sources}}';
+        window.word = '{{word}}';
         window.user = '{{user}}';
     </script>
     <!-- jquery -->

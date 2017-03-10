@@ -1,1 +1,350 @@
-"use strict";function onCategory(e){$("footer").hide(),$(".more-button").find("[class*=active]").removeClass("active"),e.stopPropagation();var n=e.target;if("LABEL"===n.tagName){var t=$(n);if(+t.attr("data-id"))if(t.hasClass("active")){t.removeClass("active");var a=t.attr("data-id"),s=activeCategory.indexOf(a);activeCategory.splice(s,1),activeCategory.length||(activeCategory=["0"],t.parent().find("[data-id=0]").addClass("active"))}else{var o=t.parent().find("[class*=active]").length,i=t.siblings().length-1;if(o==i)t.parent().find("[class*=active]").removeClass("active"),t.parent().find("[data-id=0]").addClass("active"),activeCategory=["0"];else{t.addClass("active"),t.parent().find("[data-id=0]").removeClass("active");var s=activeCategory.indexOf("0");s!=-1&&activeCategory.splice(s,1),activeCategory.push(t.attr("data-id"))}}else t.parent().find("[class*=active]").removeClass("active"),t.hasClass("active")||(t.addClass("active"),activeCategory.push(t.attr("data-id")),activeCategory=["0"]);_renderMoreNews()}}function _renderMoreNews(e){$("div.focus-loading").show(),e||(lastId=-1,$(".news-content>ol").empty());var n=URL_CHATS+"userId="+loginfo.username+"&lastId="+lastId;n+=keyword?"&keyword="+keyword:"&keyword=",n+=selfChoice?"&selfStocksOnly=1":"&selfStocksOnly=0","0"==activeCategory[0]?n+="&types=":(n+="&types=",activeCategory.forEach(function(e){n+="'"+categoryRange[+e]+"',"}),n=n.substr(0,n.length-1)),$.ajax({url:encodeURI(n),type:"GET",async:!0,cache:!1,success:function(n){var t=JSON.parse(n);t=JSON.parse(t),t&&t.length&&($("#error-msg").hide(),0!=t[0].flag?($(".more-button").find("[class*=active]").removeClass("active"),$("#error-msg strong").text(t[0].msg),$("#error-msg").show()):1==t.length?e?$("footer").show():$(".news-content>ol").html('<li style="font-size:2rem;">未找到相关消息</li>'):(t.slice(1,t.length).forEach(function(e){_renderNewsContent(e)}),keyword&&$(".news-content").highlight(keyword),$(".more-button span:nth-child(2)").hasClass("active")&&$(".more-button span:nth-child(2)").removeClass("active"),$(".more-button span:nth-child(1)").addClass("active")),$("div.focus-loading").hide())},error:function(e){console.log(e)}})}function _renderNewsContent(e){var n=$(".news-content>ol"),t=lastId!=-1,a=!1,s=e.pubTime.split(" ")[0].split("-"),o=s[1],i=s[2];if(t){var r=$("#"+lastId),d=r.parent(),l=+d.parent().find("header>.date em").text(),c=+d.parent().find("header>.date b").text();if(l!=o||c!=i)a=!0;else{var p=$('<li class="bottom-line">\n                            <div>\n                                <h2 class="title"></h2>\n                                <div>\n                                    <p>\n                                        <span class="short"></span>\n                                        <span class="long none"></span>\n                                        <a class="expand-btn none" href="" onclick="onExpandContent(this,event)">显示全部</a>\n                                    </p>\n                                </div>\n                                <div class="news-footer">\n                                    <span class="tag-date"></span>\n                                    <span>来源：</span>\n                                    <span id="tag-source" class="tag-type"></span>\n                                    <span id="label-stock">相关股票：</span>\n                                    <span id="tag-stock" class="tag-type"></span>\n                                    <button class="collapse-btn none" onclick="onCollapseContent(this)"><i class="fa fa-hand-o-up" aria-hidden="true" style="font-size: 16px;"></i>&nbsp;收起</button>\n                                </div>\n                            </div>\n                        </li>');$(p).attr("id",e.increaseId),$(p).find("h2").text(e.author),e.txt&&(p=_cutStr(e.txt,MAX_ABS,p)),$(p).find("span.tag-date").text(e.pubTime.split(".")[0]),$(p).find("span#tag-source").text(e.aff),e.code?$(p).find("span#tag-stock").text(e.code):($(p).find("span#label-stock").addClass("none"),$(p).find("span#tag-stock").addClass("none")),d.append(p)}}else a=!0;if(a){var p=$('<li class="sameday-news">\n                    <header>\n                        <div class="date">\n                            <span><em></em>月</span>\n                            <b></b>\n                        </div>\n                    </header>\n                    <ul>\n                        <li class="bottom-line">\n                            <div>\n                                <h2 class="title"></h2>\n                                <div>\n                                    <p>\n                                        <span class="short"></span>\n                                        <span class="long none"></span>\n                                        <a class="expand-btn none" href="" onclick="onExpandContent(this,event)">显示全部</a>\n                                    </p>\n                                </div>\n                                <div class="news-footer">\n                                    <span class="tag-date"></span>\n                                    <span>来源：</span>\n                                    <span id="tag-source" class="tag-type"></span>\n                                    <span id="label-stock">相关股票：</span>\n                                    <span id="tag-stock" class="tag-type"></span>\n                                    <button class="collapse-btn none" onclick="onCollapseContent(this)"><i class="fa fa-hand-o-up" aria-hidden="true" style="font-size: 16px;"></i>&nbsp;收起</button>\n                                </div>\n                            </div>\n                        </li>                   \n                    </ul>\n                </li>');$(p).find(".date em").text(o),$(p).find(".date b").text(i),$(p).find(".bottom-line").attr("id",e.increaseId),$(p).find("h2").text(e.author),e.txt&&(p=_cutStr(e.txt,MAX_ABS,p)),$(p).find("span.tag-date").text(e.pubTime.split(".")[0]),$(p).find("span#tag-source").text(e.aff),e.code?$(p).find("span#tag-stock").text(e.code):($(p).find("span#label-stock").addClass("none"),$(p).find("span#tag-stock").addClass("none")),n.append(p)}lastId=e.increaseId}function _getStrLength(e){for(var n=0,t=e.length,a=-1,s=0;s<t;s++)a=e.charCodeAt(s),n+=a>=0&&a<=128?1:2;return n}function _cutStr(e,n,t){var a=_getStrLength(e),s=0,o="";if(n>=a)return $(t).find("span.short").html(e),t;for(var i=0;i<a;i++){var r=e.charAt(i);if(s++,escape(r).length>4&&s++,o=o.concat(r),s>=n)return $(t).find("span.short").html(o+"......"),$(t).find("span.long").html(e),$(t).find(".expand-btn").removeClass("none"),t}}function delAlert(e){$(e).parent().fadeOut()}function onExpandContent(e,n){n.preventDefault();var t=$(e);t.parent().find(".short").hide(),t.parent().find(".long").show(),t.hide().parent().parent().parent().find(".collapse-btn").show()}function onCollapseContent(e){var n=$(e);n.parent().parent().find(".short").show(),n.parent().parent().find(".long").hide(),n.parent().parent().find(".expand-btn").show(),n.hide()}function clearSearch(e){$("#newsInput").val(""),$("footer").hide(),$(".more-button").find("[class*=active]").removeClass("active"),$(e).hide(),keyword="",_renderMoreNews()}var activeCategory=["0"],categoryRange=["*"],INTERVAL=18e5,loginfo,URL_CHATS="/cross?id=20&",URL_AFFLIST="/cross?id=22&",lastId=-1,keyword="",selfChoice=!1,MAX_ABS=500;$(document).ready(function(){if($.ajax({url:encodeURI(URL_AFFLIST),type:"GET",async:!0,cache:!1,success:function(e){var n=JSON.parse(e);if(n=JSON.parse(n),n&&n.length){n.sort(function(e,n){return e.localeCompare(n)});var t=n.indexOf("东方证券");t!=-1&&(n.splice(t,1),n.unshift("东方证券")),n.forEach(function(e){if(e.localeCompare("其他")){var n=$('<label class="label-category" style="margin-right: 5px;"></label>');$(n).attr("data-id",categoryRange.length+"").text(e),categoryRange.push(e),$("#sources").append(n)}})}},error:function(e){console.log(e)}}),window.user){loginfo=window.user.replace(/&quot;/g,'"'),loginfo=JSON.parse(loginfo),delete window.user,$("footer").hide(),_renderMoreNews();setInterval(_renderMoreNews,INTERVAL)}$(window).scroll(function(){$(window).scrollTop()+$(window).height()==$(document).height()&&($(".more-button span:nth-child(1)").removeClass("active"),$(".more-button span:nth-child(2)").addClass("active"),_renderMoreNews(!0))}),$("#newsInput").keydown(function(e){13==e.keyCode&&(e.preventDefault(),$("footer").hide(),$(".more-button").find("[class*=active]").removeClass("active"),_renderMoreNews())}),$("#newsInput").on("input propertychange",function(e){var n=$(this).val();n?($("#search-clear").show(),keyword=n):($("#search-clear").hide(),keyword="")}),$(".auto-refresh > input[name=self]").change(function(e){selfChoice=!selfChoice,$("footer").hide(),$(".more-button").find("[class*=active]").removeClass("active"),_renderMoreNews()})});
+'use strict';
+
+var activeCategory = ['0'];
+var categoryRange = ['*'];
+var INTERVAL = 30 * 60 * 1000;
+var loginfo;
+var URL_CHATS = '/cross?id=20&';
+var URL_AFFLIST = '/cross?id=22&';
+var lastId = -1;
+var keyword = '';
+var selfChoice = false;
+var MAX_ABS = 500;
+//<label class="label-category" data-id="1">安信证券</label>
+
+$(document).ready(function () {
+	$.ajax({
+		url: encodeURI(URL_AFFLIST),
+		type: 'GET',
+		async: true,
+		cache: false,
+		success: function success(data) {
+			var d = JSON.parse(data);
+
+			if (d && d.length) {
+				d.sort(function (a, b) {
+					return a.localeCompare(b);
+				});
+				var i = d.indexOf('东方证券');
+				if (i != -1) {
+					d.splice(i, 1);
+					d.unshift('东方证券');
+				}
+				d.forEach(function (cur) {
+					if (cur.localeCompare('其他')) {
+						var elem = $('<label class="label-category" style="margin-right: 5px;"></label>');
+						$(elem).attr('data-id', categoryRange.length + '').text(cur);
+						categoryRange.push(cur);
+						$('#sources').append(elem);
+					}
+				});
+			}
+		},
+		error: function error(err) {
+			console.log(err);
+		}
+	});
+
+	if (window.user) {
+		loginfo = window.user.replace(/&quot;/g, '"');
+		loginfo = JSON.parse(loginfo);
+		delete window.user;
+
+		//first loading
+		$('footer').hide();
+		_renderMoreNews();
+		var newsTimer = setInterval(_renderMoreNews, INTERVAL);
+	}
+	//loading more
+	$(window).scroll(function () {
+		if ($(window).scrollTop() + $(window).height() == $(document).height()) {
+			$('.more-button span:nth-child(1)').removeClass('active');
+			$('.more-button span:nth-child(2)').addClass('active');
+
+			//loading more
+			_renderMoreNews(true);
+		}
+	});
+
+	$('#newsInput').keydown(function (e) {
+		if (e.keyCode == 13) {
+			e.preventDefault();
+			$('footer').hide();
+			$('.more-button').find('[class*=active]').removeClass('active');
+			_renderMoreNews();
+		}
+	});
+
+	$('#newsInput').on('input propertychange', function (e) {
+		var value = $(this).val();
+		if (value) {
+			$('#search-clear').show();
+			keyword = value;
+		} else {
+			$('#search-clear').hide();
+			keyword = '';
+		}
+	});
+
+	$('.auto-refresh > input[name=self]').change(function (e) {
+		selfChoice = !selfChoice;
+		$('footer').hide();
+		$('.more-button').find('[class*=active]').removeClass('active');
+		_renderMoreNews();
+		// console.log('selfChoice',selfChoice);
+	});
+});
+
+function onCategory(event) {
+	$('footer').hide();
+	$('.more-button').find('[class*=active]').removeClass('active');
+	event.stopPropagation();
+
+	var target = event.target;
+	if (target.tagName === 'LABEL') {
+		var $target = $(target);
+
+		if (!+$target.attr('data-id')) {
+			$target.parent().find('[class*=active]').removeClass('active');
+			if (!$target.hasClass('active')) {
+				$target.addClass('active');
+				activeCategory.push($target.attr('data-id'));
+				activeCategory = ['0'];
+			}
+		} else {
+			if ($target.hasClass('active')) {
+				$target.removeClass('active');
+				var dataId = $target.attr('data-id');
+				var i = activeCategory.indexOf(dataId);
+				activeCategory.splice(i, 1);
+				if (!activeCategory.length) {
+					activeCategory = ['0'];
+					$target.parent().find('[data-id=0]').addClass('active');
+				}
+			} else {
+				var activeChild = $target.parent().find('[class*=active]').length;
+				var child = $target.siblings().length - 1;
+				if (activeChild == child) {
+					$target.parent().find('[class*=active]').removeClass('active');
+					$target.parent().find('[data-id=0]').addClass('active');
+					activeCategory = ['0'];
+				} else {
+					$target.addClass('active');
+					$target.parent().find('[data-id=0]').removeClass('active');
+					var i = activeCategory.indexOf('0');
+					if (i != -1) {
+						activeCategory.splice(i, 1);
+					}
+					activeCategory.push($target.attr('data-id'));
+				}
+			}
+		}
+		_renderMoreNews();
+	}
+
+	// console.log('activeCategory', activeCategory);
+}
+
+function _renderMoreNews(f) {
+	// console.log('Now the time is', new Date());
+	// console.log('lastId', lastId);
+	$('div.focus-loading').show();
+
+	if (!f) {
+		lastId = -1;
+		$('.news-content>ol').empty();
+	}
+
+	var loadUrl = URL_CHATS + 'userId=' + loginfo.username + '&lastId=' + lastId;
+	if (keyword) {
+		loadUrl += '&keyword=' + keyword;
+	} else {
+		loadUrl += '&keyword=';
+	}
+	if (selfChoice) {
+		loadUrl += '&selfStocksOnly=1';
+	} else {
+		loadUrl += '&selfStocksOnly=0';
+	}
+	if (activeCategory[0] == '0') {
+		loadUrl += '&types=';
+	} else {
+		loadUrl += '&types=';
+		activeCategory.forEach(function (cur) {
+			loadUrl += '\'' + categoryRange[+cur] + '\'' + ',';
+		});
+		loadUrl = loadUrl.substr(0, loadUrl.length - 1);
+	}
+	$.ajax({
+		url: encodeURI(loadUrl),
+		type: 'GET',
+		async: true,
+		cache: false,
+		success: function success(data) {
+			var d = JSON.parse(data);
+
+			if (d && d.length) {
+				$('#error-msg').hide();
+				if (d[0].flag != 0) {
+					$('.more-button').find('[class*=active]').removeClass('active');
+					$('#error-msg strong').text(d[0].msg);
+					$('#error-msg').show();
+				} else {
+					if (d.length == 1) {
+						//show footer
+						if (f) $('footer').show();else {
+							$('.news-content>ol').html('<li style="font-size:2rem;">未找到相关消息</li>');
+						}
+					} else {
+						//render
+						d.slice(1, d.length).forEach(function (cur) {
+							_renderNewsContent(cur);
+						});
+						if (keyword) {
+							$('.news-content').highlight(keyword);
+						}
+						if ($('.more-button span:nth-child(2)').hasClass('active')) {
+							$('.more-button span:nth-child(2)').removeClass('active');
+						}
+						$('.more-button span:nth-child(1)').addClass('active');
+					}
+				}
+				$('div.focus-loading').hide();
+			}
+		},
+		error: function error(err) {
+			console.log(err);
+		}
+	});
+}
+
+function _renderNewsContent(o) {
+
+	var $ol = $('.news-content>ol');
+	var olHasChild = lastId == -1 ? false : true;
+	var newLI = false;
+	var curDate = o.pubTime.split(' ')[0].split('-');
+	var curMon = curDate[1];
+	var curDay = curDate[2];
+
+	if (olHasChild) {
+		var $lastLi = $('#' + lastId);
+		var $lastUl = $lastLi.parent();
+		var lastMonOfLastLi = +$lastUl.parent().find('header>.date em').text();
+		var lastDayOfLastLi = +$lastUl.parent().find('header>.date b').text();
+
+		if (lastMonOfLastLi != curMon || lastDayOfLastLi != curDay) {
+			newLI = true;
+		} else {
+			var fragment = $('<li class="bottom-line">\n                            <div>\n                                <h2 class="title"></h2>\n                                <div>\n                                    <p>\n                                        <span class="short"></span>\n                                        <span class="long none"></span>\n                                        <a class="expand-btn none" href="" onclick="onExpandContent(this,event)">显示全部</a>\n                                    </p>\n                                </div>\n                                <div class="news-footer">\n                                    <span class="tag-date"></span>\n                                    <span>来源：</span>\n                                    <span id="tag-source" class="tag-type"></span>\n                                    <span id="label-stock">相关股票：</span>\n                                    <span id="tag-stock" class="tag-type"></span>\n                                    <button class="collapse-btn none" onclick="onCollapseContent(this)"><i class="fa fa-hand-o-up" aria-hidden="true" style="font-size: 16px;"></i>&nbsp;收起</button>\n                                </div>\n                            </div>\n                        </li>');
+			$(fragment).attr('id', o.increaseId);
+			$(fragment).find('h2').text(o.author);
+			if (o.txt) {
+				fragment = _cutStr(o.txt, MAX_ABS, fragment);
+			}
+			$(fragment).find('span.tag-date').text(o.pubTime.split('.')[0]);
+			$(fragment).find('span#tag-source').text(o.aff);
+			if (o.code) $(fragment).find('span#tag-stock').text(o.code);else {
+				$(fragment).find('span#label-stock').addClass('none');
+				$(fragment).find('span#tag-stock').addClass('none');
+			}
+
+			$lastUl.append(fragment);
+		}
+	} else {
+		newLI = true;
+	}
+
+	if (newLI) {
+		var fragment = $('<li class="sameday-news">\n                    <header>\n                        <div class="date">\n                            <span><em></em>月</span>\n                            <b></b>\n                        </div>\n                    </header>\n                    <ul>\n                        <li class="bottom-line">\n                            <div>\n                                <h2 class="title"></h2>\n                                <div>\n                                    <p>\n                                        <span class="short"></span>\n                                        <span class="long none"></span>\n                                        <a class="expand-btn none" href="" onclick="onExpandContent(this,event)">显示全部</a>\n                                    </p>\n                                </div>\n                                <div class="news-footer">\n                                    <span class="tag-date"></span>\n                                    <span>来源：</span>\n                                    <span id="tag-source" class="tag-type"></span>\n                                    <span id="label-stock">相关股票：</span>\n                                    <span id="tag-stock" class="tag-type"></span>\n                                    <button class="collapse-btn none" onclick="onCollapseContent(this)"><i class="fa fa-hand-o-up" aria-hidden="true" style="font-size: 16px;"></i>&nbsp;收起</button>\n                                </div>\n                            </div>\n                        </li>\n                    </ul>\n                </li>');
+
+		$(fragment).find('.date em').text(curMon);
+		$(fragment).find('.date b').text(curDay);
+		$(fragment).find('.bottom-line').attr('id', o.increaseId);
+		$(fragment).find('h2').text(o.author);
+		if (o.txt) {
+			fragment = _cutStr(o.txt, MAX_ABS, fragment);
+		}
+		$(fragment).find('span.tag-date').text(o.pubTime.split('.')[0]);
+		$(fragment).find('span#tag-source').text(o.aff);
+		if (o.code) $(fragment).find('span#tag-stock').text(o.code);else {
+			$(fragment).find('span#label-stock').addClass('none');
+			$(fragment).find('span#tag-stock').addClass('none');
+		}
+
+		$ol.append(fragment);
+	}
+
+	//record lastId
+	lastId = o.increaseId;
+}
+
+//cut str
+function _getStrLength(str) {
+	var realLength = 0,
+	    len = str.length,
+	    charCode = -1;
+	for (var i = 0; i < len; i++) {
+		charCode = str.charCodeAt(i);
+		if (charCode >= 0 && charCode <= 128) realLength += 1;else realLength += 2;
+	}
+	return realLength;
+};
+
+function _cutStr(str, len, elem) {
+	var str_len = _getStrLength(str);
+	var str_length = 0;
+	var str_cut = '';
+	if (len >= str_len) {
+		//.short = str
+		//hide button of showing all
+		$(elem).find('span.short').html(str);
+		return elem;
+	}
+
+	for (var i = 0; i < str_len; i++) {
+		var a = str.charAt(i);
+		str_length++;
+		if (escape(a).length > 4) {
+			str_length++;
+		}
+		str_cut = str_cut.concat(a);
+		if (str_length >= len) {
+			//.short = str_cut + '...'; .long = str;
+			//show button of showing all
+			$(elem).find('span.short').html(str_cut + '......');
+			$(elem).find('span.long').html(str);
+			$(elem).find('.expand-btn').removeClass('none');
+			return elem;
+		}
+	}
+}
+
+function delAlert(that) {
+	$(that).parent().fadeOut();
+}
+
+function onExpandContent(that, event) {
+	event.preventDefault();
+	var $that = $(that);
+	$that.parent().find('.short').hide();
+	$that.parent().find('.long').show();
+	$that.hide().parent().parent().parent().find('.collapse-btn').show();
+}
+
+function onCollapseContent(that) {
+	var $that = $(that);
+	$that.parent().parent().find('.short').show();
+	$that.parent().parent().find('.long').hide();
+	$that.parent().parent().find('.expand-btn').show();
+	$that.hide();
+}
+
+function clearSearch(that) {
+	$('#newsInput').val('');
+	$('footer').hide();
+	$('.more-button').find('[class*=active]').removeClass('active');
+	$(that).hide();
+	keyword = '';
+	_renderMoreNews();
+}

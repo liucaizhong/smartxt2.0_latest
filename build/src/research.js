@@ -1,1 +1,779 @@
-"use strict";function clearSearch(e){$("#stockInput").val(""),$(e).hide(),_hideStockList(),_renderData(0)}function customOpStock(e){if(e){var t=$(e),a=t.find('span[class*="item-1"]').text();t.find('span[class*="item-2"]').text();$("#stockInput").val(""),$("#search-clear").hide(),$(".auto-refresh input")[0].checked=!1,_clearSource(),_clearTheme(),_clearMap(searchMap),$(".focus-loading").show();var r=URL_SURVEY+"userId="+loginfo.username+"&period=10&keyword="+a+"&selfStocksOnly=0";$.ajax({url:encodeURI(r),method:"GET",cache:!1,success:function(e){var t=JSON.parse(e);t=JSON.parse(t),_renderSearchResults(t)},error:function(e){console.log(e)}})}}function _renderData(e){$("div.focus-loading").show(),resBuy[e]&&resBuy[e].length?(_renderTheme(resIndus[e]),_renderMap(searchMap,resProv[e]),_renderResults(resBuy[e])):$.ajax({url:encodeURI(URL_SURVEY_FILE[e]),method:"GET",cache:!1,success:function(t){var a=JSON.parse(t);a=JSON.parse(a),resBuy[e]=a.all[0].codes,resSell[e]=a.all[1].codes,resAll[e]=resBuy[e].concat(resSell[e]),resIndus[e]=a.industry,resProv[e]=a.province,_renderTheme(resIndus[e]),_renderMap(searchMap,resProv[e]),_renderResults(resBuy[e])},error:function(e){console.log(e)}})}function onPeriod(e){var t=$(e);t.hasClass("btn-invalid")&&($(".auto-refresh input")[0].checked=!1,$("#stockInput").val(""),$("#search-clear").hide(),_hideStockList(),_clearPeriod(),_clearSource(),$("#s0").removeClass("btn-invalid").addClass("btn-valid"),_clearTheme(),t.removeClass("btn-invalid").addClass("btn-valid"),curPeriod=t.attr("id").substring(1),_renderData(curPeriod))}function _clearPeriod(){var e=$("#btnPeriod").children("button.btn-valid");Array.prototype.forEach.call(e,function(e){$(e).removeClass("btn-valid").addClass("btn-invalid")})}function onSource(e){var t=$(e);if(t.hasClass("btn-invalid")){$(".auto-refresh input")[0].checked=!1,$("#stockInput").val(""),$("#search-clear").hide(),_hideStockList(),_clearSource(),_clearTheme(),_clearMap(searchMap),t.removeClass("btn-invalid").addClass("btn-valid");var a=t.attr("id")[1];switch(a){case"0":_renderResults(resAll[curPeriod]);break;case"1":_renderResults(resBuy[curPeriod]);break;case"2":_renderResults(resSell[curPeriod])}}}function _clearSource(){var e=$("#btnSource").children("button.btn-valid");Array.prototype.forEach.call(e,function(e){$(e).removeClass("btn-valid").addClass("btn-invalid")})}function _renderTheme(e){var t=$("#btnTheme");(t.children()||t.children().length)&&t.empty();var a=document.createDocumentFragment();e.forEach(function(e,t){var r=document.createElement("LABEL");$(r).attr("id","t"+t).addClass("research-tag-invalid").text(e.indus[0]),$(a).append(r)}),t.append(a)}function onTheme(e,t){t.stopPropagation(),t.preventDefault();var a=$(t.target),r=t.target.tagName;if("LABEL"===r&&a.hasClass("research-tag-invalid")){$(".auto-refresh input")[0].checked=!1,$("#stockInput").val(""),$("#search-clear").hide(),_hideStockList(),_clearTheme(),_clearSource(),_clearMap(searchMap),a.removeClass("research-tag-invalid").addClass("research-tag-valid");var n=resIndus[curPeriod][a.attr("id")[1]];console.log("themeObj",n),_renderResults(n)}}function _clearTheme(){var e=$("#btnTheme").children("label.research-tag-valid");Array.prototype.forEach.call(e,function(e){$(e).removeClass("research-tag-valid").addClass("research-tag-invalid")})}function _renderResults(e){$("html, body").animate({scrollTop:$("section#research-list").offset().top-100},800),$(".focus-loading").css("display")&&"none"===$(".focus-loading").css("display")&&$(".focus-loading").show();var t=$("#result-list");if((t.children()||t.children().length)&&t.empty(),!e)return t.append($('<p style="font-size:2rem;">没有相关的调研记录</p>')),void $("div.focus-loading").hide();var a=[];if(Array.isArray(e))a=e;else{var r=e.code;r.forEach(function(e){resAll[curPeriod].forEach(function(t){t.code[0]===e&&a.push(t)})})}a.forEach(function(e,a){e.dates.forEach(function(a,r){var n=0,s=document.createElement("DIV"),o=$(s);o.addClass("col-xs-6").addClass("col-lg-3");var c=document.createElement("DIV"),d=$(c);d.addClass("research-card");var l=document.createElement("DIV");$(l).addClass("card-header");var i=document.createElement("DIV");$(i).addClass("research-left-header");var u=document.createElement("H6");$(i).append(u),$(l).append(i);var p=document.createElement("DIV");$(p).addClass("research-right-header");var m=document.createElement("H5");$(m).addClass("research-card-title").text(a.date[0]),$(p).append(m);var h=document.createElement("P");$(h).addClass("research-card-text").text(e.name[0]+"("+e.code[0]+")"),$(p).append(h),$(l).append(p),d.append(l);var f=document.createElement("DIV");$(f).addClass("card-content");var v=document.createElement("DIV"),I=$(v);I.addClass("card-item");var g=document.createElement("SPAN");$(g).addClass("item-title").text("调研机构：研究员"),I.append(g),a.affs.forEach(function(e){var t=e.aff[0]+"：",a=2*(t.length+4)-1;e.persons.forEach(function(e,r){if(1==r)for(t="";a--;)t+=" ";n++;var s=document.createElement("SPAN"),o=$(s);o.addClass("item-content").attr("data-toggle","popover"),o.hover(function(e){var t=$(e.target);t.popover("show");var a=t.attr("aria-describedby"),r=$("#"+a)[0],n=$(r).find("div.popover-content")[0],s=document.createElement("PRE");$(s).text($(n).text()),$(n).text("").append(s)},function(e){var t=$(e.target),a=t.attr("aria-describedby");if(a){var r=$("#"+a)[0],n=$(r);$resultItem=t;var s=e.pageX,o=e.pageY,c=$resultItem.width(),d=$resultItem.height(),l=$resultItem.offset().left,i=$resultItem.offset().top;s>l&&s<l+c+10&&(o>i+d||o<i)&&($resultItem.removeClass("hover-item-content"),$resultItem.popover("hide"),$resultItem=null),n.hover(function(e){$resultItem&&($resultItem.hasClass("hover-item-content")||$resultItem.addClass("hover-item-content"))},function(e){var t=e.pageX,a=e.pageY;if($resultItem){var r=$resultItem.width(),n=$resultItem.height(),s=$resultItem.offset().left,o=$resultItem.offset().top;t>s&&a>o&&t<s+r+10&&a<o+n||($resultItem.removeClass("hover-item-content"),$resultItem.popover("hide"),$resultItem=null)}})}});var c=t;if(e.person.forEach(function(e){c+=e+" "}),o.text(c),e.report){o.append($('<i class="fa fa-bookmark" aria-hidden="true" style="color:#F6310D;"></i>')),o.attr("title","相关研报:");var d="";e.report.forEach(function(e){d+=e.reportDate+":\n"+_newLine(e.reportName)+"\n"}),o.attr("data-content",d)}I.append(s)})}),$(u).text(n),$(f).append(v),d.append(f),o.append(c),t.append(s)})}),$(".focus-loading").hide()}function _renderMap(e,t){var a=0,r=t.map(function(e){return a+=parseInt(e.count[0]),{name:e.prov[0],value:e.count[0],more:{code:e.code}}});e.setOption({baseOption:{tooltip:{trigger:"item"},visualMap:{min:0,max:a,splitNumber:20,color:["#D0243E","#F75D5D","#FFB0B0"],show:!1},series:[{name:"报告数",type:"map",map:"china",label:{normal:{show:!0},emphasis:{show:!0}},itemStyle:{emphasis:{}},data:r}]},media:[]}),e.on("click",function(t){console.log(t);var a=t.dataIndex;a!=mapIndex&&(_clearSource(),_clearTheme(),_clearMap(e),mapIndex=a,e.dispatchAction({type:"highlight",seriesIndex:0,dataIndex:mapIndex}),t.data?_renderResults(t.data.more):_renderResults())})}function _clearMap(e){mapIndex!=-1&&(e.dispatchAction({type:"downplay",seriesIndex:0,dataIndex:mapIndex}),mapIndex=-1)}function _renderSearchResults(e){$("html, body").animate({scrollTop:$("section#research-list").offset().top-100},800),$(".focus-loading").show();var t=$("#result-list");return(t.children()||t.children().length)&&t.empty(),e&&e.length?(e.forEach(function(e){var a=document.createElement("DIV"),r=$(a);r.addClass("col-xs-6").addClass("col-lg-3");var n=document.createElement("DIV"),s=$(n);s.addClass("research-card");var o=document.createElement("DIV");$(o).addClass("card-header");var c=document.createElement("DIV");$(c).addClass("research-left-header");var d=document.createElement("H6");$(d).text(e.reportList.length),$(c).append(d),$(o).append(c);var l=document.createElement("DIV");$(l).addClass("research-right-header");var i=document.createElement("H5");$(i).addClass("research-card-title").text(e.dytime),$(l).append(i);var u=document.createElement("P");$(u).addClass("research-card-text").text(e.name+"("+e.code+")"),$(l).append(u),$(o).append(l),s.append(o);var p=document.createElement("DIV");$(p).addClass("card-content");var m=document.createElement("DIV"),h=$(m);h.addClass("card-item");var f=document.createElement("SPAN");$(f).addClass("item-title").text("调研机构：研究员"),h.append(f),e.reportList.forEach(function(e){var t=document.createElement("SPAN"),a=$(t);a.addClass("item-content").attr("data-toggle","popover"),a.hover(function(e){var t=$(e.target);t.popover("show");var a=t.attr("aria-describedby"),r=$("#"+a)[0],n=$(r).find("div.popover-content")[0],s=document.createElement("PRE");$(s).text($(n).text()),$(n).text("").append(s)},function(e){var t=$(e.target),a=t.attr("aria-describedby");if(a){var r=$("#"+a)[0],n=$(r);$resultItem=t;var s=e.pageX,o=e.pageY,c=$resultItem.width(),d=$resultItem.height(),l=$resultItem.offset().left,i=$resultItem.offset().top;s>l&&s<l+c+10&&(o>i+d||o<i)&&($resultItem.removeClass("hover-item-content"),$resultItem.popover("hide"),$resultItem=null),n.hover(function(e){$resultItem&&($resultItem.hasClass("hover-item-content")||$resultItem.addClass("hover-item-content"))},function(e){var t=e.pageX,a=e.pageY;if($resultItem){var r=$resultItem.width(),n=$resultItem.height(),s=$resultItem.offset().left,o=$resultItem.offset().top;t>s&&a>o&&t<s+r+10&&a<o+n||($resultItem.removeClass("hover-item-content"),$resultItem.popover("hide"),$resultItem=null)}})}});var r=e.aff+"："+e.analyst;if(a.text(r),!jQuery.isEmptyObject(e.reports[0])){a.append($('<i class="fa fa-bookmark" aria-hidden="true" style="color:#F6310D;"></i>')),a.attr("title","相关研报:");var n="";e.reports.forEach(function(e){n+=e.pubDate+":\n"+_newLine(e.title)+"\n"}),a.attr("data-content",n)}h.append(t)}),$(p).append(m),s.append(p),r.append(n),t.append(a)}),void $(".focus-loading").hide()):(t.append($('<p style="font-size:2rem;">没有相关的调研记录</p>')),void $(".focus-loading").hide())}function _newLine(e){for(var t="",a=0,r=0,n=35,s=-1,o=0;o<e.length;o++)s=e.charCodeAt(o),a+=s>=0&&s<=128?1:2;for(var o=0;o<a;o++){var c=e.charAt(o);r++,escape(c).length>4&&r++,t=t.concat(c),r>=n&&(t=t.concat("\n"),r=0)}return t}var searchMap=echarts.init(document.getElementById("searchMap"),"macarons"),resBuy={},resSell={},resAll={},resIndus={},resProv={},mapIndex=-1,$resultItem=null,URL_SURVEY="/cross?id=21&",URL_SURVEY_FILE=[],loginfo,curPeriod=0,selfStock;$(document).ready(function(){window.user&&(loginfo=window.user.replace(/&quot;/g,'"'),loginfo=JSON.parse(loginfo),delete window.user,URL_SURVEY_FILE[0]=URL_SURVEY+"userId="+loginfo.username+"&period=10&keyword=&selfStocksOnly=0",URL_SURVEY_FILE[1]=URL_SURVEY+"userId="+loginfo.username+"&period=20&keyword=&selfStocksOnly=0",URL_SURVEY_FILE[2]=URL_SURVEY+"userId="+loginfo.username+"&period=30&keyword=&selfStocksOnly=0",_renderData(0)),$(".auto-refresh > input[name=self]").change(function(e){$(".focus-loading").show();var t=URL_SURVEY+"userId="+loginfo.username+"&period=10&keyword=&selfStocksOnly=1";_clearSource(),_clearTheme(),_clearMap(searchMap),$("#stockInput").val(""),$("#search-clear").hide(),_hideStockList(),$(this)[0].checked?$.ajax({url:encodeURI(t),method:"GET",cache:!1,success:function(e){var t=JSON.parse(e);t=JSON.parse(t),_renderSearchResults(t)},error:function(e){console.log(e)}}):($("#s1").removeClass("btn-invalid").addClass("btn-valid"),_renderData(0))}),$("#stockInput").on("input propertychange",function(e){var t=$(this).val();t&&$("#search-clear").show()}),$(window).on("resize",function(){searchMap.resize()}),$("body").popover({placement:"right",trigger:"manual"})});
+'use strict';
+
+//global parameters
+var searchMap = echarts.init(document.getElementById('searchMap'), 'macarons');
+var resBuy = {},
+    resSell = {},
+    resAll = {};
+var resIndus = {},
+    resProv = {};
+var mapIndex = -1;
+var $resultItem = null;
+var URL_SURVEY = '/cross?id=21&';
+//for test
+// var URL_SURVEY_TEST = './survey.today.10_fix.json';
+var URL_SURVEY_FILE = [];
+var loginfo;
+// var selfChoice = false;
+var curPeriod = 0;
+var selfStock;
+
+$(document).ready(function () {
+    if (window.user) {
+        loginfo = window.user.replace(/&quot;/g, '"');
+        loginfo = JSON.parse(loginfo);
+        delete window.user;
+
+        URL_SURVEY_FILE[0] = URL_SURVEY + 'userId=' + loginfo.username + '&period=10&keyword=&selfStocksOnly=0';
+        URL_SURVEY_FILE[1] = URL_SURVEY + 'userId=' + loginfo.username + '&period=20&keyword=&selfStocksOnly=0';
+        URL_SURVEY_FILE[2] = URL_SURVEY + 'userId=' + loginfo.username + '&period=30&keyword=&selfStocksOnly=0';
+        //get data
+        //default 10days
+        _renderData(0);
+
+        //for test
+        // URL_SURVEY_FILE[3] = URL_SURVEY_TEST;
+        //  _renderData(3);
+    }
+    $('.auto-refresh > input[name=self]').change(function (e) {
+        $('.focus-loading').show();
+        // selfChoice = !selfChoice;
+        var loadUrl = URL_SURVEY + 'userId=' + loginfo.username + '&period=10&keyword=&selfStocksOnly=1';
+
+        _clearSource();
+        _clearTheme();
+        _clearMap(searchMap);
+        $('#stockInput').val('');
+        $('#search-clear').hide();
+        _hideStockList();
+        if ($(this)[0].checked) {
+            $.ajax({
+                url: encodeURI(loadUrl),
+                method: 'GET',
+                cache: false,
+                success: function success(data) {
+                    var d = JSON.parse(data);
+                    d = JSON.parse(d);
+
+                    _renderSearchResults(d);
+                },
+                error: function error(err) {
+                    console.log(err);
+                }
+            });
+        } else {
+            $('#s1').removeClass('btn-invalid').addClass('btn-valid');
+            _renderData(0);
+        }
+    });
+    //search panel
+    $('#stockInput').on('input propertychange', function (e) {
+        var value = $(this).val();
+        if (value) {
+            $('#search-clear').show();
+        }
+    });
+
+    //echarts resize
+    $(window).on('resize', function () {
+        searchMap.resize();
+    });
+
+    //initialize popover
+    $('body').popover({
+        placement: 'right',
+        trigger: 'manual'
+        // delay: {hide: '5000000'}
+        // selector: '[data-toggle="popover"]'
+        // template: '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-title"></h3><pre class="popover-content"></pre></div>'
+    });
+});
+
+function clearSearch(that) {
+    $('#stockInput').val('');
+    $(that).hide();
+    _hideStockList();
+
+    //get data
+    //default 10days
+    _renderData(0);
+}
+
+function customOpStock(li) {
+    if (!li) {
+        return;
+    }
+
+    var $li = $(li);
+    var code = $li.find('span[class*="item-1"]').text();
+    var name = $li.find('span[class*="item-2"]').text();
+    $('#stockInput').val('');
+    $('#search-clear').hide();
+    $('.auto-refresh input')[0].checked = false;
+    _clearSource();
+    _clearTheme();
+    _clearMap(searchMap);
+    // console.log(code, name);
+    // console.log('selfChoice', selfChoice);
+    //ajax get data
+    //to do later
+    $('.focus-loading').show();
+    var loadUrl = URL_SURVEY + 'userId=' + loginfo.username + '&period=10&keyword=' + code + '&selfStocksOnly=0';
+
+    $.ajax({
+        url: encodeURI(loadUrl),
+        method: 'GET',
+        cache: false,
+        success: function success(data) {
+            var d = JSON.parse(data);
+            d = JSON.parse(d);
+
+            _renderSearchResults(d);
+        },
+        error: function error(err) {
+            console.log(err);
+        }
+    });
+}
+
+function _renderData(p) {
+
+    $('div.focus-loading').show();
+    if (resBuy[p] && resBuy[p].length) {
+        //render industry list
+        _renderTheme(resIndus[p]);
+
+        //render map
+        _renderMap(searchMap, resProv[p]);
+
+        //render results
+        _renderResults(resBuy[p]);
+    } else {
+        $.ajax({
+            url: encodeURI(URL_SURVEY_FILE[p]),
+            method: 'GET',
+            cache: false,
+            success: function success(data) {
+                var d = JSON.parse(data);
+                d = JSON.parse(d);
+                // var d = data;
+
+                resBuy[p] = d.all[0].codes;
+                resSell[p] = d.all[1].codes;
+                resAll[p] = resBuy[p].concat(resSell[p]);
+                resIndus[p] = d.industry;
+                resProv[p] = d.province;
+
+                //render industry list
+                _renderTheme(resIndus[p]);
+
+                //render map
+                _renderMap(searchMap, resProv[p]);
+
+                //render results
+                _renderResults(resBuy[p]);
+            },
+            error: function error(err) {
+                console.log(err);
+            }
+        });
+    }
+}
+
+function onPeriod(that) {
+    var $btn = $(that);
+    if ($btn.hasClass('btn-invalid')) {
+        $('.auto-refresh input')[0].checked = false;
+        $('#stockInput').val('');
+        $('#search-clear').hide();
+        _hideStockList();
+        //clear valid period button
+        _clearPeriod();
+        //clear valid source button
+        //and set default valid button
+        _clearSource();
+        $('#s0').removeClass('btn-invalid').addClass('btn-valid');
+        //clear valid theme button
+        _clearTheme();
+
+        $btn.removeClass('btn-invalid').addClass('btn-valid');
+
+        curPeriod = $btn.attr('id').substring(1);
+        //get json
+        //to do later
+        _renderData(curPeriod);
+    }
+}
+
+function _clearPeriod() {
+    var children = $('#btnPeriod').children('button.btn-valid');
+    Array.prototype.forEach.call(children, function (cur) {
+        $(cur).removeClass('btn-valid').addClass('btn-invalid');
+    });
+}
+
+function onSource(that) {
+    var $btn = $(that);
+    if ($btn.hasClass('btn-invalid')) {
+        $('.auto-refresh input')[0].checked = false;
+        $('#stockInput').val('');
+        $('#search-clear').hide();
+        _hideStockList();
+        _clearSource();
+        _clearTheme();
+        _clearMap(searchMap);
+        $btn.removeClass('btn-invalid').addClass('btn-valid');
+        //render results
+        var renderId = $btn.attr('id')[1];
+        switch (renderId) {
+            case '0':
+                _renderResults(resAll[curPeriod]);
+                break;
+            case '1':
+                _renderResults(resBuy[curPeriod]);
+                break;
+            case '2':
+                _renderResults(resSell[curPeriod]);
+                break;
+        }
+    }
+}
+
+function _clearSource() {
+    var children = $('#btnSource').children('button.btn-valid');
+    Array.prototype.forEach.call(children, function (cur) {
+        $(cur).removeClass('btn-valid').addClass('btn-invalid');
+    });
+}
+
+function _renderTheme(indus) {
+    var $btnTheme = $('#btnTheme');
+    //clear all of its content
+    if ($btnTheme.children() || $btnTheme.children().length) {
+        $btnTheme.empty();
+    }
+    var fragment = document.createDocumentFragment();
+
+    indus.forEach(function (cur, index) {
+        var tag = document.createElement('LABEL');
+        $(tag).attr('id', 't' + index).addClass('research-tag-invalid').text(cur.indus[0]);
+        $(fragment).append(tag);
+    });
+
+    $btnTheme.append(fragment);
+}
+
+function onTheme(that, event) {
+    event.stopPropagation();
+    event.preventDefault();
+
+    var $target = $(event.target);
+    var tagName = event.target.tagName;
+
+    if (tagName === 'LABEL' && $target.hasClass('research-tag-invalid')) {
+        $('.auto-refresh input')[0].checked = false;
+        $('#stockInput').val('');
+        $('#search-clear').hide();
+        _hideStockList();
+        _clearTheme();
+        _clearSource();
+        _clearMap(searchMap);
+        $target.removeClass('research-tag-invalid').addClass('research-tag-valid');
+        var themeObj = resIndus[curPeriod][$target.attr('id')[1]];
+        // console.log('themeObj', themeObj);
+        //render results
+        _renderResults(themeObj);
+    }
+}
+
+function _clearTheme() {
+    var children = $('#btnTheme').children('label.research-tag-valid');
+    Array.prototype.forEach.call(children, function (cur) {
+        $(cur).removeClass('research-tag-valid').addClass('research-tag-invalid');
+    });
+}
+
+function _renderResults(data) {
+    //scroll to result list
+    $("html, body").animate({ scrollTop: $('section#research-list').offset().top - 100 }, 800);
+
+    if ($('.focus-loading').css('display') && $('.focus-loading').css('display') === 'none') {
+        $('.focus-loading').show();
+    }
+    var $resultList = $('#result-list');
+
+    //clear all of its content
+    if ($resultList.children() || $resultList.children().length) {
+        $resultList.empty();
+    }
+
+    //if data is null
+    if (!data) {
+        $resultList.append($('<p style="font-size:2rem;">没有相关的调研记录</p>'));
+        $('div.focus-loading').hide();
+        return;
+    }
+
+    var res = [],
+        num = 0;
+
+    //input parameter is Object:Industry or Province
+    if (!Array.isArray(data)) {
+        var code = data.code;
+
+        code.forEach(function (code) {
+            resAll[curPeriod].forEach(function (cur) {
+                if (cur.code[0] === code) {
+                    res.push(cur);
+                }
+            });
+        });
+    } else {
+        res = data;
+    }
+
+    res.forEach(function (cur, n) {
+        cur.dates.forEach(function (rep, i) {
+            var personNumber = 0;
+            //create element
+            var fragment = document.createElement('DIV');
+            var $fragment = $(fragment);
+            $fragment.addClass('col-xs-6').addClass('col-lg-3');
+            var card = document.createElement('DIV');
+            var $card = $(card);
+            $card.addClass('research-card');
+            //render card header
+            var header = document.createElement('DIV');
+            $(header).addClass('card-header');
+            //create number
+            //rep.affs.length
+            var lDiv = document.createElement('DIV');
+            $(lDiv).addClass('research-left-header');
+            var h6 = document.createElement('H6');
+            // $(h6).text(rep.affs.length);
+            $(lDiv).append(h6);
+            $(header).append(lDiv);
+            //create h5
+            var rDiv = document.createElement('DIV');
+            $(rDiv).addClass('research-right-header');
+            var h5 = document.createElement('H5');
+            $(h5).addClass('research-card-title').text(rep.date[0]);
+            $(rDiv).append(h5);
+            //create p
+            var p = document.createElement('P');
+            $(p).addClass('research-card-text').text(cur.name[0] + '(' + cur.code[0] + ')');
+            $(rDiv).append(p);
+            $(header).append(rDiv);
+            //append header to card
+            $card.append(header);
+
+            //render card content
+            var content = document.createElement('DIV');
+            $(content).addClass('card-content');
+            //create item
+            var item = document.createElement('DIV');
+            var $item = $(item);
+            $item.addClass('card-item');
+            //create span
+            var span = document.createElement('SPAN');
+            $(span).addClass('item-title').text('调研机构：研究员');
+            $item.append(span);
+
+            rep.affs.forEach(function (aff) {
+                var affName = aff.aff[0] + '：';
+                var lenAff = (affName.length + 4) * 2 - 1;
+
+                aff.persons.forEach(function (per, perIdx) {
+                    if (perIdx == 1) {
+                        affName = '';
+                        while (lenAff--) {
+                            affName += ' ';
+                        }
+                    }
+                    personNumber++;
+                    //create item content
+                    var spanContent = document.createElement('SPAN');
+                    var $spanContent = $(spanContent);
+                    $spanContent.addClass('item-content').attr('data-toggle', 'popover');
+                    //hover handler:aria-describedby
+                    $spanContent.hover(function (e) {
+                        var $tar = $(e.target);
+                        $tar.popover('show');
+                        var popId = $tar.attr('aria-describedby');
+                        var pop = $('#' + popId)[0];
+                        var oldContent = $(pop).find('div.popover-content')[0];
+                        var newContent = document.createElement('PRE');
+                        $(newContent).text($(oldContent).text());
+                        $(oldContent).text('').append(newContent);
+                    }, function (e) {
+                        var $tar = $(e.target);
+                        var popId = $tar.attr('aria-describedby');
+                        if (popId) {
+                            var pop = $('#' + popId)[0];
+                            var $pop = $(pop);
+                            //set value for target
+                            $resultItem = $tar;
+                            //get mouse position
+                            var clientX = e.pageX;
+                            var clientY = e.pageY;
+                            //get $resultItem info
+                            var width = $resultItem.width();
+                            var height = $resultItem.height();
+                            var X = $resultItem.offset().left;
+                            var Y = $resultItem.offset().top;
+                            if (clientX > X && clientX < X + width + 10 && (clientY > Y + height || clientY < Y)) {
+                                $resultItem.removeClass('hover-item-content');
+                                $resultItem.popover('hide');
+                                $resultItem = null;
+                            }
+
+                            //mouseleave listener for popover
+                            $pop.hover(function (e) {
+                                if ($resultItem) {
+                                    if (!$resultItem.hasClass('hover-item-content')) {
+                                        $resultItem.addClass('hover-item-content');
+                                    }
+                                }
+                            }, function (e) {
+                                //get mouse position
+                                var clientX = e.pageX;
+                                var clientY = e.pageY;
+
+                                if ($resultItem) {
+                                    //get $resultItem info
+                                    var width = $resultItem.width();
+                                    var height = $resultItem.height();
+                                    var X = $resultItem.offset().left;
+                                    var Y = $resultItem.offset().top;
+
+                                    if (clientX > X && clientY > Y && clientX < X + width + 10 && clientY < Y + height) {} else {
+                                        $resultItem.removeClass('hover-item-content');
+                                        $resultItem.popover('hide');
+                                        $resultItem = null;
+                                    }
+                                }
+                            });
+                        }
+                    });
+                    //set text
+                    // var repAuthor = aff.aff[0]+'：';
+                    // aff.persons.forEach((per) => {
+                    //     repAuthor += per + ' ';
+                    // });
+                    // $spanContent.text(repAuthor);
+
+                    var repAuthor = affName;
+                    per.person.forEach(function (per) {
+                        repAuthor += per + ' ';
+                    });
+                    $spanContent.text(repAuthor);
+                    //set popover content
+                    if (per.report) {
+                        $spanContent.append($('<i class="fa fa-bookmark" aria-hidden="true" style="color:#F6310D;"></i>'));
+                        //set popover title
+                        $spanContent.attr('title', '相关研报:');
+                        var repContent = '';
+                        per.report.forEach(function (name) {
+                            repContent += name.reportDate + ':\n' + _newLine(name.reportName) + '\n';
+                        });
+                        $spanContent.attr('data-content', repContent);
+                    }
+                    //append to item
+                    $item.append(spanContent);
+                });
+            });
+            $(h6).text(personNumber);
+            //append to card content
+            $(content).append(item);
+            //append to card 
+            $card.append(content);
+            //append to fragment
+            $fragment.append(card);
+            //append fragment to DOM
+            $resultList.append(fragment);
+        });
+    });
+    $('.focus-loading').hide();
+}
+
+function _renderMap(chart, data) {
+
+    // chart = echarts.init(document.getElementById('searchMap'), 'macarons');
+    //filter show data
+    var max = 0;
+    var showData = data.map(function (cur) {
+        max += parseInt(cur.count[0]);
+        return {
+            name: cur.prov[0],
+            value: cur.count[0],
+            more: { code: cur.code }
+        };
+    });
+
+    // configure echart
+    // chart.showLoading();
+
+    chart.setOption({
+        baseOption: {
+            tooltip: {
+                trigger: 'item'
+            },
+            visualMap: {
+                min: 0,
+                max: max,
+                splitNumber: 20,
+                color: ['#D0243E', '#F75D5D', '#FFB0B0'],
+                show: false
+            },
+            series: [{
+                name: '报告数',
+                type: 'map',
+                map: 'china',
+                label: {
+                    normal: {
+                        show: true
+                    },
+                    emphasis: {
+                        show: true
+                    }
+                },
+                itemStyle: {
+                    emphasis: {
+                        // borderColor: '#9900ff'
+                    }
+                },
+                data: showData
+            }]
+        },
+        media: []
+    });
+
+    //bind click
+    chart.on('click', function (params) {
+        // console.log(params);
+
+        var newMapIndex = params.dataIndex;
+
+        if (newMapIndex != mapIndex) {
+            // cancel highlight
+            _clearSource();
+            _clearTheme();
+            _clearMap(chart);
+            //highlight area
+            mapIndex = newMapIndex;
+            chart.dispatchAction({
+                type: 'highlight',
+                seriesIndex: 0,
+                dataIndex: mapIndex
+            });
+
+            if (params.data) {
+                _renderResults(params.data.more);
+            } else {
+                _renderResults();
+            }
+        }
+    });
+
+    // chart.hideLoading();
+}
+
+function _clearMap(chart) {
+    if (mapIndex != -1) {
+        chart.dispatchAction({
+            type: 'downplay',
+            seriesIndex: 0,
+            dataIndex: mapIndex
+        });
+        mapIndex = -1;
+    }
+}
+
+function _renderSearchResults(data) {
+    //scroll to result list
+    $("html, body").animate({ scrollTop: $('section#research-list').offset().top - 100 }, 800);
+    $('.focus-loading').show();
+
+    var $resultList = $('#result-list');
+
+    //clear all of its content
+    if ($resultList.children() || $resultList.children().length) {
+        $resultList.empty();
+    }
+
+    //if data is null
+    if (!data || !data.length) {
+        $resultList.append($('<p style="font-size:2rem;">没有相关的调研记录</p>'));
+        $('.focus-loading').hide();
+        return;
+    }
+
+    data.forEach(function (curTab) {
+        //create element
+        var fragment = document.createElement('DIV');
+        var $fragment = $(fragment);
+        $fragment.addClass('col-xs-6').addClass('col-lg-3');
+        var card = document.createElement('DIV');
+        var $card = $(card);
+        $card.addClass('research-card');
+        //render card header
+        var header = document.createElement('DIV');
+        $(header).addClass('card-header');
+        //rep.affs.length
+        var lDiv = document.createElement('DIV');
+        $(lDiv).addClass('research-left-header');
+        var h6 = document.createElement('H6');
+        $(h6).text(curTab.reportList.length);
+        $(lDiv).append(h6);
+        $(header).append(lDiv);
+        //create h5
+        var rDiv = document.createElement('DIV');
+        $(rDiv).addClass('research-right-header');
+        var h5 = document.createElement('H5');
+        $(h5).addClass('research-card-title').text(curTab.dytime);
+        $(rDiv).append(h5);
+        //create p
+        var p = document.createElement('P');
+        $(p).addClass('research-card-text').text(curTab.name + '(' + curTab.code + ')');
+        $(rDiv).append(p);
+        $(header).append(rDiv);
+        //append header to card
+        $card.append(header);
+
+        //render card content
+        var content = document.createElement('DIV');
+        $(content).addClass('card-content');
+        //create item
+        var item = document.createElement('DIV');
+        var $item = $(item);
+        $item.addClass('card-item');
+        //create span
+        var span = document.createElement('SPAN');
+        $(span).addClass('item-title').text('调研机构：研究员');
+        $item.append(span);
+
+        curTab.reportList.forEach(function (curRep) {
+            //create item content
+            var spanContent = document.createElement('SPAN');
+            var $spanContent = $(spanContent);
+            $spanContent.addClass('item-content').attr('data-toggle', 'popover');
+            // //hover handler:aria-describedby
+            $spanContent.hover(function (e) {
+                var $tar = $(e.target);
+                $tar.popover('show');
+                var popId = $tar.attr('aria-describedby');
+                var pop = $('#' + popId)[0];
+                var oldContent = $(pop).find('div.popover-content')[0];
+                var newContent = document.createElement('PRE');
+                $(newContent).text($(oldContent).text());
+                $(oldContent).text('').append(newContent);
+            }, function (e) {
+                var $tar = $(e.target);
+                var popId = $tar.attr('aria-describedby');
+                if (popId) {
+                    var pop = $('#' + popId)[0];
+                    var $pop = $(pop);
+                    //set value for target
+                    $resultItem = $tar;
+                    //get mouse position
+                    var clientX = e.pageX;
+                    var clientY = e.pageY;
+                    //get $resultItem info
+                    var width = $resultItem.width();
+                    var height = $resultItem.height();
+                    var X = $resultItem.offset().left;
+                    var Y = $resultItem.offset().top;
+                    if (clientX > X && clientX < X + width + 10 && (clientY > Y + height || clientY < Y)) {
+                        $resultItem.removeClass('hover-item-content');
+                        $resultItem.popover('hide');
+                        $resultItem = null;
+                    }
+                    //mouseleave listener for popover
+                    $pop.hover(function (e) {
+                        if ($resultItem) {
+                            if (!$resultItem.hasClass('hover-item-content')) {
+                                $resultItem.addClass('hover-item-content');
+                            }
+                        }
+                    }, function (e) {
+                        //get mouse position
+                        var clientX = e.pageX;
+                        var clientY = e.pageY;
+
+                        if ($resultItem) {
+                            //get $resultItem info
+                            var width = $resultItem.width();
+                            var height = $resultItem.height();
+                            var X = $resultItem.offset().left;
+                            var Y = $resultItem.offset().top;
+
+                            if (clientX > X && clientY > Y && clientX < X + width + 10 && clientY < Y + height) {} else {
+                                $resultItem.removeClass('hover-item-content');
+                                $resultItem.popover('hide');
+                                $resultItem = null;
+                            }
+                        }
+                    });
+                }
+            });
+
+            //set text
+            var repAuthor = curRep.aff + '：' + curRep.analyst;
+            $spanContent.text(repAuthor);
+
+            //set popover content
+            if (!jQuery.isEmptyObject(curRep.reports[0])) {
+                $spanContent.append($('<i class="fa fa-bookmark" aria-hidden="true" style="color:#F6310D;"></i>'));
+                //set popover title
+                $spanContent.attr('title', '相关研报:');
+                var repContent = '';
+                curRep.reports.forEach(function (name) {
+                    repContent += name.pubDate + ':\n' + _newLine(name.title) + '\n';
+                });
+                $spanContent.attr('data-content', repContent);
+            }
+            //append to item
+            $item.append(spanContent);
+        });
+
+        //append to card content
+        $(content).append(item);
+        //append to card 
+        $card.append(content);
+        //append to fragment
+        $fragment.append(card);
+        //append fragment to DOM
+        $resultList.append(fragment);
+    });
+
+    $('.focus-loading').hide();
+}
+
+function _newLine(str) {
+
+    var strRes = '';
+    var str_len = 0,
+        str_length = 0,
+        len = 35,
+        charCode = -1;
+
+    for (var i = 0; i < str.length; i++) {
+        charCode = str.charCodeAt(i);
+        if (charCode >= 0 && charCode <= 128) str_len += 1;else str_len += 2;
+    }
+
+    for (var i = 0; i < str_len; i++) {
+        var a = str.charAt(i);
+        str_length++;
+        if (escape(a).length > 4) {
+            str_length++;
+        }
+        strRes = strRes.concat(a);
+        if (str_length >= len) {
+            strRes = strRes.concat('\n');
+            str_length = 0;
+        }
+    }
+
+    return strRes;
+}

@@ -33,7 +33,6 @@ $(document).ready(() => {
 	        cache: false,
 	        success: (data) => {
 	            var d = JSON.parse(data);
-	            d = JSON.parse(d);
 
 	            if(d && d.length) {
 	                var idx = Math.floor(Math.random() * (d.length>5?5:d.length));
@@ -49,7 +48,7 @@ $(document).ready(() => {
 	            console.log(err);
 	        }
 	    });
-    } 
+    }
 
 	//deal with jump search
 	if(window.topic && window.stock) {
@@ -81,7 +80,6 @@ $(document).ready(() => {
 	    cache: false,
 	    success: (data) => {
 	        var d = JSON.parse(data);
-	        d = JSON.parse(d);
 
 	        if(d && d.length) {
 				_renderDatalist(d);
@@ -93,7 +91,7 @@ $(document).ready(() => {
 	        console.log(err);
 	    }
 	});
-	
+
 	//echart resize
 	$(window).on('resize',()=>{
 		chartAttention.resize();
@@ -131,7 +129,7 @@ $(document).ready(() => {
 			}
 		}
 	});
-	//form submit 
+	//form submit
 	$('#form-topic').submit(function(e) {
 		e.preventDefault();
 		_hideErr();
@@ -150,7 +148,7 @@ $(document).ready(() => {
 
 		cond.topic = topic;
 	    cond.stock = stock;
-			
+
 		var url = URL_TOPICHEAT + 'userId=' + loginfo.username + '&stock=' + stock + '&topic=' + topic;
 	    _renderChart(url);
 	});
@@ -194,7 +192,6 @@ function onStar(that) {
         dataType: 'json',
         success: (data) => {
             var d = JSON.parse(data);
-            d = JSON.parse(d);
 
             if(d.flag || d[0].status) {
                 $btn.toggleClass('icon-collected');
@@ -231,13 +228,12 @@ function _renderChart(url) {
 		url: encodeURI(url),
 		cache: false,
 		success: (data) => {
-				
+
             var heat = [];
-            var index = [];	
+            var index = [];
             var category = [];
-            var legend = cond.stock+'-'+cond.topic;	
+            var legend = cond.stock+'-'+cond.topic;
             var d = JSON.parse(data);
-            d= JSON.parse(d);
             var entry = d.topicHeat;
             if(!entry || !entry.length) {
             	// chartAttention.hideLoading();
@@ -267,7 +263,7 @@ function _renderChart(url) {
             	category.push(cur.date);
             	heat.push(cur.heat);
             	index.push(cur.index);
-            });				
+            });
 
             //attention
 			chartAttention.setOption({
@@ -279,13 +275,13 @@ function _renderChart(url) {
 						trigger: 'axis'
 					},
 					dataZoom: [{
-						handleColor: 'rgb(75,188,208)', 
-						fillerColor: 'rgb(75,188,208)',  
+						handleColor: 'rgb(75,188,208)',
+						fillerColor: 'rgb(75,188,208)',
 						borderWidth:0,
-						show : true,  
-						realtime: true,  
-						start : 75.5, 
-						end: 100, 
+						show : true,
+						realtime: true,
+						start : 75.5,
+						end: 100,
 						height:15
 			        }],
 					legend: {
@@ -303,17 +299,17 @@ function _renderChart(url) {
 						type: 'category',
 						data: category,
 						axisLine: {
-							show: true, 
+							show: true,
 							lineStyle:{
-								type:'solid', 
-								width: 1, 
-								color: 'rgb(75,188,208)' 
+								type:'solid',
+								width: 1,
+								color: 'rgb(75,188,208)'
 							}
 						},
-						axisTick: false, 
+						axisTick: false,
 						axisLabel:{
 							textStyle: {
-				                fontFamily : '微软雅黑', 
+				                fontFamily : '微软雅黑',
 				                fontSize : 12,
 				                color: 'black'
 				            }
@@ -323,35 +319,35 @@ function _renderChart(url) {
 					yAxis: [{
 						name: '关注度(H)',
 						type: 'value',
-						scale:true, 
+						scale:true,
 						axisLine: {
-							show: true, 
+							show: true,
 							lineStyle:{
-								type:'solid', 
-								width: 1, 
-								color: 'rgb(75,188,208)' 
+								type:'solid',
+								width: 1,
+								color: 'rgb(75,188,208)'
 							}
 						},
 						axisLabel:{
 							textStyle:{
-				                fontFamily : '微软雅黑', 
+				                fontFamily : '微软雅黑',
 				                fontSize : 12,
 				                color: 'black'
 				            }
 						},
 						axisTick: false,
 						nameTextStyle:{
-				            fontFamily : '微软雅黑', 
+				            fontFamily : '微软雅黑',
 				            fontSize : 12,
 				            color: 'black'
-				        }, 
-				        splitNumber:10, 
+				        },
+				        splitNumber:10,
 				        splitLine: {
-				        	show: true, 
+				        	show: true,
 				        	lineStyle:{
-				        		type:'dashed', 
-				        		width: 1, 
-				        		color:'#dcdcdc' 
+				        		type:'dashed',
+				        		width: 1,
+				        		color:'#dcdcdc'
 				        	}
 				        }
 					}],
@@ -379,13 +375,13 @@ function _renderChart(url) {
 						trigger: 'axis'
 					},
 					dataZoom: [{
-						handleColor: 'rgb(75,188,208)', 
-						fillerColor: 'rgb(75,188,208)',  
+						handleColor: 'rgb(75,188,208)',
+						fillerColor: 'rgb(75,188,208)',
 						borderWidth:0,
-						show : true,  
-						realtime: true,  
-						start : 75.5, 
-						end: 100, 
+						show : true,
+						realtime: true,
+						start : 75.5,
+						end: 100,
 						height:15
 			        }],
 					legend: {
@@ -404,17 +400,17 @@ function _renderChart(url) {
 						type: 'category',
 						data: category,
 						axisLine: {
-							show: true, 
+							show: true,
 							lineStyle:{
-								type:'solid', 
-								width: 1, 
-								color: 'rgb(75,188,208)' 
+								type:'solid',
+								width: 1,
+								color: 'rgb(75,188,208)'
 							}
 						},
-						axisTick: false, 
+						axisTick: false,
 						axisLabel:{
 							textStyle: {
-				                fontFamily : '微软雅黑', 
+				                fontFamily : '微软雅黑',
 				                fontSize : 12,
 				                color: 'black'
 				            }
@@ -424,35 +420,35 @@ function _renderChart(url) {
 					yAxis: [{
 						name: '价格指数(I)',
 						type: 'value',
-						scale:true, 
+						scale:true,
 						axisLine: {
-							show: true, 
+							show: true,
 							lineStyle:{
-								type:'solid', 
-								width: 1, 
-								color: 'rgb(75,188,208)' 
+								type:'solid',
+								width: 1,
+								color: 'rgb(75,188,208)'
 							}
 						},
 						axisLabel:{
 							textStyle:{
-				                fontFamily : '微软雅黑', 
+				                fontFamily : '微软雅黑',
 				                fontSize : 12,
 				                color: 'black'
 				            }
 						},
 						axisTick: false,
 						nameTextStyle:{
-				            fontFamily : '微软雅黑', 
+				            fontFamily : '微软雅黑',
 				            fontSize : 12,
 				            color: 'black'
-				        }, 
-				        splitNumber:10, 
+				        },
+				        splitNumber:10,
 				        splitLine: {
-				        	show: true, 
+				        	show: true,
 				        	lineStyle:{
-				        		type:'dashed', 
-				        		width: 1, 
-				        		color:'#dcdcdc' 
+				        		type:'dashed',
+				        		width: 1,
+				        		color:'#dcdcdc'
 				        	}
 				        }
 					}],
@@ -481,7 +477,7 @@ function customOpStock(li) {
 	if(!li) {
 		return;
 	}
-	
+
 	var $li = $(li);
 	// var code = $li.find('span[class*="item-1"]').text();
 	var name = $li.find('span[class*="item-2"]').text();
@@ -541,7 +537,7 @@ function _renderTopicTags(tags) {
 		$(tag).text(cur.code+'-'+cur.name+'-'+cur.event);
 		$tagsPool.append(tag);
 	});
-	
+
 }
 
 function checkTag(e) {

@@ -2,7 +2,7 @@ var INTERVAL = 30*60*1000;
 var abstract = true;
 var selfChoice = false;
 var activeCategory = ['0'];
-var categoryRange = ['*','业绩预报','业绩快报','项目收购','人事变动','利润分配','增持减持','资金用途','资产重组','增发预案','重大合同','年度报告','举牌'];
+var categoryRange = ['*','业绩预报','业绩快报','项目收购','人事变动','利润分配','举牌','资金用途','资产重组','增发预案','重大合同','年度报告','增持', '减持', '招股说明书'];
 var activeIndustry = ['0'];
 var industryCategory = ['*','非银金融','传媒','交通运输','建筑材料','纺织服装','房地产','医药生物','有色金属','轻工制造','采掘','农林牧渔','休闲服务','家用电器','钢铁','汽车','国防军工','综合','机械设备','公用事业','银行','化工','电气设备','通信','商业贸易','计算机','电子','食品饮料','建筑装饰'];
 var keyword = '';
@@ -31,7 +31,7 @@ $(document).ready(() => {
 	  		//loading more
 	  		_renderMoreNews(true);
 	  	}
-	});	  		
+	});
 
 	$('#newsInput').keydown(function(e) {
 		if(e.keyCode == 13) {
@@ -76,7 +76,7 @@ $(document).ready(() => {
 		_renderMoreNews();
 		// console.log('selfChoice',selfChoice);
     });
-    
+
 });
 
 function onExpandContent(that,event) {
@@ -131,7 +131,7 @@ function onCategory(event) {
 					$target.parent().find('[data-id=0]').addClass('active');
 				}
 			}else {
-				var activeChild = $target.parent().find('[class*=active]').length; 
+				var activeChild = $target.parent().find('[class*=active]').length;
 				var child = $target.siblings().length - 1;
 				if(activeChild == child) {
 					$target.parent().find('[class*=active]').removeClass('active');
@@ -151,7 +151,7 @@ function onCategory(event) {
 		_renderMoreNews();
 	}
 
-	console.log('activeCategory', activeCategory);
+	// console.log('activeCategory', activeCategory);
 }
 
 function onIndustry(event) {
@@ -181,7 +181,7 @@ function onIndustry(event) {
 					$target.parent().find('[data-id=0]').addClass('active');
 				}
 			}else {
-				var activeChild = $target.parent().find('[class*=active]').length; 
+				var activeChild = $target.parent().find('[class*=active]').length;
 				var child = $target.siblings().length - 1;
 				if(activeChild == child) {
 					$target.parent().find('[class*=active]').removeClass('active');
@@ -201,7 +201,7 @@ function onIndustry(event) {
 		_renderMoreNews();
 	}
 
-	console.log('activeIndustry', activeIndustry);
+	// console.log('activeIndustry', activeIndustry);
 }
 
 //cut str
@@ -253,7 +253,7 @@ function _renderMoreNews(f) {
 		lastId = -1;
 		$('.news-content>ol').empty();
 	}
-	
+
 	var loadUrl = URL_NEWS + 'userId=' + loginfo.username + '&lastId=' + lastId;
 	if(keyword) {
 		loadUrl += '&keyword=' + keyword;
@@ -295,7 +295,7 @@ function _renderMoreNews(f) {
 		cache: false,
 		success: (data) => {
 		    var d = JSON.parse(data);
-		    d = JSON.parse(d);
+
 		    if(d && d.length) {
 		        //render
 		        d.forEach(function(cur) {
@@ -303,8 +303,11 @@ function _renderMoreNews(f) {
 		        });
 		        if(keyword) {
 		        	$('.news-content').highlight(keyword);
+		        	// $('.news-content').highlight(keyword,{
+		        	// 	exceptClass: ['tag-indus','tag-type']
+		        	// });
 		        }
-		        
+
 		        if($('.more-button span:nth-child(2)').hasClass('active')) {
 		        	$('.more-button span:nth-child(2)').removeClass('active');
 		        }
@@ -324,7 +327,7 @@ function _renderMoreNews(f) {
 		error: (err) => {
 		    console.log(err);
 		}
-	}); 
+	});
 }
 
 function _renderNewsContent(o) {
@@ -412,7 +415,7 @@ function _renderNewsContent(o) {
                                     <button class="collapse-btn none" onclick="onCollapseContent(this)"><i class="fa fa-hand-o-up" aria-hidden="true" style="font-size: 16px;"></i>&nbsp;收起</button>
                                 </div>
                             </div>
-                        </li>                   
+                        </li>
                     </ul>
                 </li>`);
 

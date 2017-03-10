@@ -1,1 +1,557 @@
-"use strict";function onStar(e){var t=$(e).find("i");if(t.hasClass("icon-collected"))var o=URL_UNCOLLECT,n="取消收藏",a={userId:loginfo.username,links:cond.stock+"@"+cond.topic};else var o=URL_COLLECT,n="已收藏",a={userId:loginfo.username,code:cond.stock,topic:cond.topic};$.ajax({url:o,method:"POST",data:a,dataType:"json",success:function(e){var o=JSON.parse(e);o=JSON.parse(o),o.flag||o[0].status?(t.toggleClass("icon-collected"),_showFadeMsg(n)):_showFadeMsg(o.msg)},error:function(e){console.log(e)}})}function _renderDatalist(e){var t=$("#topicList");e.forEach(function(e){var o=document.createElement("OPTION");$(o).val(e),t.append(o)})}function _renderChart(e){$("div.focus-loading").show(),chartAttention=echarts.init(document.getElementById("chart-attention")),chartPrice=echarts.init(document.getElementById("chart-price")),echarts.connect([chartAttention,chartPrice]),$.ajax({url:encodeURI(e),cache:!1,success:function(e){var t=[],o=[],n=[],a=cond.stock+"-"+cond.topic,r=JSON.parse(e);r=JSON.parse(r);var i=r.topicHeat;if(!i||!i.length)return _showErr("找不到相关信息"),$("div.focus-loading").hide(),!1;var c=r.flag,s=$("i[class*=icon-collect]");0==c||-1==c?s.hasClass("icon-collected")&&s.removeClass("icon-collected"):1==c&&(s.hasClass("icon-collected")||s.addClass("icon-collected")),$("#stockInput").val(""),$("#eventInput").val(""),i.forEach(function(e){n.push(e.date),t.push(e.heat),o.push(e.index)}),chartAttention.setOption({baseOption:{title:{text:""},tooltip:{trigger:"axis"},dataZoom:[{handleColor:"rgb(75,188,208)",fillerColor:"rgb(75,188,208)",borderWidth:0,show:!0,realtime:!0,start:75.5,end:100,height:15}],legend:{data:[{name:a,icon:"line"}]},toolbox:{feature:{saveAsImage:{}}},xAxis:[{type:"category",data:n,axisLine:{show:!0,lineStyle:{type:"solid",width:1,color:"rgb(75,188,208)"}},axisTick:!1,axisLabel:{textStyle:{fontFamily:"微软雅黑",fontSize:12,color:"black"}},boundaryGap:!1}],yAxis:[{name:"关注度(H)",type:"value",scale:!0,axisLine:{show:!0,lineStyle:{type:"solid",width:1,color:"rgb(75,188,208)"}},axisLabel:{textStyle:{fontFamily:"微软雅黑",fontSize:12,color:"black"}},axisTick:!1,nameTextStyle:{fontFamily:"微软雅黑",fontSize:12,color:"black"},splitNumber:10,splitLine:{show:!0,lineStyle:{type:"dashed",width:1,color:"#dcdcdc"}}}],series:[{name:a,type:"line",data:t,itemStyle:{normal:{color:"rgb(50,70,95)"}}}]}}),chartPrice.setOption({baseOption:{title:{text:""},tooltip:{trigger:"axis"},dataZoom:[{handleColor:"rgb(75,188,208)",fillerColor:"rgb(75,188,208)",borderWidth:0,show:!0,realtime:!0,start:75.5,end:100,height:15}],legend:{data:[{name:a,icon:"line"}]},toolbox:{feature:{saveAsImage:{}}},xAxis:[{type:"category",data:n,axisLine:{show:!0,lineStyle:{type:"solid",width:1,color:"rgb(75,188,208)"}},axisTick:!1,axisLabel:{textStyle:{fontFamily:"微软雅黑",fontSize:12,color:"black"}},boundaryGap:!1}],yAxis:[{name:"价格指数(I)",type:"value",scale:!0,axisLine:{show:!0,lineStyle:{type:"solid",width:1,color:"rgb(75,188,208)"}},axisLabel:{textStyle:{fontFamily:"微软雅黑",fontSize:12,color:"black"}},axisTick:!1,nameTextStyle:{fontFamily:"微软雅黑",fontSize:12,color:"black"},splitNumber:10,splitLine:{show:!0,lineStyle:{type:"dashed",width:1,color:"#dcdcdc"}}}],series:[{name:a,type:"line",data:o,itemStyle:{normal:{color:"rgb(230,85,30)"}}}]}}),$("div.focus-loading").hide()},error:function(e){console.log(e)}})}function customOpStock(e){if(e){var t=$(e),o=t.find('span[class*="item-2"]').text();$("#stockInput").val(o)}}function _showErr(e){$("div#error-msg>strong").text(e),$("div#error-msg").show(500)}function _hideErr(){$("div#error-msg").hide(500)}function delAlert(e){var t=$(e);t.parent().hide(500)}function _showFadeMsg(e){var t=$(".suspending-toolbar").offset().left-50,o=$(".suspending-toolbar").offset().top+100;$("#fade-msg").text(e),$("#fade-alert").css({left:t,top:o}).fadeIn(function(){setTimeout(function(){$("#fade-alert").fadeOut()},1e3)})}function onPool(e){$("#topic-tags").children().show();var t=$(document).height();$("#pool").height(t).show()}function destroyPool(e){$("#pool").hide(),clearSearch()}function clearSearch(e){$("#topicPoolInput").val(""),$("#topic-tags").children().show(),$("#search-clear").hide()}function _renderTopicTags(e){var t=$("#topic-tags");e.forEach(function(e){var o=$('<label class="label-category" ></label>');$(o).attr("data-value",e.code+"|"+e.name+"|"+e.event),$(o).text(e.code+"-"+e.name+"-"+e.event),t.append(o)})}function checkTag(e){if(e.stopPropagation(),"LABEL"===e.target.tagName){destroyPool();var t=$(".charts .topic-collect .btn-star");t.hasClass("collect")&&t.removeClass("collect");var o=$(e.target).attr("data-value").split("|");cond.topic=o[2],cond.stock=o[1];var n=URL_TOPICHEAT+"userId="+loginfo.username+"&stock="+cond.stock+"&topic="+cond.topic;_renderChart(n)}}var URL_TOPICHEAT="/cross?id=2&",URL_COLLECT="/crosspost?id=15",URL_UNCOLLECT="/crosspost?id=16",URL_ALLTOPICS="/cross?id=24&",URL_TOPICLIST="/cross?id=25",cond={topic:"",stock:""},loginfo,jump=!1,chartAttention=echarts.init(document.getElementById("chart-attention")),chartPrice=echarts.init(document.getElementById("chart-price"));echarts.connect([chartAttention,chartPrice]),$(document).ready(function(){if(window.user){loginfo=window.user.replace(/&quot;/g,'"'),loginfo=JSON.parse(loginfo),delete window.user;var e=URL_ALLTOPICS+"userId="+loginfo.username+"&keyword=";$.ajax({url:encodeURI(e),type:"GET",async:!0,cache:!1,success:function(e){var t=JSON.parse(e);if(t=JSON.parse(t),t&&t.length){Math.floor(Math.random()*(t.length>5?5:t.length));_renderTopicTags(t)}},error:function(e){console.log(e)}})}if(window.topic&&window.stock){var t=unescape(decodeURIComponent(window.topic)),o=unescape(decodeURIComponent(window.stock));delete window.topic,delete window.stock,cond.topic=t,cond.stock=o,jump=!0;var n=URL_TOPICHEAT+"userId="+loginfo.username+"&stock="+o+"&topic="+t;_renderChart(n)}else{cond.topic="举牌",cond.stock="金科股份";var n=URL_TOPICHEAT+"userId="+loginfo.username+"&stock="+cond.stock+"&topic="+cond.topic;jump||_renderChart(n)}$.ajax({url:encodeURI(URL_TOPICLIST),type:"GET",async:!0,cache:!1,success:function(e){var t=JSON.parse(e);t=JSON.parse(t),t&&t.length&&_renderDatalist(t)},error:function(e){console.log(e)}}),$(window).on("resize",function(){chartAttention.resize(),chartPrice.resize();var e=$(window).width();e<1520&&e>795?$(".suspending-toolbar").css({right:"8%"}):e<795?$(".suspending-toolbar").css({right:"5%"}):$(".suspending-toolbar").css({right:"15%"})}),$(window).resize(),$("#stockInput").on("input propertychange",function(e){$(this).val()&&$(this).hasClass("error")&&$(this).removeClass("error")}),$("#eventInput").on("input propertychange",function(e){$(this).val()&&$(this).hasClass("error")&&$(this).removeClass("error")}),$("#form-topic").submit(function(e){e.preventDefault(),_hideErr();var t=$("#stockInput").val(),o=$("#eventInput").val();if(!t)return $("#stockInput").addClass("error"),!1;if(!o)return $("#eventInput").addClass("error"),!1;cond.topic=o,cond.stock=t;var n=URL_TOPICHEAT+"userId="+loginfo.username+"&stock="+t+"&topic="+o;_renderChart(n)}),$("#topicPoolInput").on("input propertychange",function(e){var t=$(this).val();t?($("#search-clear").show(),$("#topic-tags").find(":not(label[data-value*='"+t+"'])").hide(),$("#topic-tags").find("label[data-value*='"+t+"']").show()):$("#topic-tags").children().show()})});
+'use strict';
+
+//http://139.196.18.233:8087/smartxtAPI/topicHeat?
+var URL_TOPICHEAT = '/cross?id=2&';
+//http://139.196.18.233:8087/smartxtAPI/topicFollow
+var URL_COLLECT = '/crosspost?id=15';
+//http://139.196.18.233:8087/smartxtAPI/topicUnFollow
+var URL_UNCOLLECT = '/crosspost?id=16';
+var URL_ALLTOPICS = '/cross?id=24&';
+var URL_TOPICLIST = '/cross?id=25';
+var cond = {
+	topic: '',
+	stock: ''
+};
+var loginfo;
+var jump = false;
+//echarts
+var chartAttention = echarts.init(document.getElementById('chart-attention'));
+var chartPrice = echarts.init(document.getElementById('chart-price'));
+echarts.connect([chartAttention, chartPrice]);
+
+$(document).ready(function () {
+
+	//get user
+	if (window.user) {
+		loginfo = window.user.replace(/&quot;/g, '"');
+		loginfo = JSON.parse(loginfo);
+		delete window.user;
+
+		var loadUrl = URL_ALLTOPICS + 'userId=' + loginfo.username + '&keyword=';
+		$.ajax({
+			url: encodeURI(loadUrl),
+			type: 'GET',
+			async: true,
+			cache: false,
+			success: function success(data) {
+				var d = JSON.parse(data);
+
+				if (d && d.length) {
+					var idx = Math.floor(Math.random() * (d.length > 5 ? 5 : d.length));
+					//       cond.topic = d[idx].event;
+					// cond.stock = d[idx].name;
+
+					_renderTopicTags(d);
+				} else {
+					//show message
+				}
+			},
+			error: function error(err) {
+				console.log(err);
+			}
+		});
+	}
+
+	//deal with jump search
+	if (window.topic && window.stock) {
+		var topic = unescape(decodeURIComponent(window.topic));
+		var stock = unescape(decodeURIComponent(window.stock));
+
+		delete window['topic'];
+		delete window['stock'];
+
+		cond.topic = topic;
+		cond.stock = stock;
+		jump = true;
+
+		var url = URL_TOPICHEAT + 'userId=' + loginfo.username + '&stock=' + stock + '&topic=' + topic;
+		_renderChart(url);
+	} else {
+		cond.topic = '举牌';
+		cond.stock = '金科股份';
+		var url = URL_TOPICHEAT + 'userId=' + loginfo.username + '&stock=' + cond.stock + '&topic=' + cond.topic;
+		if (!jump) _renderChart(url);
+	}
+
+	//load topiclist
+	$.ajax({
+		url: encodeURI(URL_TOPICLIST),
+		type: 'GET',
+		async: true,
+		cache: false,
+		success: function success(data) {
+			var d = JSON.parse(data);
+
+			if (d && d.length) {
+				_renderDatalist(d);
+			} else {
+				//show message
+			}
+		},
+		error: function error(err) {
+			console.log(err);
+		}
+	});
+
+	//echart resize
+	$(window).on('resize', function () {
+		chartAttention.resize();
+		chartPrice.resize();
+		var w = $(window).width();
+		if (w < 1520 && w > 795) {
+			$('.suspending-toolbar').css({
+				'right': '8%'
+			});
+		} else if (w < 795) {
+			$('.suspending-toolbar').css({
+				'right': '5%'
+			});
+		} else {
+			$('.suspending-toolbar').css({
+				'right': '15%'
+			});
+		}
+	});
+
+	$(window).resize();
+
+	$('#stockInput').on('input propertychange', function (e) {
+		if ($(this).val()) {
+			if ($(this).hasClass('error')) {
+				$(this).removeClass('error');
+			}
+		}
+	});
+
+	$('#eventInput').on('input propertychange', function (e) {
+		if ($(this).val()) {
+			if ($(this).hasClass('error')) {
+				$(this).removeClass('error');
+			}
+		}
+	});
+	//form submit
+	$('#form-topic').submit(function (e) {
+		e.preventDefault();
+		_hideErr();
+		var stock = $('#stockInput').val();
+		var topic = $('#eventInput').val();
+
+		if (!stock) {
+			$('#stockInput').addClass('error');
+			return false;
+		}
+
+		if (!topic) {
+			$('#eventInput').addClass('error');
+			return false;
+		}
+
+		cond.topic = topic;
+		cond.stock = stock;
+
+		var url = URL_TOPICHEAT + 'userId=' + loginfo.username + '&stock=' + stock + '&topic=' + topic;
+		_renderChart(url);
+	});
+
+	$('#topicPoolInput').on('input propertychange', function (e) {
+		var value = $(this).val();
+		if (value) {
+			$('#search-clear').show();
+			$('#topic-tags').find(":not(label[data-value*='" + value + "'])").hide();
+			$('#topic-tags').find("label[data-value*='" + value + "']").show();
+		} else {
+			$('#topic-tags').children().show();
+		}
+	});
+});
+
+function onStar(that) {
+	var $btn = $(that).find('i');
+	if (!$btn.hasClass('icon-collected')) {
+		var path = URL_COLLECT;
+		var msg = '已收藏';
+		var postData = {
+			userId: loginfo.username,
+			code: cond.stock,
+			topic: cond.topic
+		};
+	} else {
+		var path = URL_UNCOLLECT;
+		var msg = '取消收藏';
+		var postData = {
+			userId: loginfo.username,
+			links: cond.stock + '@' + cond.topic
+		};
+	}
+
+	$.ajax({
+		url: path,
+		method: 'POST',
+		data: postData,
+		// contentType: 'application/json',
+		dataType: 'json',
+		success: function success(data) {
+			var d = JSON.parse(data);
+
+			if (d.flag || d[0].status) {
+				$btn.toggleClass('icon-collected');
+				_showFadeMsg(msg);
+			} else {
+				_showFadeMsg(d.msg);
+			}
+		},
+		error: function error(err) {
+			console.log(err);
+		}
+	});
+}
+
+function _renderDatalist(d) {
+	var all = $('#topicList');
+	d.forEach(function (cur) {
+		var option = document.createElement('OPTION');
+		$(option).val(cur);
+		all.append(option);
+	});
+}
+
+function _renderChart(url) {
+	$('div.focus-loading').show();
+
+	chartAttention = echarts.init(document.getElementById('chart-attention'));
+	chartPrice = echarts.init(document.getElementById('chart-price'));
+	echarts.connect([chartAttention, chartPrice]);
+	// configure echart
+	// chartAttention.showLoading();
+	// chartPrice.showLoading();
+	$.ajax({
+		url: encodeURI(url),
+		cache: false,
+		success: function success(data) {
+
+			var heat = [];
+			var index = [];
+			var category = [];
+			var legend = cond.stock + '-' + cond.topic;
+			var d = JSON.parse(data);
+			var entry = d.topicHeat;
+			if (!entry || !entry.length) {
+				// chartAttention.hideLoading();
+				// chartPrice.hideLoading();
+				_showErr('找不到相关信息');
+				$('div.focus-loading').hide();
+				return false;
+			}
+			var flag = d.flag;
+			var $btnCollect = $('i[class*=icon-collect]');
+			if (0 == flag || -1 == flag) {
+				if ($btnCollect.hasClass('icon-collected')) {
+					$btnCollect.removeClass('icon-collected');
+				}
+			} else if (1 == flag) {
+				if (!$btnCollect.hasClass('icon-collected')) {
+					$btnCollect.addClass('icon-collected');
+				}
+			}
+			$('#stockInput').val('');
+			$('#eventInput').val('');
+			// $('.charts .topic-collect').show();
+			//scroll to result list
+			// $("html, body").animate({scrollTop: $('section.charts').offset().top-60}, 800);
+
+			entry.forEach(function (cur) {
+				category.push(cur.date);
+				heat.push(cur.heat);
+				index.push(cur.index);
+			});
+
+			//attention
+			chartAttention.setOption({
+				baseOption: {
+					title: {
+						text: ''
+					},
+					tooltip: {
+						trigger: 'axis'
+					},
+					dataZoom: [{
+						handleColor: 'rgb(75,188,208)',
+						fillerColor: 'rgb(75,188,208)',
+						borderWidth: 0,
+						show: true,
+						realtime: true,
+						start: 75.5,
+						end: 100,
+						height: 15
+					}],
+					legend: {
+						data: [{
+							name: legend,
+							icon: 'line'
+						}]
+					},
+					toolbox: {
+						feature: {
+							saveAsImage: {}
+						}
+					},
+					xAxis: [{
+						type: 'category',
+						data: category,
+						axisLine: {
+							show: true,
+							lineStyle: {
+								type: 'solid',
+								width: 1,
+								color: 'rgb(75,188,208)'
+							}
+						},
+						axisTick: false,
+						axisLabel: {
+							textStyle: {
+								fontFamily: '微软雅黑',
+								fontSize: 12,
+								color: 'black'
+							}
+						},
+						boundaryGap: false
+					}],
+					yAxis: [{
+						name: '关注度(H)',
+						type: 'value',
+						scale: true,
+						axisLine: {
+							show: true,
+							lineStyle: {
+								type: 'solid',
+								width: 1,
+								color: 'rgb(75,188,208)'
+							}
+						},
+						axisLabel: {
+							textStyle: {
+								fontFamily: '微软雅黑',
+								fontSize: 12,
+								color: 'black'
+							}
+						},
+						axisTick: false,
+						nameTextStyle: {
+							fontFamily: '微软雅黑',
+							fontSize: 12,
+							color: 'black'
+						},
+						splitNumber: 10,
+						splitLine: {
+							show: true,
+							lineStyle: {
+								type: 'dashed',
+								width: 1,
+								color: '#dcdcdc'
+							}
+						}
+					}],
+					series: [{
+						name: legend,
+						type: 'line',
+						data: heat,
+						itemStyle: {
+							normal: {
+								color: 'rgb(50,70,95)'
+							}
+						}
+					}]
+				}
+			});
+			// chartAttention.hideLoading();
+
+			//price
+			chartPrice.setOption({
+				baseOption: {
+					title: {
+						text: ''
+					},
+					tooltip: {
+						trigger: 'axis'
+					},
+					dataZoom: [{
+						handleColor: 'rgb(75,188,208)',
+						fillerColor: 'rgb(75,188,208)',
+						borderWidth: 0,
+						show: true,
+						realtime: true,
+						start: 75.5,
+						end: 100,
+						height: 15
+					}],
+					legend: {
+						data: [{
+							name: legend,
+							icon: 'line'
+						}]
+					},
+					toolbox: {
+						feature: {
+							saveAsImage: {}
+						}
+					},
+					xAxis: [{
+						// name: 'Date',
+						type: 'category',
+						data: category,
+						axisLine: {
+							show: true,
+							lineStyle: {
+								type: 'solid',
+								width: 1,
+								color: 'rgb(75,188,208)'
+							}
+						},
+						axisTick: false,
+						axisLabel: {
+							textStyle: {
+								fontFamily: '微软雅黑',
+								fontSize: 12,
+								color: 'black'
+							}
+						},
+						boundaryGap: false
+					}],
+					yAxis: [{
+						name: '价格指数(I)',
+						type: 'value',
+						scale: true,
+						axisLine: {
+							show: true,
+							lineStyle: {
+								type: 'solid',
+								width: 1,
+								color: 'rgb(75,188,208)'
+							}
+						},
+						axisLabel: {
+							textStyle: {
+								fontFamily: '微软雅黑',
+								fontSize: 12,
+								color: 'black'
+							}
+						},
+						axisTick: false,
+						nameTextStyle: {
+							fontFamily: '微软雅黑',
+							fontSize: 12,
+							color: 'black'
+						},
+						splitNumber: 10,
+						splitLine: {
+							show: true,
+							lineStyle: {
+								type: 'dashed',
+								width: 1,
+								color: '#dcdcdc'
+							}
+						}
+					}],
+					series: [{
+						name: legend,
+						type: 'line',
+						data: index,
+						itemStyle: {
+							normal: {
+								color: 'rgb(230,85,30)'
+							}
+						}
+					}]
+				}
+			});
+			// chartPrice.hideLoading();
+			$('div.focus-loading').hide();
+		},
+		error: function error(err) {
+			console.log(err);
+		}
+	});
+}
+
+function customOpStock(li) {
+	if (!li) {
+		return;
+	}
+
+	var $li = $(li);
+	// var code = $li.find('span[class*="item-1"]').text();
+	var name = $li.find('span[class*="item-2"]').text();
+	$('#stockInput').val(name);
+}
+
+function _showErr(text) {
+	$('div#error-msg>strong').text(text);
+	$('div#error-msg').show(500);
+}
+
+function _hideErr() {
+	$('div#error-msg').hide(500);
+}
+
+function delAlert(that) {
+	var $btn = $(that);
+	$btn.parent().hide(500);
+}
+
+function _showFadeMsg(text) {
+
+	var l = $('.suspending-toolbar').offset().left - 50;
+	var t = $('.suspending-toolbar').offset().top + 100;
+	$('#fade-msg').text(text);
+
+	$('#fade-alert').css({ 'left': l, 'top': t }).fadeIn(function () {
+		setTimeout(function () {
+			$('#fade-alert').fadeOut();
+		}, 1000);
+	});
+}
+
+function onPool(that) {
+	$('#topic-tags').children().show();
+	var poolHeight = $(document).height();
+	$('#pool').height(poolHeight).show();
+}
+
+function destroyPool(that) {
+	$('#pool').hide();
+	clearSearch();
+}
+
+function clearSearch(that) {
+	$('#topicPoolInput').val('');
+	$('#topic-tags').children().show();
+	$('#search-clear').hide();
+}
+
+function _renderTopicTags(tags) {
+	var $tagsPool = $('#topic-tags');
+	tags.forEach(function (cur) {
+		var tag = $('<label class="label-category" ></label>');
+		$(tag).attr('data-value', cur.code + '|' + cur.name + '|' + cur.event);
+		$(tag).text(cur.code + '-' + cur.name + '-' + cur.event);
+		$tagsPool.append(tag);
+	});
+}
+
+function checkTag(e) {
+	e.stopPropagation();
+	if (e.target.tagName === 'LABEL') {
+		destroyPool();
+		var $btnCollect = $('.charts .topic-collect .btn-star');
+		if ($btnCollect.hasClass('collect')) {
+			$btnCollect.removeClass('collect');
+		}
+		var value = $(e.target).attr('data-value').split('|');
+		cond.topic = value[2];
+		cond.stock = value[1];
+
+		var url = URL_TOPICHEAT + 'userId=' + loginfo.username + '&stock=' + cond.stock + '&topic=' + cond.topic;
+		_renderChart(url);
+	}
+}

@@ -52,6 +52,7 @@ exports.findByUsername = function(username, cb) {
 			return cb(null, user);
 		}
 		var address = 'http://139.196.18.233:8087/smartxtAPI/getUserInfo?userId='+ username;
+		// console.log('ip', req.ip);
 		//http request get user
 		http.get(url.parse(address), function(response) {
 	  		var body = '';

@@ -18,7 +18,6 @@ $(document).ready(() => {
 		cache: false,
 		success: (data) => {
 		    var d = JSON.parse(data);
-		    d = JSON.parse(d);
 
 		    if(d && d.length) {
 		    	d.sort(function(a, b) {
@@ -35,14 +34,14 @@ $(document).ready(() => {
 			    		$(elem).attr('data-id', categoryRange.length+'').text(cur);
 			    		categoryRange.push(cur);
 			    		$('#sources').append(elem);
-			    	}	
+			    	}
 		    	});
-		    } 
+		    }
 		},
 		error: (err) => {
 		    console.log(err);
 		}
-	}); 
+	});
 
 	if(window.user) {
         loginfo = window.user.replace(/&quot;/g,'"');
@@ -63,7 +62,7 @@ $(document).ready(() => {
 	  		//loading more
 	  		_renderMoreNews(true);
 	  	}
-	});	  		
+	});
 
 	$('#newsInput').keydown(function(e) {
 		if(e.keyCode == 13) {
@@ -122,7 +121,7 @@ function onCategory(event) {
 					$target.parent().find('[data-id=0]').addClass('active');
 				}
 			}else {
-				var activeChild = $target.parent().find('[class*=active]').length; 
+				var activeChild = $target.parent().find('[class*=active]').length;
 				var child = $target.siblings().length - 1;
 				if(activeChild == child) {
 					$target.parent().find('[class*=active]').removeClass('active');
@@ -154,7 +153,7 @@ function _renderMoreNews(f) {
 		lastId = -1;
 		$('.news-content>ol').empty();
 	}
-	
+
 	var loadUrl = URL_CHATS + 'userId=' + loginfo.username + '&lastId=' + lastId;
 	if(keyword) {
 		loadUrl += '&keyword=' + keyword;
@@ -182,7 +181,6 @@ function _renderMoreNews(f) {
 		cache: false,
 		success: (data) => {
 		    var d = JSON.parse(data);
-		    d = JSON.parse(d);
 
 		    if(d && d.length) {
 		    	$('#error-msg').hide();
@@ -218,7 +216,7 @@ function _renderMoreNews(f) {
 		error: (err) => {
 		    console.log(err);
 		}
-	}); 
+	});
 }
 
 function _renderNewsContent(o) {
@@ -308,7 +306,7 @@ function _renderNewsContent(o) {
                                     <button class="collapse-btn none" onclick="onCollapseContent(this)"><i class="fa fa-hand-o-up" aria-hidden="true" style="font-size: 16px;"></i>&nbsp;收起</button>
                                 </div>
                             </div>
-                        </li>                   
+                        </li>
                     </ul>
                 </li>`);
 

@@ -11,7 +11,6 @@ $(document).ready(function() {
         cache: false,
         success: (data) => {
             var d = JSON.parse(data);
-            d = JSON.parse(d);
 
             if(d && d.length) {
                 //render line chart
@@ -28,7 +27,7 @@ $(document).ready(function() {
         e.preventDefault();
         // console.log('go top');
         curPage = 1;
-        
+
         $('section').css('transform','translateY(0%)');
         $('footer').css('transform','translateY('+$(window).height()+'px)');
         $('#topcontrol').css({'opacity':0,'z-index':999});
@@ -36,7 +35,7 @@ $(document).ready(function() {
     // $(window).on('resize', function() {
     //     $('section').height($(window).height());
     // });
-    /* ======= Fixed header when scrolled ======= */   
+    /* ======= Fixed header when scrolled ======= */
     $(window).on('load resize', function() {
         $('footer').css('transform','translateY('+$(window).height()+'px)');
 
@@ -70,10 +69,10 @@ $(document).ready(function() {
         loginfo = JSON.parse(loginfo);
         var userName = loginfo.username;
         delete window.user;
-        console.log('user', loginfo);
+        // console.log('user', loginfo);
         postData.userId = userName;
         // $.extend({
-        //     userId: userName,  
+        //     userId: userName,
         // }, postData);
     }
     $.ajax({
@@ -83,10 +82,7 @@ $(document).ready(function() {
         // contentType: 'application/json',
         dataType: 'json',
         success: (data) => {
-            var d = JSON.parse(data);
-            d = JSON.parse(d);
-
-            console.log('log', d.flag);
+            // console.log('log', d.flag);
         },
         error: (err) => {
             console.log(err);
@@ -140,7 +136,7 @@ function sectionOnScroll(e) {
                         $('#topcontrol').css({'opacity':0});
                     }
                 }, 300);
-                
+
                 return;
             }
             setTimeout(function() {
@@ -173,13 +169,13 @@ function sectionOnScroll(e) {
                 return;
             }
             setTimeout(function() {
-                $('section[class*=section-' + --curPage + ']').css('transform','translateY(0%)'); 
+                $('section[class*=section-' + --curPage + ']').css('transform','translateY(0%)');
                     if(curPage > 1) {
                         $('#topcontrol').css({'opacity':1,'z-index':999});
                     }else{
                         $('#topcontrol').css({'opacity':0});
                     }
-            }, 300);           
+            }, 300);
         }
 
     }
@@ -197,7 +193,7 @@ function scrollUp() {
     if(curPage == 1) {
         return;
     }
-            
+
     if(curPage == LASTPAGE) {
         var windowHeight = $(window).height();
         // var footerHeight = $('footer').height();
@@ -211,18 +207,18 @@ function scrollUp() {
                 $('#topcontrol').css({'opacity':0});
             }
         }, 300);
-        
+
         return;
     }
-            
+
     setTimeout(function() {
-        $('section[class*=section-' + --curPage + ']').css('transform','translateY(0%)'); 
+        $('section[class*=section-' + --curPage + ']').css('transform','translateY(0%)');
         if(curPage > 1) {
             $('#topcontrol').css({'opacity':1,'z-index':999});
         }else{
             $('#topcontrol').css({'opacity':0});
         }
-    }, 300);  
+    }, 300);
 }
 
 function scrollDown() {
@@ -230,12 +226,12 @@ function scrollDown() {
     if(curPage == LASTPAGE) {
         return;
     }
-            
+
     if(curPage == (LASTPAGE-1)) {
         var windowHeight = $(window).height();
         var footerHeight = $('footer').height();
         var delta = windowHeight - footerHeight;
-                
+
         setTimeout(function() {
             $('section[class*=section-' + curPage++ + ']').css('transform','translateY(-'+footerHeight+'px)');
             $('footer').css('transform','translateY('+delta+'px)');
@@ -245,10 +241,10 @@ function scrollDown() {
                 $('#topcontrol').css({'opacity':0});
             }
         }, 300);
-                
+
         return;
     }
-            
+
     setTimeout(function() {
         $('section[class*=section-' + curPage++ + ']').css('transform','translateY(-100%)');
         if(curPage > 1) {

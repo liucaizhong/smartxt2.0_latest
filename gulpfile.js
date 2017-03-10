@@ -46,16 +46,16 @@ gulp.task('es6', () => {
 	.pipe(babel({
 		presets: ['es2015']
 	}))
-	.pipe(uglify())
+	// .pipe(uglify())
 	.pipe(gulp.dest(appProd + 'src'))
-  .pipe(bs.stream());
+    .pipe(bs.stream());
 });
 
 //jade => html
 // var pug = require('gulp-pug');
 
 // gulp.task('html', () => {
- 
+
 //   gulp.src(viewProd + '*.pug')
 //     .pipe(plumber())
 //     .pipe(pug({
@@ -66,7 +66,7 @@ gulp.task('es6', () => {
 
 //livereload
 // gulp.task('watch', () => {
-  
+
 //   gulp.watch(appDev + 'img/*', ['image']);
 //   gulp.watch(viewProd + '*.jade', ['html']);
 // });

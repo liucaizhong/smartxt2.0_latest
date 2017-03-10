@@ -10,8 +10,10 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var md5 = require('md5');
 var flash = require('connect-flash');
+var fs = require('fs');
+var readline = require('readline');
 
-// routes 
+// routes
 var index = require('./routes/index');
 // var signup = require('./routes/signup');
 var login = require('./routes/login');
@@ -40,36 +42,25 @@ passport.use(new LocalStrategy({
 },
 function(username, password, cb) {
     auth.findByUsername(username, function(err, user) {
-      //store user info
-      // req.session.user = {
-      //     username: username,
-      //     password: password
-      // };
-
-      // auth.setUser({
-      //     username: username,
-      //     password: password
-      // });
-      if (err) { 
+      if (err) {
         console.log('出现错误.');
-        return cb(err); 
+        return cb(err);
       }
-      // console.log('user', user);
 
       //for convenience
       if(user.username == '3117'){
         return cb(null, user);
       }
 
-      if (!user.password) { 
+      if (!user.password) {
         console.log('没有找到对应的用户名.');
-        return cb(null, user, {message: '0'}); 
+        return cb(null, user, {message: '0'});
       }
 
-      if (user.password != md5(password)) { 
+      if (user.password != md5(password)) {
         console.log('密码匹配有误.');
         user.password = password;
-        return cb(null, user, {message: '1'}); 
+        return cb(null, user, {message: '1'});
       }
       return cb(null, user);
     });
@@ -80,7 +71,6 @@ passport.serializeUser(function(user, cb) {
   cb(null, user.username);
 });
 passport.deserializeUser(function(username, cb) {
-  // console.log('deserializeUser begin');
   auth.getByUsername(username, function (err, user) {
     if (err) { return cb(err); }
     cb(null, user);
@@ -114,7 +104,46 @@ app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'build')));
 
 // define the relation url&js
-// app.use('/', index);
+app.all('*', function(req, res, next) {
+  try {
+    var addr = req.headers['x-forwarded-for'] ||
+        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
+        req.connection.socket.remoteAddress;
+    addr = addr.split(':');
+    var i = addr.length -1;
+    addr = addr[i];
+
+    var f = false;
+    var frs = fs.createReadStream('./data/anti_crawl.txt');
+    var rl = readline.createInterface({
+      input: frs,
+      output: process.stdout
+    });
+    rl.on('line', (input)=> {
+      // console.log(input);
+      if(addr === input) {
+        f = !f;
+      }
+    });
+
+    rl.on('close', ()=> {
+      if(f) {
+        var err = new Error('Not Found');
+        err.status = 404;
+        next(err);
+      }else {
+        next();
+      }
+    });
+
+  } catch (e) {
+    console.log(e);
+    // next();
+  }
+
+});
+app.use('/', index);
 app.use('/index', index);
 // app.use('/signup', signup);
 app.use('/login', login);

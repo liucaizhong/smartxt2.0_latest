@@ -75,7 +75,7 @@ $(document).ready(() => {
         // histogram.forEach(function(cur) {
         //     cur.resize();
         // })
-        
+
         var w = $(window).width();
         if(w < 1520 && w > 795) {
             $('.suspending-toolbar').css({
@@ -157,14 +157,13 @@ $(document).ready(() => {
             cache: false,
             success: (data) => {
                 var d = JSON.parse(data);
-                d = JSON.parse(d);
 
                 if(d && d.length) {
                     // $('input#theme-input').val(d[idx]);
                     _renderDatalist(d);
 
                     if(!jump) {
-                        var idx = Math.floor(Math.random() * (d.length>10?10:d.length)); 
+                        var idx = Math.floor(Math.random() * (d.length>10?10:d.length));
                         theme[0] = d[idx];
                         // jump = true;
                         _setCondition(method,theme);
@@ -204,7 +203,7 @@ $(document).ready(() => {
         }
 
         _renderCharts();
-    });   
+    });
 
 });
 
@@ -252,11 +251,11 @@ function _renderCharts(heatUrl, stockUrl) {
         cache: false,
         success: (data) => {
             var d = JSON.parse(data);
-            d = JSON.parse(d);
 
             if(d && d.length) {
                 //render line chart
                 _renderLineChart(d);
+                $('div.focus-loading').hide();
             } else {
                 //show message
             }
@@ -273,7 +272,6 @@ function _renderCharts(heatUrl, stockUrl) {
         cache: false,
         success: (data) => {
             var d = JSON.parse(data);
-            d = JSON.parse(d);
 
             if(d && d.length) {
                 //render line chart
@@ -303,11 +301,11 @@ function _genUrl(url, flag) {
     //add theme to url
     if(method != 2) {
         theme.forEach(function(cur) {
-        	urlTheme += cur.trim() + ',';
+        	urlTheme += cur.trim() + ';';
         });
     }else {
         theme.forEach(function(cur) {
-            urlTheme += cur.trim() + ';';
+            urlTheme += cur.trim() + ',';
         });
     }
     //remove comma at the end of str
@@ -315,7 +313,7 @@ function _genUrl(url, flag) {
     // urlTheme = encodeURIComponent(escape(urlTheme));
     //add source to url
     source.forEach(function(cur) {
-    	urlSource += cur +',';
+    	urlSource += cur +';';
     });
 	//remove comma at the end of str
 	urlSource = urlSource.substr(0, urlSource.length-1);
@@ -368,7 +366,7 @@ function onMethod(that) {
         });
         $btn.removeClass('btn-invalid').addClass('btn-valid');
     }
-    console.log('method:', method);
+    // console.log('method:', method);
 }
 
 function _setDefault() {
@@ -389,18 +387,17 @@ function _setDefault() {
     //set theme
     if(method == 2) {
         $('#btnAddTheme').removeClass('fa-plus-circle').addClass('fa-link');
-    	$('#theme-input').attr('placeholder','支持主题交叉搜索(半角分号隔开),例如“钢铁;煤炭”');
+    	$('#theme-input').attr('placeholder','请逐次输入要搜索的关键词,例如“煤炭”');
     } else {
         $('#btnAddTheme').removeClass('fa-link').addClass('fa-plus-circle');
     	$('#theme-input').attr('placeholder','输入关键字用于描述要查询的主题信息,例如 “钢铁”');
-
-        if(method == 1) {
-            theme = theme.slice(0,1);
-            $('#theme-tags').find('div:not([data-txt="' + theme[0].trim() + '"])').remove();
-        }else {
-            source = source.slice(0,1);
-            $('#s' + source[0]).siblings('[class*="btn-valid"]').removeClass('btn-valid').addClass('btn-invalid');
-        }
+    }
+    if(method == 1) {
+        theme = theme.slice(0,1);
+        $('#theme-tags').find('div:not([data-txt="' + theme[0].trim() + '"])').remove();
+    }else {
+        source = source.slice(0,1);
+        $('#s' + source[0]).siblings('[class*="btn-valid"]').removeClass('btn-valid').addClass('btn-invalid');
     }
     // var tagChilds = $('div#theme-tags').empty();
     // theme = [];
@@ -418,13 +415,13 @@ function onPeriod(that) {
         });
         $btn.removeClass('btn-invalid').addClass('btn-valid');
     }
-    console.log('period:', period);
+    // console.log('period:', period);
 }
 
 function onSource(that) {
-    if (0 == method) {
+    if (method != 1) {
         var $btn = $(that);
-        var curSource = $btn.attr('id')[1]
+        var curSource = +$btn.attr('id')[1]
         if (source[0] != curSource) {
             source[0] = curSource;
             var btnSiblings = $btn.siblings('button[class*="btn-valid"]');
@@ -435,7 +432,7 @@ function onSource(that) {
         }
     } else {
         var $btn = $(that);
-        var curSource = $btn.attr('id')[1];
+        var curSource = +$btn.attr('id')[1];
         var indexOfSource = source.indexOf(curSource);
         if (-1 == indexOfSource) {
             source.push(curSource);
@@ -445,7 +442,7 @@ function onSource(that) {
             $btn.removeClass('btn-valid').addClass('btn-invalid');
         }
     }
-    console.log('source:', source);
+    // console.log('source:', source);
 }
 
 function _showErr(text) {
@@ -494,7 +491,7 @@ function addTheme(that) {
     	$('#theme-tags').append(themeTag);
 
     }
-    console.log('theme', theme);
+    // console.log('theme', theme);
 }
 
 function delThemeTag(that) {
@@ -507,7 +504,7 @@ function delThemeTag(that) {
     if(!theme.length) {
     	_hideErr();
     }
-    console.log('theme', theme);
+    // console.log('theme', theme);
 }
 
 function delAlert(that) {
@@ -519,7 +516,7 @@ function _renderLineChart(data) {
     //scroll to result list
     // $("html, body").animate({scrollTop: $('#charts').offset().top - 100}, 800);
 
-    lineChart = echarts.init(document.getElementById('line-chart')); 
+    lineChart = echarts.init(document.getElementById('line-chart'));
     // chart.showLoading();
 
     var flag = data[0].flag;
@@ -545,7 +542,7 @@ function _renderLineChart(data) {
     }
     var entry = data.splice(1);
 
-  	var legend = []; 
+  	var legend = [];
   	var category = [];
   	var series = [];
 
@@ -560,9 +557,9 @@ function _renderLineChart(data) {
                 itemStyle : {
                     normal: {
                         areaStyle: {
-                            type: 'default', 
+                            type: 'default',
                             color:'rgba(239,243,246,.6)'
-                        }, 
+                        },
                         color: 'rgb(50,70,90)'
                     }
                 },
@@ -575,9 +572,9 @@ function _renderLineChart(data) {
                 itemStyle : {
                     normal: {
                         areaStyle: {
-                            type: 'default', 
+                            type: 'default',
                             color: 'rgba(250,225,222,.6)'
-                        }, 
+                        },
                         color: 'rgb(235,85,30)'
                     }
                 },
@@ -617,7 +614,7 @@ function _renderLineChart(data) {
   	} else {
   		chartTitle = theme[0];
   	}
- 
+
     lineChart.setOption({
         baseOption: {
             title: {
@@ -627,12 +624,12 @@ function _renderLineChart(data) {
                 trigger: 'axis'
             },
             dataZoom: [{
-                handleColor:'rgb(75,188,208)', 
-                fillerColor:'rgb(75,188,208)',  
+                handleColor:'rgb(75,188,208)',
+                fillerColor:'rgb(75,188,208)',
                 borderWidth:0,
-                show : true,  
-                realtime: true,  
-                start:75.5, 
+                show : true,
+                realtime: true,
+                start:75.5,
                 end: 100,
                 height:15
             }],
@@ -648,18 +645,18 @@ function _renderLineChart(data) {
             	type: 'category',
                 data: category,
                 axisLine: {
-                    show: true, 
+                    show: true,
                     lineStyle:{
-                        type:'solid', 
-                        width: 1, 
-                        color:'rgb(75,188,208)' 
+                        type:'solid',
+                        width: 1,
+                        color:'rgb(75,188,208)'
                     }
                 },
                 axisTick:false,
                 axisLabel:{
                     textStyle: {
                         color:'black',
-                        fontFamily : '微软雅黑', 
+                        fontFamily : '微软雅黑',
                         fontSize : 12
                     }
                 },
@@ -669,64 +666,64 @@ function _renderLineChart(data) {
                 name: '关注度(H)',
                 type: 'value',
 	  			splitNumber: 10,
-                scale:true, 
+                scale:true,
                 axisLine: {
-                    show: true, 
+                    show: true,
                     lineStyle:{
-                        type:'solid', 
-                        width: 1, 
-                        color:'rgb(75,188,208)' 
+                        type:'solid',
+                        width: 1,
+                        color:'rgb(75,188,208)'
                     }
                 },
                 axisLabel:{
                     textStyle:{
                         color:'black',
-                        fontFamily : '微软雅黑', 
+                        fontFamily : '微软雅黑',
                         fontSize : 12
                     }
                 },
                 splitLine: {
-                    show: true, 
+                    show: true,
                     lineStyle:{
-                        type:'dashed', 
+                        type:'dashed',
                         width: 1
                     }
                 },
                 nameTextStyle:{
                     color:'black',
-                    fontFamily : '微软雅黑', 
+                    fontFamily : '微软雅黑',
                     fontSize : 12
                 }
             }, {
                 name: '指数(I)',
                 type: 'value',
 	  			splitNumber: 10,
-                scale:true, 
+                scale:true,
                 axisLine: {
-                    show: true, 
+                    show: true,
                     lineStyle:{
-                        type:'solid', 
-                        width: 1, 
-                        color:'rgb(75,188,208)' 
+                        type:'solid',
+                        width: 1,
+                        color:'rgb(75,188,208)'
                     }
                 },
                 axisLabel:{
                     textStyle:{
                         color:'black',
-                        fontFamily : '微软雅黑', 
+                        fontFamily : '微软雅黑',
                         fontSize : 12
                     }
                 },
                 splitLine: {
-                    show: false, 
+                    show: false,
                     lineStyle:{
-                        type:'dashed', 
+                        type:'dashed',
                         width: 1
                     }
                 },
                 nameTextStyle:{
                     color:'black',
-                    fontFamily : '微软雅黑', 
+                    fontFamily : '微软雅黑',
                     fontSize : 12
                 }
             }],
@@ -762,7 +759,7 @@ function _renderHistogram(data) {
             } else {
                 legend.push(cur.concept);
             }
-            //data for one tab 
+            //data for one tab
             var category = [];
             var text = [];
             var price = [];
@@ -815,28 +812,27 @@ function _renderHistogram(data) {
 
         var isEmpty = jQuery.isEmptyObject(chartData[i]);
         if(!isEmpty) {
+
+            if($tabContent.hasClass('theme-error-msg')) {
+              $tabContent.removeClass('theme-error-msg');
+            }
             var l = chartIndex.length;
             //render charts
             for(var n = 0; n < l; ++n) {
                 if(n%2) {
                     _renderRightHistogram(chartData[i].category,chartData[i].data[n],chartIndex[n],chartColor[n%2],id);
                     echarts.connect([histogram[n-1+l*i], histogram[n+l*i]]);
-                    console.log(n-1+l*i, n+l*i);
+                    // console.log(n-1+l*i, n+l*i);
                 } else {
                     _renderLeftHistogram(chartData[i].category,chartData[i].data[n],chartIndex[n],chartColor[n%2],id);
                 }
             }
         } else {
             //show message
-            $('#tab-content').text('不存在股票相关指数！').css({
-                'padding-top': '100px',
-                'padding-bottom': '120px',
-                'text-align': 'center',
-                'font-size': '2rem'
-            });
+            $tabContent.text('不存在股票相关指数！').addClass('theme-error-msg');
         }
 
-        $('div.focus-loading').hide();
+        // $('div.focus-loading').hide();
         //whether show footer
         if($('footer').hasClass('none')) {
             $('footer').show();
@@ -874,7 +870,7 @@ function _renderLeftHistogram(category,data,index,color,id) {
                 data: [index],
                 x: 'right',
                 textStyle: {
-                    fontFamily : '微软雅黑', 
+                    fontFamily : '微软雅黑',
                     fontSize : 12,
                     color: 'black'
                 }
@@ -882,17 +878,17 @@ function _renderLeftHistogram(category,data,index,color,id) {
             xAxis:  {
                 type: 'value',
                 position:'top',
-                axisLine: {show: false}, 
+                axisLine: {show: false},
                 splitNumber: 10,
-                splitLine: {show: true, 
+                splitLine: {show: true,
                     lineStyle:{
-                        type:'dashed', 
+                        type:'dashed',
                         width: 1
                     }
                 },
                 axisLabel: {
                     textStyle: {
-                        fontFamily : '微软雅黑', 
+                        fontFamily : '微软雅黑',
                         fontSize : 12,
                         color: 'black'
                     }
@@ -905,7 +901,7 @@ function _renderLeftHistogram(category,data,index,color,id) {
                 position: 'left',
                 inverse: true,
                 axisTick: false,
-                axisLine: {show: false}, 
+                axisLine: {show: false},
                 splitLine: {show: false}
             },
             series: [
@@ -956,7 +952,7 @@ function _renderRightHistogram(category,data,index,color,id) {
                 data: [index],
                 x: 'left',
                 textStyle: {
-                    fontFamily : '微软雅黑', 
+                    fontFamily : '微软雅黑',
                     fontSize : 12,
                     color: 'black'
                 }
@@ -964,17 +960,17 @@ function _renderRightHistogram(category,data,index,color,id) {
             xAxis:  {
                 type: 'value',
                 position:'top',
-                axisLine: {show: false}, 
+                axisLine: {show: false},
                 splitNumber: 10,
-                splitLine: {show: true, 
+                splitLine: {show: true,
                     lineStyle:{
-                        type:'dashed', 
+                        type:'dashed',
                         width: 1
                     }
                 },
                 axisLabel: {
                     textStyle: {
-                        fontFamily : '微软雅黑', 
+                        fontFamily : '微软雅黑',
                         fontSize : 12,
                         color: 'black'
                     }
@@ -991,7 +987,7 @@ function _renderRightHistogram(category,data,index,color,id) {
                     inside: true
                 },
                 axisTick: false,
-                axisLine: {show: false}, 
+                axisLine: {show: false},
                 splitLine: {show: false}
             },
             color: [color],
@@ -1075,7 +1071,6 @@ function onStar(that) {
         dataType: 'json',
         success: (data) => {
             var d = JSON.parse(data);
-            d = JSON.parse(d);
 
             if(d.flag || d[0].status) {
                 $btn.toggleClass('icon-collected');
@@ -1096,7 +1091,7 @@ function onsourceNav(that) {
     $('#sourceNavs').find('a.nav-link[class*="active"]').removeClass('active');
     $that.addClass('active');
 
-    //ajax 
+    //ajax
     var sourceId = $that.attr('id');
     source[0] = sourceId.substr(sourceId.length-1,1);
     _renderCharts();
@@ -1136,7 +1131,6 @@ function onAddFreshWord(that) {
         dataType: 'json',
         success: (data) => {
             var d = JSON.parse(data);
-            d = JSON.parse(d);
 
             if(d.flag) {
                 _showFadeMsg('新词：'+value+' 提交成功');

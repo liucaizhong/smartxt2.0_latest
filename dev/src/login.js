@@ -18,8 +18,8 @@ $(document).ready(function() {
 			return;
 		}
 
-        console.log('loginLink', loginLink);
-        console.log('loginKeyword', loginKeyword);
+        // console.log('loginLink', loginLink);
+        // console.log('loginKeyword', loginKeyword);
 
 		//post
 		//username+password
@@ -69,8 +69,8 @@ $(document).ready(function() {
 			$(".login-content").addClass('shake_effect')
 		},1); 
 
-        console.log('user', user);
-        console.log('error', error);
+        // console.log('user', user);
+        // console.log('error', error);
     }
 
     if(window.link) {
@@ -80,7 +80,7 @@ $(document).ready(function() {
         linkTemp = linkTemp.replace(/&#x2F;/g, '\\');
         loginLink = linkTemp;
 
-        console.log('loginLink', loginLink);
+        // console.log('loginLink', loginLink);
     } 
     if(window.word) {
         var wordTemp = window.word;
@@ -88,7 +88,7 @@ $(document).ready(function() {
         wordTemp = wordTemp.replace(/&quot;/g, '');
         loginKeyword = wordTemp;
 
-        console.log('loginKeyword', loginKeyword);
+        // console.log('loginKeyword', loginKeyword);
     }
 
     $('#account').on('input propertychange', function(e) {

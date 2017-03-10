@@ -20,18 +20,29 @@ var URL_DELSTOCK = '/crosspost?id=9';
 var URL_FRESHWORD = '/cross?id=12&';
 //http://139.196.18.233:8087/smartxtAPI/profileUpdate
 var URL_UPDATEPROFILE = '/crosspost?id=17';
+var URL_REGISTERUSER = '/crosspost?id=26';
 //0:stock,1:theme,2:topic
 var opObj = 0;
 var loginfo;
 var sourceRange = ['投资者总体', '散户群体', '从业人群', '新闻媒体'];
+var stockListFromFile = [];
+var registerFlag = false;
 
 $(document).ready(function() {
 	//get user
-    console.log(window.user);
+    // console.log(window.user);
     if(window.user) {
         loginfo = window.user.replace(/&quot;/g,'"');
         loginfo = JSON.parse(loginfo);
         delete window.user;
+
+        if(!loginfo.username.localeCompare('13524213611') || !loginfo.username.localeCompare('18917892217')
+      || !loginfo.username.localeCompare('13817134049') || !loginfo.username.localeCompare('18611114502')
+    || !loginfo.username.localeCompare('13602515165')) {
+          $('#registerTab').show();
+        }else {
+          $('#registerTab').hide();
+        }
         //get user profile
 	    $.ajax({
 	    	url: encodeURI(URL_PROFILE + 'userId=' + loginfo.username),
@@ -40,7 +51,6 @@ $(document).ready(function() {
 	        cache: false,
 	    	success: (data) => {
 	    		var d = JSON.parse(data);
-	    		d = JSON.parse(d);
 
 	            _renderProfileTab(d);
 	        },
@@ -56,7 +66,6 @@ $(document).ready(function() {
 	        cache: false,
 	    	success: (data) => {
 	    		var d = JSON.parse(data);
-	    		d = JSON.parse(d);
 
 	    		if(d && d.length) {
 	            	_renderStockTab(d);
@@ -74,7 +83,6 @@ $(document).ready(function() {
 	        cache: false,
 	    	success: (data) => {
 	    		var d = JSON.parse(data);
-	    		d = JSON.parse(d);
 
 	    		if(d && d.length) {
 	            	_renderWordTab(d);
@@ -84,7 +92,7 @@ $(document).ready(function() {
 	            console.log(err);
 	    	}
 	    });
-	    //get concept 
+	    //get concept
 	    $.ajax({
 	    	url: encodeURI(URL_CONCEPT + 'userId=' + loginfo.username),
 	        method: 'GET',
@@ -92,7 +100,7 @@ $(document).ready(function() {
 	        cache: false,
 	    	success: (data) => {
 	    		var d = JSON.parse(data);
-	    		d = JSON.parse(d);
+
 	    		if(d) {
 	            	_renderConceptTab(d);
 	    		}
@@ -109,7 +117,7 @@ $(document).ready(function() {
 	        cache: false,
 	    	success: (data) => {
 	    		var d = JSON.parse(data);
-	    		d = JSON.parse(d);
+
 	    		if(d) {
 	            	_renderTopicTab(d);
 	    		}
@@ -118,7 +126,7 @@ $(document).ready(function() {
 	            console.log(err);
 	    	}
 	    });
-    } 
+    }
 
     $('#inputEmailContent').keydown(function(e) {
         var keycode = e.keyCode;
@@ -135,6 +143,51 @@ $(document).ready(function() {
             onSubmitUpdatePassword();
         }
     });
+
+    $('#registerRealName').on('input propertychange blur focus', function(e) {
+      var name = $(this).val();
+
+      if(name && name.length) {
+        $('#registerRealNameErr').hide().text('');
+        registerFlag = true;
+      }else {
+        $('#registerRealNameErr').text('姓名不能为空').show();
+        registerFlag = false;
+      }
+    });
+
+    $('#registerMobileContent').on('input propertychange blur focus', function(e) {
+      var mobile = $(this).val();
+
+      if(mobile.length != 11) {
+        $('#registerMobileErr').text('联系方式长度不正确').show();
+        registerFlag = false;
+      }else {
+        $('#registerMobileErr').hide().text('');
+        registerFlag = true;
+      }
+    });
+
+    $('#registerEmailContent').on('input propertychange blur focus', function(e) {
+      var email = $(this).val();
+
+      if(!email) {
+        $('#registerEmailErr').text('邮箱地址为空').show();
+        registerFlag = false;
+        return;
+      }
+
+      var reg = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/g;
+      if(!reg.test(email)) {
+        $('#registerEmailErr').text('邮箱格式不正确').show();
+        registerFlag = false;
+        return;
+      }
+
+      $('#registerEmailErr').hide().text();
+      registerFlag = true;
+    });
+
 });
 
 function _renderProfileTab(d) {
@@ -233,7 +286,7 @@ function customOpStock(li) {
 	if(!li) {
 		return;
 	}
-	
+
 	var $li = $(li);
 	var code = $li.find('span[class*="item-1"]').text();
 	var name = $li.find('span[class*="item-2"]').text();
@@ -250,7 +303,6 @@ function customOpStock(li) {
 	    dataType: 'json',
 	    success: (data) => {
 	    	var d = JSON.parse(data);
-	    	d = JSON.parse(d);
 
 	    	if(d.flag) {
 	            _insertStock(code, name, true);
@@ -318,7 +370,7 @@ function onDelAllStock(that) {
 
 function onCheckAllStock(event) {
 	event.stopPropagation();
-	if(event.target.tagName == 'INPUT') {	
+	if(event.target.tagName == 'INPUT') {
 		var check = document.getElementById('checkAllStock');
 		if(check.checked) {
 			var checkbox = document.querySelectorAll('#stockTableContent div.table-content input');
@@ -407,7 +459,6 @@ function _delStock() {
 		dataType: 'json',
 		success: (data) => {
 			var d = JSON.parse(data);
-			d = JSON.parse(d);
 
 			if(d.flag) {
 			    $('#del-all-stock').hide(500);
@@ -429,7 +480,7 @@ function _delStock() {
 		error: (err) => {
 			console.log(err);
 		}
-	});			
+	});
 }
 
 function onConfirm() {
@@ -467,8 +518,6 @@ function onConfirm() {
 		        dataType: 'json',
 		        success: (data) => {
 		            var d = JSON.parse(data);
-		            d = JSON.parse(d);
-
 
 		            if(d[0].status) {
 		                $('#del-all-theme').hide(500);
@@ -476,12 +525,12 @@ function onConfirm() {
 						$('#themeTableContent').find('input:checked').each(function(idx, elem) {
 							elem.checked = false;
 						});
-						
+
 						//delete the checked stocks
 						$parentsToDel.remove();
 
 						_showFadeMsg('成功删除主题');
-						
+
 						delThemes = [];
 
 		            }else {
@@ -492,7 +541,7 @@ function onConfirm() {
 		            console.log(err);
 		        }
 		    });
-			
+
 			break;
 		case 2:
 			var checkAll = document.getElementById('checkAllTopic');
@@ -521,7 +570,6 @@ function onConfirm() {
 		        dataType: 'json',
 		        success: (data) => {
 		            var d = JSON.parse(data);
-		            d = JSON.parse(d);
 
 		            if(d[0].status) {
 						$('#del-all-topic').hide(500);
@@ -529,12 +577,12 @@ function onConfirm() {
 						$('#topicTableContent').find('input:checked').each(function(idx, elem) {
 							elem.checked = false;
 						});
-						
+
 						//delete the checked stocks
 						$(delTopics).parent().parent().remove();
 
 						_showFadeMsg('成功删除话题');
-						
+
 						delTopics = [];
 		            }else {
 		                _showFadeMsg(d.msg);
@@ -544,7 +592,7 @@ function onConfirm() {
 		            console.log(err);
 		        }
 		    });
-			
+
 			break;
 	}
 }
@@ -567,7 +615,7 @@ function onCancel() {
 
 function onCheckAllTheme(event) {
 	event.stopPropagation();
-	if(event.target.tagName == 'INPUT') {	
+	if(event.target.tagName == 'INPUT') {
 		var check = document.getElementById('checkAllTheme');
 		if(check.checked) {
 			var checkbox = document.querySelectorAll('#themeTableContent div.table-content input');
@@ -678,7 +726,7 @@ function onDelAllTopic(that) {
 
 function onCheckAllTopic(event) {
 	event.stopPropagation();
-	if(event.target.tagName == 'INPUT') {	
+	if(event.target.tagName == 'INPUT') {
 		var check = document.getElementById('checkAllTopic');
 		if(check.checked) {
 			var checkbox = document.querySelectorAll('#topicTableContent div.table-content input');
@@ -776,7 +824,7 @@ function onUpdateMobile(that) {
 }
 
 function onSubmitUpdateMobile() {
-	console.log('update mobile!');
+	// console.log('update mobile!');
 
 	if(!$('#inputFieldNo').val()) {
 		$('#mobileErr').text('区号为空').show();
@@ -790,7 +838,7 @@ function onSubmitUpdateMobile() {
 
 	//ajax
 	//to do later
-	
+
 	//update successfully
 	$('#btnUpdateMobile').text('修改');
 	$('#mobileErr').hide();
@@ -815,7 +863,7 @@ function onUpdateEmail(that) {
 }
 
 function onSubmitUpdateEmail() {
-	console.log('update email!');
+	// console.log('update email!');
 	var newEmail = $('#inputEmailContent').val();
 
 	if(!newEmail) {
@@ -842,7 +890,6 @@ function onSubmitUpdateEmail() {
 	    dataType: 'json',
 	    success: (data) => {
 	    	var d = JSON.parse(data);
-	    	d = JSON.parse(d);
 
 	    	if(d.flag) {
 	            //update successfully
@@ -864,7 +911,7 @@ function onSubmitUpdateEmail() {
 }
 
 function onSubmitUpdatePassword() {
-	console.log('update password!');
+	// console.log('update password!');
 
 	if(!$('#oldPassword').val()) {
 		$('#changePasswordError').text('旧密码为空').fadeIn();
@@ -894,13 +941,13 @@ function onSubmitUpdatePassword() {
 	    data: {
 	    	userId: loginfo.username,
 	    	field: 'passWord',
-	    	value: $.md5($('#newPassword').val())
+	    	value: $.md5($('#newPassword').val()),
+            oldvalue: $.md5($('#oldPassword').val())
 	    },
 	    // contentType: 'application/json',
 	    dataType: 'json',
 	    success: (data) => {
 	    	var d = JSON.parse(data);
-	    	d = JSON.parse(d);
 
 	    	if(d.flag) {
 	            //update successfully
@@ -919,5 +966,149 @@ function onSubmitUpdatePassword() {
 	        console.log(err);
 	    }
 	});
+}
 
+function onChangeFile(that) {
+  var file = that.files[0];
+  stockListFromFile = [];
+  if(!$.isEmptyObject(file)) {
+    var reader = new FileReader();
+    reader.onload = function()
+         {
+            var codeArr = [];
+            this.result.split('\n').forEach((cur) => {
+              var c = cur.substr(0,6);
+              stocks.forEach((cur)=> {
+                if(cur.substr(0,6) === c) {
+                  codeArr.push({
+                    code: c,
+                    name: cur.substring(6,cur.length)
+                  });
+                }
+              });
+            });
+            $('#fileName').val(file.name);
+            // $('#btn-file-remove').show();
+            $('#btn-file-submit').show();
+            if(codeArr&&codeArr.length !=0) {
+              if(document.getElementById('btn-file-submit').disabled) {
+                document.getElementById('btn-file-submit').disabled = false;
+              }
+              $('#fileError').hide();
+              stockListFromFile = codeArr;
+              console.log(stockListFromFile);
+            }
+            else {
+              if(!document.getElementById('btn-file-submit').disabled) {
+                document.getElementById('btn-file-submit').disabled = true;
+              }
+              $('#fileError').text('不存在真实有效的股票代码').show();
+              return false;
+            }
+         };
+    reader.readAsText(file);
+  }
+}
+
+// function onRemoveSelectedFile() {
+//
+//   $('#fileName').val('');
+//   $('#btn-file-remove').hide();
+//   $('#btn-file-submit').hide();
+//   $('#fileError').hide();
+//   stockListFromFile = [];
+//   console.log(stockListFromFile);
+// }
+
+function onUploadSelectedFile() {
+
+  $('div.user-loading').show();
+  var code = '';
+  stockListFromFile.forEach((cur)=> {
+      code += cur.code + ',';
+  });
+  code = code.substring(0,code.length-1);
+  console.log(code);
+
+  // ajax to do later....
+  $.ajax({
+	    url: URL_ADDSTOCK,
+	    method: 'POST',
+	    data: {
+	    	userId: loginfo.username,
+	    	code: code
+	    },
+	    // contentType: 'application/json',
+	    dataType: 'json',
+	    success: (data) => {
+	    	var d = JSON.parse(data);
+
+	    	if(d.flag) {
+          stockListFromFile.forEach((cur)=> {
+              _insertStock(cur.code,cur.name);
+          });
+          $('#fileName').val('');
+          $('#btn-file-submit').hide();
+          _clearFileInput();
+          _showFadeMsg('成功添加至股票列表');
+	    	}else {
+	    		_showFadeMsg(d.msg);
+	    	}
+        $('div.user-loading').hide();
+	    },
+	    error: (err) => {
+	        console.log(err);
+	    }
+	});
+
+}
+
+function _clearFileInput() {
+  var isIE = navigator.userAgent.indexOf('IE') == -1?false:true;
+  var $el = $('#input-file');
+  if (isIE) {
+      var $srcFrm = $el.closest('form');
+      var $tmpFrm = $(document.createElement('form'));
+      var $tmpEl = $(document.createElement('div'));
+      $el.before($tmpEl);
+      if ($srcFrm.length) {
+          $srcFrm.after($tmpFrm);
+      } else {
+          $tmpEl.after($tmpFrm);
+      }
+      $tmpFrm.append($el).trigger('reset');
+      $tmpEl.before($el).remove();
+      $tmpFrm.remove();
+  } else { // normal input clear behavior for other sane browsers
+      $el.val('');
+  }
+}
+
+function onRegisterUser() {
+  if(registerFlag) {
+    $.ajax({
+  	    url: URL_REGISTERUSER,
+  	    method: 'POST',
+  	    data: {
+  	    	name: $('#registerRealName').val(),
+  	    	phone: $('#registerMobileContent').val(),
+          email: $('#registerEmailContent').val()
+  	    },
+  	    // contentType: 'application/json',
+  	    dataType: 'json',
+  	    success: (data) => {
+  	    	var d = JSON.parse(data);
+
+  	    	// if(d.flag) {
+  	      //
+  	    	// }else {
+          if(!$.isEmptyObject(d))
+  	    	  _showFadeMsg('注册成功！');
+  	    	// }
+  	    },
+  	    error: (err) => {
+  	        console.log(err);
+  	    }
+  	});
+  }
 }

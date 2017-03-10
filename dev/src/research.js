@@ -277,7 +277,7 @@ function onTheme(that, event) {
         _clearMap(searchMap);
         $target.removeClass('research-tag-invalid').addClass('research-tag-valid');
         var themeObj = resIndus[curPeriod][$target.attr('id')[1]];
-        console.log('themeObj', themeObj);
+        // console.log('themeObj', themeObj);
         //render results
         _renderResults(themeObj);
     }
@@ -548,7 +548,7 @@ function _renderMap(chart, data) {
 
     //bind click
     chart.on('click', function(params) {
-        console.log(params);
+        // console.log(params);
 
         var newMapIndex = params.dataIndex;
 

@@ -1,34 +1,36 @@
+
 var express = require('express');
 var http = require('http');
 var url = require('url');
 var querystring = require('querystring');
 
-var urls = ['http://139.196.18.233:8087/smartxtAPI/getConceptHeat?', 
-			'http://139.196.18.233:8087/smartxtAPI/getConceptStocks?',
-			'http://139.196.18.233:8087/smartxtAPI/topicHeat?',
-			'http://139.196.18.233:8087/smartxtAPI/getUserInfo?',
-			'http://139.196.18.233:8087/smartxtAPI/getUserConcept?',
-			'http://139.196.18.233:8087/smartxtAPI/getUserTopic?',
-			'http://139.196.18.233:8087/smartxtAPI/getConceptList?',
-			'http://139.196.18.233:8087/smartxtAPI/getSelfChoiceStocks?',
-			'http://139.196.18.233:8087/smartxtAPI/stockFollow',
-			'http://139.196.18.233:8087/smartxtAPI/stockRemoval',
-			'http://139.196.18.233:8087/smartxtAPI/conceptSubmit',
-			'http://139.196.18.233:8087/smartxtAPI/getAllStockMap?',
-			'http://139.196.18.233:8087/smartxtAPI/submitStatus?',
-			'http://139.196.18.233:8087/smartxtAPI/conceptFollow',
-			'http://139.196.18.233:8087/smartxtAPI/conceptUnFollow',
-			'http://139.196.18.233:8087/smartxtAPI/topicFollow',
-			'http://139.196.18.233:8087/smartxtAPI/topicUnFollow',
-			'http://139.196.18.233:8087/smartxtAPI/profileUpdate',
-			'http://139.196.18.233:8087/smartxtAPI/visitLog',
-			'http://139.196.18.233:8087/smartxtAPI/queryAnnounce?',
-			'http://139.196.18.233:8087/smartxtAPI/queryChats?',
-			'http://139.196.18.233:8087/smartxtAPI/surveyList?',
-			'http://139.196.18.233:8087/smartxtAPI/affList?',
-			'http://139.196.18.233:8087/smartxtAPI/allConcepts?',
-			'http://139.196.18.233:8087/smartxtAPI/topicsOnAir?',
-			'http://139.196.18.233:8087/smartxtAPI/topicList?'];
+var urls = ['http://139.196.18.233:8087/smartxtAPP/getConceptHeat?', //0
+			'http://139.196.18.233:8087/smartxtAPP/getConceptStocks?',//1
+			'http://139.196.18.233:8087/smartxtAPP/topicHeat?',//2
+			'http://139.196.18.233:8087/smartxtAPP/getUserInfo?',//3
+			'http://139.196.18.233:8087/smartxtAPP/getUserConcept?',//4
+			'http://139.196.18.233:8087/smartxtAPP/getUserTopic?',//5
+			'http://139.196.18.233:8087/smartxtAPP/getConceptList?',//6
+			'http://139.196.18.233:8087/smartxtAPP/getSelfChoiceStocks?',//7
+			'http://139.196.18.233:8087/smartxtAPP/stockFollow',//8
+			'http://139.196.18.233:8087/smartxtAPP/stockRemoval',//9
+			'http://139.196.18.233:8087/smartxtAPP/conceptSubmit',//10
+			'http://139.196.18.233:8087/smartxtAPP/getAllStockMap?',//11
+			'http://139.196.18.233:8087/smartxtAPP/submitStatus?',//12
+			'http://139.196.18.233:8087/smartxtAPP/conceptFollow',//13
+			'http://139.196.18.233:8087/smartxtAPP/conceptUnFollow',//14
+			'http://139.196.18.233:8087/smartxtAPP/topicFollow',//15
+			'http://139.196.18.233:8087/smartxtAPP/topicUnFollow',//16
+			'http://139.196.18.233:8087/smartxtAPP/profileUpdate',//17
+			'http://139.196.18.233:8087/smartxtAPP/visitLog',//18
+			'http://139.196.18.233:8087/smartxtAPP/queryAnnounce?',//19
+			'http://139.196.18.233:8087/smartxtAPP/queryChats?',//20
+			'http://139.196.18.233:8087/smartxtAPP/surveyList?',//21
+			'http://139.196.18.233:8087/smartxtAPP/affList?',//22
+			'http://139.196.18.233:8087/smartxtAPP/allConcepts?',//23
+			'http://139.196.18.233:8087/smartxtAPP/topicsOnAir?',//24
+			'http://139.196.18.233:8087/smartxtAPP/topicList?',//25
+		    'http://139.196.18.233:8087/smartxtAPP/register'];//26
 
 exports.get = function(req, res) {
 
@@ -40,11 +42,19 @@ exports.get = function(req, res) {
   	var endIndex = address.length-1;
   	if(address.charAt(endIndex) == '&')
   		address = address.slice(0, endIndex);
+  	address = url.parse(address);
 
-  	console.log(address);
-
+	var options = {
+	    host: address.hostname,
+	    path: address.path,
+	    port: address.port,
+	    method: 'GET',
+	    headers: {
+	        'x-forwarded-for': req.ip
+	    }
+	};
   	//send http request
-  	http.get(url.parse(address), function(response) {
+  	var getReq = http.request(options, function(response) {
   		var body = '';
 	    response.on('data', function(d) {
 	      body += d;
@@ -54,6 +64,11 @@ exports.get = function(req, res) {
 	      	res.json(body);
 	    });
 	});
+
+	getReq.on('error', (e) => {
+  		console.log(`problem with request: ${e.message}`);
+	});
+	getReq.end();
 };
 
 exports.post = function(req, res) {
@@ -64,15 +79,15 @@ exports.post = function(req, res) {
   	//send http post
   	//json转换为字符串
 	var data = querystring.stringify(req.body);
-	console.log('data', data);
 	var options = {
 	    host: address.hostname,
-	    path: address.pathname,
+	    path: address.path,
 	    port: address.port,
 	    method: 'POST',
 	    headers: {
 	        'Content-Type': 'application/x-www-form-urlencoded',
-	        'Content-Length': Buffer.byteLength(data)
+	        'Content-Length': Buffer.byteLength(data),
+	        'x-forwarded-for': req.ip
 	    }
 	};
 

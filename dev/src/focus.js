@@ -30,7 +30,7 @@ $(document).ready(() => {
         loginfo = window.user.replace(/&quot;/g,'"');
         loginfo = JSON.parse(loginfo);
         delete window.user;
-        console.log('user', loginfo);
+        // console.log('user', loginfo);
        	//get concept list
 		//render echarts
 		$('footer.footer').hide();
@@ -40,10 +40,13 @@ $(document).ready(() => {
 	//loading more
 	$(window).scroll(function() {
 	  	if ($(window).scrollTop() + $(window).height() == $(document).height()) {
-	  		$('.more-button span:nth-child(1)').removeClass('active');
-	  		$('.more-button span:nth-child(2)').addClass('active');
+			$('.btn-more').text('正在加载');
+			$('div.focus-loading').show();
 
-	  		_renderCharts(conceptList.splice(0,CHARTNUM)); 
+			setTimeout(function() {
+				// console.log('Begin freshing.');
+				_renderCharts(conceptList.splice(0,CHARTNUM));
+			},500);
 	  	}
 	});
 
@@ -73,18 +76,18 @@ function onForm(that, event) {
 						case 1:
 							$('#btnPeriod').find('button[class*="btn-valid"]').removeClass('btn-valid').addClass('btn-invalid');
 							$('#p0').attr('disabled',true);
-							$('#p1').attr('disabled',false).addClass('btn-valid');
+							$('#p1').attr('disabled',false).removeClass('btn-invalid').addClass('btn-valid');
 							$('#p2').attr('disabled',false);
 							$('#p3').attr('disabled',false);
 							period = 1;
 							break;
 						case 2:
 							$('#btnPeriod').find('button[class*="btn-valid"]').removeClass('btn-valid').addClass('btn-invalid');
-							$('#p0').attr('disabled',false).addClass('btn-valid');
-							$('#p1').attr('disabled',false);
+							$('#p0').attr('disabled',false);
+							$('#p1').attr('disabled',false).removeClass('btn-invalid').addClass('btn-valid');
 							$('#p2').attr('disabled',false);
 							$('#p3').attr('disabled',true);
-							period = 0;
+							period = 1;
 							break;
 					}
 				}
@@ -102,7 +105,7 @@ function onForm(that, event) {
 				}
 				break;
 		}
-		
+
 		if(update) {
 			$('footer.footer').hide();
 			$('.more-button').find('[class*=active]').removeClass('active');
@@ -127,7 +130,7 @@ function onForm(that, event) {
 function _renderConceptList() {
 	$('div.focus-loading').show();
 	// $('.loading-more').hide();
-	var typeUrl; 
+	var typeUrl;
 	if(!method) {
 		typeUrl = methodRange[method];
 	}else {
@@ -141,10 +144,10 @@ function _renderConceptList() {
 		cache: false,
 		success: (data) => {
 			var d = JSON.parse(data);
-			d = JSON.parse(d);
+
 		    if(d.length) {
-		        conceptList = d;  
-		        _renderCharts(conceptList.splice(0,CHARTNUM)); 
+		        conceptList = d;
+		        _renderCharts(conceptList.splice(0,CHARTNUM));
 		        // $('.loading-more').show();
 		    } else {
 		    	// $('.loading-more').hide();
@@ -173,11 +176,10 @@ function _renderCharts(concepts) {
 			cache: false,
 			success: (data) => {
 				var d = JSON.parse(data);
-				d = JSON.parse(d);
 
 			    if(d[0].flag !== -1) {
 			    	var entry = d[1];
-			    	var legend = []; 
+			    	var legend = [];
   					var category = [];
   					var series = [];
 			  		var heat = [];
@@ -190,9 +192,9 @@ function _renderCharts(concepts) {
 				  		itemStyle : {
 				  			normal: {
 				  				areaStyle: {
-				  					type: 'default', 
+				  					type: 'default',
 				  					color:'rgba(239,243,246,.6)'
-				  				}, 
+				  				},
 				  				color: 'rgb(50,70,90)'
 				  			}
 				  		},
@@ -205,9 +207,9 @@ function _renderCharts(concepts) {
 				  		itemStyle : {
 				  			normal: {
 				  				areaStyle: {
-				  					type: 'default', 
+				  					type: 'default',
 				  					color: 'rgba(250,225,222,.6)'
-				  				}, 
+				  				},
 				  				color: 'rgb(235,85,30)'
 				  			}
 				  		},
@@ -244,13 +246,13 @@ function _renderCharts(concepts) {
 				                trigger: 'axis'
 				            },
 				            dataZoom: [{
-				                handleColor:'rgb(75,188,208)', 
-				                fillerColor:'rgb(75,188,208)',  
+				                handleColor:'rgb(75,188,208)',
+				                fillerColor:'rgb(75,188,208)',
 				                borderWidth:0,
-				                show : true,  
-				                realtime: true, 
-				                start:75.5, 
-				                end: 100, 
+				                show : false,
+				                realtime: true,
+				                start:75.5,
+				                end: 100,
 				                height:15
 				            }, {
 				                type: 'inside',
@@ -260,17 +262,11 @@ function _renderCharts(concepts) {
 				            legend: {
 				                data: legend
 				            },
-				            toolbox: {
-				                feature: {
-				                    saveAsImage: {}
-				                },
-				                right: '15%'
-				            },
 				            xAxis: {
 				            	type: 'category',
 				                data: category,
-				                axisTick:false, 
-				                splitLine: {show: false}, 
+				                axisTick:false,
+				                splitLine: {show: false},
 				                axisLine: {
 				                	show: true,
 				                	lineStyle: {
@@ -282,23 +278,23 @@ function _renderCharts(concepts) {
 				                boundaryGap: false,
 				                axisLabel: {
 				                	textStyle: {
-				                		fontFamily : '微软雅黑', 
+				                		fontFamily : '微软雅黑',
 				                		fontSize : 12,
 				                		color: 'black'
-				                	}, 
+				                	},
 				                	show: true
 				                }
 				            },
 				            yAxis: [{
 				                name: '关注度(H)',
 				                type: 'value',
-					  			splitNumber: 7, 
+					  			splitNumber: 7,
 					  			splitLine: {
-					  				show: true, 
+					  				show: true,
 					  				lineStyle:{type:'dashed', width: 1}
 					  			},
 					  			nameTextStyle: {
-				                		fontFamily : '微软雅黑', 
+				                		fontFamily : '微软雅黑',
 				                		fontSize : 12,
 				                		color: 'black'
 				                },
@@ -309,25 +305,25 @@ function _renderCharts(concepts) {
 					  					width: 1,
 					  					color: 'rgb(75,188,208)'
 					  				}
-					  			}, 
+					  			},
 					  			axisLabel: {
 					  				textStyle: {
-				                		fontFamily : '微软雅黑', 
+				                		fontFamily : '微软雅黑',
 				                		fontSize : 12,
 				                		color: 'black'
-				                	}, 
-				                	show: true,  
+				                	},
+				                	show: true,
 				                }
 				            }, {
 				                name: '指数(I)',
 				                type: 'value',
-					  			splitNumber: 7, 
+					  			splitNumber: 7,
 					  			splitLine: {
-					  				show: false, 
+					  				show: false,
 					  				lineStyle:{type:'dashed', width: 1}
 					  			},
 					  			nameTextStyle: {
-				                		fontFamily : '微软雅黑', 
+				                		fontFamily : '微软雅黑',
 				                		fontSize : 12,
 				                		color: 'black'
 				                },
@@ -338,48 +334,40 @@ function _renderCharts(concepts) {
 					  					width: 1,
 					  					color: 'rgb(75,188,208)'
 					  				}
-					  			}, 
+					  			},
 					  			axisLabel: {
 					  				textStyle: {
-				                		fontFamily : '微软雅黑', 
+				                		fontFamily : '微软雅黑',
 				                		fontSize : 12,
 				                		color: 'black'
-				                	}, 
-				                	show: true,  
+				                	},
+				                	show: true,
 				                }
 				            }],
 				            series: series
 				        }
 				    });
 
-					//click:jump to theme page
-				 //    chart.on('click', function (params) {
-				 //    	console.log('params', params);
-					//     // window.open('/theme','_blank');
-					// });
-
 				    charts.push(chart);
-					// console.log('charts', charts);
-					if(!$('.more-button span:nth-child(1)').hasClass('active')) {
-						$('.more-button span:nth-child(1)').addClass('active');
-					}
-					if($('.more-button span:nth-child(2)').hasClass('active')) {
-						$('.more-button span:nth-child(1)').addClass('active');
-	  					$('.more-button span:nth-child(2)').removeClass('active');
-					}
-			    } 
-			    $('div.focus-loading').hide();
+			    }
 			},
 			error: (err) => {
 			    console.log(err);
 			}
-		});	
+		});
 	});
 
 	if(concepts.length < CHARTNUM) {
-		$('.more-button').hide();
+		$('.btn-more').removeClass('active');
 		$('footer.footer').show();
+	}else {
+		if(!$('.btn-more').hasClass('active')) {
+			$('.btn-more').addClass('active');
+		}else {
+			$('.btn-more').text('浏览更多');
+		}
 	}
+	$('div.focus-loading').hide();
 }
 
 function onJumpTheme(that) {

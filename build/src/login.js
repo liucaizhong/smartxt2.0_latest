@@ -1,1 +1,120 @@
-"use strict";function rememberMe(e){if(e.stopPropagation(),"A"==e.target.tagName){var o=document.getElementById("rememberMe");o.checked?o.checked=!1:o.checked=!0}}function createUser(){$(".register-note").toggle()}function collapseInfo(){$(".register-note").hide()}var loginLink,loginKeyword;$(document).ready(function(){if($("#form-login").submit(function(e){e.preventDefault();var o=$("#account"),n=$("#password"),r=document.getElementById("rememberMe").checked;return o.val()&&n.val()?(console.log("loginLink",loginLink),console.log("loginKeyword",loginKeyword),void $.StandardPost("/login",{username:o.val(),password:n.val(),remember:r,link:loginLink,keyword:loginKeyword})):($(".login-content").removeClass("shake_effect"),void setTimeout(function(){$(".login-content").addClass("shake_effect")},1))}),$("#form-login").keydown(function(e){var o=e.keyCode;13==o&&$("#form-login").submit()}),window.error){var e=window.error;delete window.error,e=e.replace(/&quot;/g,'"'),e=JSON.parse(e),0==e.message&&($("#account-err").show(),$("#password-err").hide()),1==e.message&&($("#account-err").hide(),$("#password-err").show());var o=window.user;delete window.user,o=o.replace(/&quot;/g,'"'),o=JSON.parse(o),$("#account").val(o.username),$("#password").val(o.password),$(".login-content").removeClass("shake_effect"),setTimeout(function(){$(".login-content").addClass("shake_effect")},1),console.log("user",o),console.log("error",e)}if(window.link){var n=window.link;delete window.link,n=n.replace(/&quot;/g,""),n=n.replace(/&#x2F;/g,"\\"),loginLink=n,console.log("loginLink",loginLink)}if(window.word){var r=window.word;delete window.word,r=r.replace(/&quot;/g,""),loginKeyword=r,console.log("loginKeyword",loginKeyword)}$("#account").on("input propertychange",function(e){$("#account-err").hide()}),$("#password").on("input propertychange",function(e){$("#password-err").hide()})});
+'use strict';
+
+var loginLink;
+var loginKeyword;
+
+$(document).ready(function () {
+    $('#form-login').submit(function (e) {
+        e.preventDefault();
+
+        var $account = $('#account');
+        var $password = $('#password');
+        var rememberMe = document.getElementById('rememberMe').checked;
+
+        if (!$account.val() || !$password.val()) {
+            $(".login-content").removeClass('shake_effect');
+            setTimeout(function () {
+                $(".login-content").addClass('shake_effect');
+            }, 1);
+            return;
+        }
+
+        // console.log('loginLink', loginLink);
+        // console.log('loginKeyword', loginKeyword);
+
+        //post
+        //username+password
+        $.StandardPost('/login', {
+            username: $account.val(),
+            password: $password.val(),
+            remember: rememberMe,
+            link: loginLink,
+            keyword: loginKeyword
+        });
+    });
+
+    $('#form-login').keydown(function (e) {
+        var keycode = e.keyCode;
+        if (keycode == 13) {
+            $('#form-login').submit();
+        }
+    });
+
+    if (window.error) {
+        var error = window.error;
+        delete window.error;
+        error = error.replace(/&quot;/g, '"');
+        error = JSON.parse(error);
+
+        if (0 == error.message) {
+            $('#account-err').show();
+            $('#password-err').hide();
+        }
+        if (1 == error.message) {
+            $('#account-err').hide();
+            $('#password-err').show();
+        }
+
+        var user = window.user;
+        delete window.user;
+        user = user.replace(/&quot;/g, '"');
+        user = JSON.parse(user);
+
+        $('#account').val(user.username);
+        $('#password').val(user.password);
+
+        $(".login-content").removeClass('shake_effect');
+        setTimeout(function () {
+            $(".login-content").addClass('shake_effect');
+        }, 1);
+
+        // console.log('user', user);
+        // console.log('error', error);
+    }
+
+    if (window.link) {
+        var linkTemp = window.link;
+        delete window.link;
+        linkTemp = linkTemp.replace(/&quot;/g, '');
+        linkTemp = linkTemp.replace(/&#x2F;/g, '\\');
+        loginLink = linkTemp;
+
+        // console.log('loginLink', loginLink);
+    }
+    if (window.word) {
+        var wordTemp = window.word;
+        delete window.word;
+        wordTemp = wordTemp.replace(/&quot;/g, '');
+        loginKeyword = wordTemp;
+
+        // console.log('loginKeyword', loginKeyword);
+    }
+
+    $('#account').on('input propertychange', function (e) {
+        $('#account-err').hide();
+    });
+
+    $('#password').on('input propertychange', function (e) {
+        $('#password-err').hide();
+    });
+});
+
+function rememberMe(e) {
+    e.stopPropagation();
+    if (e.target.tagName == 'A') {
+        var check = document.getElementById('rememberMe');
+        if (check.checked) {
+            check.checked = false;
+        } else {
+            check.checked = true;
+        }
+    }
+}
+
+function createUser() {
+    $('.register-note').toggle();
+}
+
+function collapseInfo() {
+    $('.register-note').hide();
+}

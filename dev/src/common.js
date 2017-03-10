@@ -37,12 +37,12 @@ $(document).ready(() => {
 //             });
 //     };
 
-    /* ======= Twitter Bootstrap hover dropdown ======= */   
-    /* Ref: https://github.com/CWSpear/bootstrap-hover-dropdown */ 
+    /* ======= Twitter Bootstrap hover dropdown ======= */
+    /* Ref: https://github.com/CWSpear/bootstrap-hover-dropdown */
     /* apply dropdownHover to all elements with the data-hover="dropdown" attribute */
 
     // $('[data-hover="dropdown"]').dropdownHover();
-    
+
     /* ======= jQuery Placeholder ======= */
     /* Ref: https://github.com/mathiasbynens/jquery-placeholder */
 
@@ -53,10 +53,10 @@ $(document).ready(() => {
                 $mainNav.removeClass('my-navbar');
         }
     });
-    
-    $('input, textarea').placeholder();  
 
-    // hover show QRcode for weixin 
+    $('input, textarea').placeholder();
+
+    // hover show QRcode for weixin
     // apple to do .....
     $('.weixin').hover(function(e) {
         // console.log(e);
@@ -72,7 +72,7 @@ $(document).ready(() => {
             'left': left,
             'z-index': 999
         });
-        
+
         $('body').append(qrCode);
     }, function(e) {
         $('img').remove('#weixin-qr');
@@ -94,7 +94,7 @@ $(document).ready(() => {
         var height = top + num*60;
         var clientX = e.pageX;
         var clientY = e.pageY;
-        
+
         if(clientX <= left || clientX >= width || clientY <= top || clientY >= height) {
             $this.find('div.dropdown-menu').css('display', 'none');
         }
@@ -110,7 +110,7 @@ $(document).ready(() => {
         // dataType: 'json',
         success: (data) => {
             var d = JSON.parse(data);
-            d = JSON.parse(d);
+
             d.forEach(function(cur) {
                 stocks.push(cur.code+cur.name);
             });
@@ -147,7 +147,7 @@ $(document).ready(() => {
                     var str = cur.substring(0,i) + '<strong>' + cur.substr(i,len) + '</strong>';
                     str += cur.substring(len+i, 6);
                     $(item1).html(str);
-                    
+
                     var item2 = $('<span class="item-2"></span>').text(cur.slice(6));
                     var div = $('<div></div>').attr('rel', indicator);
                     $(div).append(item1).append(item2);
@@ -165,7 +165,7 @@ $(document).ready(() => {
 
                 if(i >= 6) {
                     var item1 = $('<span class="item-1"></span>').text(cur.substring(0,6));
-                    
+
                     var item2 = $('<span class="item-2"></span>');
                     var str = cur.substring(6,i) + '<strong>' + cur.substr(i,len) + '</strong>';
                     str += cur.slice(len+i);
@@ -207,7 +207,7 @@ $(document).ready(() => {
         if($(this).val()) {
             // _showStockList();
             $(this).trigger('input');
-        }      
+        }
     });
     $(window).click(function(event) {
 
@@ -227,7 +227,7 @@ $(document).ready(() => {
     $('#stockInput').keydown(function(e) {
 
         var keycode = e.keyCode;
-        console.log('keycode',keycode);
+        // console.log('keycode',keycode);
         var curLI = $('li[class*="stock-li-hover"]')[0];
         var rel = +$(curLI).find('div').attr('rel');
         var len = $('#stockList li').children().length;
@@ -284,18 +284,20 @@ $.fn.extend({
         }));
     },
     unicode: function(s) {
-        var len = s.length;
         var rs = '';
         s = s.replace(/([-.*+?^${}()|[\]\/\\])/g, "\\$1");
-        for (let i = 0; i < len; i++) {
-            if (s.charCodeAt(i) > 255) rs += "\\u" + s.charCodeAt(i).toString(16);
-            else rs += s.charAt(i);
+        for (let i = 0; i < s.length; i++) {
+            console.log('rs:',rs);
+            if (s.charCodeAt(i) > 255)
+                rs += "\\u" + s.charCodeAt(i).toString(16);
+            else
+                rs += s.charAt(i);
         }
         return rs;
     }
 });
 
-//implement standard post 
+//implement standard post
 $.extend({
     StandardPost:function(url,args){
         var body = document.body,
@@ -376,7 +378,7 @@ function expandNavbar(e, f) {
 
     if(f)
         $mainNav.addClass('my-index-navbar');
-    else 
+    else
         $mainNav.addClass('my-navbar');
 }
 

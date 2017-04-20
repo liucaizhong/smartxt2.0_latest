@@ -6,6 +6,7 @@ var categoryRange = ['*','业绩预报','业绩快报','项目收购','人事变
 var activeIndustry = ['0'];
 var industryCategory = ['*','非银金融','传媒','交通运输','建筑材料','纺织服装','房地产','医药生物','有色金属','轻工制造','采掘','农林牧渔','休闲服务','家用电器','钢铁','汽车','国防军工','综合','机械设备','公用事业','银行','化工','电气设备','通信','商业贸易','计算机','电子','食品饮料','建筑装饰'];
 var keyword = '';
+var keywordOption = 0;
 var URL_NEWS = '/cross?id=19&';
 var loginfo;
 var lastId = -1;
@@ -33,11 +34,16 @@ $(document).ready(() => {
 	  	}
 	});
 
-	$('#newsInput').keydown(function(e) {
+	$('.search-field').keydown(function(e) {
 		if(e.keyCode == 13) {
 			e.preventDefault();
 			$('footer').hide();
 			$('.more-button').find('[class*=active]').removeClass('active');
+			keyword = $('#newsInput').val();
+			if(keywordOption == abstract) {
+				abstract = !abstract;
+				$('.auto-refresh > input[name=abstract]')[0].checked = abstract;
+			}
 			_renderMoreNews();
 		}
     });
@@ -46,10 +52,12 @@ $(document).ready(() => {
     	var value = $(this).val();
 	    if(value) {
 	        $('#search-clear').show();
-	        keyword = value;
+			keywordOptionShow();
+	        // keyword = value;
 	    }else {
 	       	$('#search-clear').hide();
-	       	keyword = '';
+			keywordOptionHide();
+			// keyword = '';
 	    }
     });
 
@@ -63,6 +71,11 @@ $(document).ready(() => {
 
     $('.auto-refresh > input[name=abstract]').change(function(e) {
  		abstract = !abstract;
+		// if(keywordOption == abstract) {
+		// 	keywordOption = +!abstract;
+		// 	$('.search-news-by-keyword-options').find('[class*=active]').removeClass('active');
+		// 	$('.search-news-by-keyword-options > label:nth-child('+(keywordOption+1)+')').addClass('active');
+		// }
  		$('footer').hide();
  		$('.more-button').find('[class*=active]').removeClass('active');
  		_renderMoreNews();
@@ -78,6 +91,16 @@ $(document).ready(() => {
     });
 
 });
+
+function keywordOptionShow() {
+	$('.search-news-by-keyword-options').show();
+}
+
+function keywordOptionHide() {
+	$('.search-news-by-keyword-options').hide().find('[class*=active]').removeClass('active');
+	$('.search-news-by-keyword-options > label:first-child').addClass('active');
+	keywordOption = 0;
+}
 
 function onExpandContent(that,event) {
 	event.preventDefault();
@@ -100,6 +123,7 @@ function clearSearch(that) {
     $('footer').hide();
  	$('.more-button').find('[class*=active]').removeClass('active');
     $(that).hide();
+	keywordOptionHide();
     keyword = '';
     _renderMoreNews();
 }
@@ -117,7 +141,7 @@ function onCategory(event) {
 			$target.parent().find('[class*=active]').removeClass('active');
 			if(!$target.hasClass('active')) {
 				$target.addClass('active');
-				activeCategory.push($target.attr('data-id'));
+				// activeCategory.push($target.attr('data-id'));
 				activeCategory = ['0'];
 			}
 		}else {
@@ -154,6 +178,30 @@ function onCategory(event) {
 	// console.log('activeCategory', activeCategory);
 }
 
+function onKeywordOption(e) {
+	$('footer').hide();
+	$('.more-button').find('[class*=active]').removeClass('active');
+	event.stopPropagation();
+
+	var target = event.target;
+	if(target.tagName === 'LABEL') {
+		var $target = $(target);
+
+		$target.parent().find('[class*=active]').removeClass('active');
+		if(!$target.hasClass('active')) {
+			$target.addClass('active');
+			keywordOption= +$target.attr('data-id');
+			$('.auto-refresh > input[name=abstract]')[0].checked
+			if(keywordOption == abstract) {
+				abstract = !abstract;
+				$('.auto-refresh > input[name=abstract]')[0].checked = abstract;
+			}
+			_renderMoreNews();
+		}
+	}
+	// console.log('keywordOption is '+keywordOption);
+}
+
 function onIndustry(event) {
 	$('footer').hide();
 	$('.more-button').find('[class*=active]').removeClass('active');
@@ -167,7 +215,7 @@ function onIndustry(event) {
 			$target.parent().find('[class*=active]').removeClass('active');
 			if(!$target.hasClass('active')) {
 				$target.addClass('active');
-				activeIndustry.push($target.attr('data-id'));
+				// activeIndustry.push($target.attr('data-id'));
 				activeIndustry = ['0'];
 			}
 		}else {

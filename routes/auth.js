@@ -26,7 +26,7 @@ var http = require('http');
 // }
 
 exports.isAuthenticated = function(req, res, next) {
-  if (req.isAuthenticated()) 
+  if (req.isAuthenticated())
   	return next();
 
   // setLoginBefore(req.url, req.body.keyword);
@@ -38,7 +38,7 @@ exports.isAuthenticated = function(req, res, next) {
   req.flash('word', JSON.stringify(req.body.keyword));
   console.log('keyword', req.body.keyword);
   res.redirect('/login');
-}; 
+};
 
 exports.findByUsername = function(username, cb) {
 	process.nextTick(function() {
@@ -51,7 +51,7 @@ exports.findByUsername = function(username, cb) {
 			user.username = username;
 			return cb(null, user);
 		}
-		var address = 'http://139.196.18.233:8087/smartxtAPI/getUserInfo?userId='+ username;
+		var address = 'http://139.196.18.233:8087/smartxtAPP/getUserInfo?userId='+ username;
 		// console.log('ip', req.ip);
 		//http request get user
 		http.get(url.parse(address), function(response) {
@@ -61,8 +61,8 @@ exports.findByUsername = function(username, cb) {
 		    });
 
 		    response.on('end', function() {
-		      	body = JSON.parse(body);
 		      	data = JSON.parse(body);
+		      	//data = JSON.parse(body);
 
 		      	user.username = username;
 		      	if(data.pwd) {
@@ -92,7 +92,7 @@ exports.getByUsername = function(username, cb) {
 			user.username = username;
 			return cb(null, user);
 		}
-		var address = 'http://139.196.18.233:8087/smartxtAPI/getUserInfo?userId='+ username;
+		var address = 'http://139.196.18.233:8087/smartxtAPP/getUserInfo?userId='+ username;
 		//http request get user
 		http.get(url.parse(address), function(response) {
 	  		var body = '';
@@ -101,9 +101,9 @@ exports.getByUsername = function(username, cb) {
 		    });
 
 		    response.on('end', function() {
-		      	body = JSON.parse(body);
-		      	// console.log('body', body);
 		      	data = JSON.parse(body);
+		      	// console.log('body', body);
+		      	//data = JSON.parse(body);
 		      	// console.log('data', data);
 
 		      	if(data) {

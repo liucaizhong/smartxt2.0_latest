@@ -7,25 +7,25 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <meta name="description" content="smartxt2.0 prediction">
-    <meta name="author" content="liucaizhong">    
-    <link rel="shortcut icon" href="/img/icon/favicon.ico">  
+    <meta name="author" content="liucaizhong">
+    <link rel="shortcut icon" href="/img/icon/favicon.ico">
     <!-- Global CSS -->
     <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css">
-    <!-- Plugins CSS -->    
+    <!-- Plugins CSS -->
     <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
     <!-- Theme CSS -->
     <link rel="stylesheet" href="/css/styles.css">
-</head> 
+</head>
 
 <body>
-    <!-- ******HEADER****** --> 
+    <!-- ******HEADER****** -->
     <header id="header" class="header navbar-fixed-top scrolled">
-        <div class="container"> 
+        <div class="container">
             <div class="nav-left">
                 <div class="logo">
                     <a href="/index"></a>
                 </div><!--//logo-->
-            </div><!-- //nav-left  -->  
+            </div><!-- //nav-left  -->
             <div class="nav-right">
                 <nav class="navbar">
                     <button class="navbar-toggler hidden-lg-up my-collapse-btn" type="button" data-toggle="collapse" data-target="#main-nav" aria-controls="main-nav" aria-expanded="false" aria-label="Toggle navigation" onclick="expandNavbar(event)"><i class="fa fa-bars" aria-hidden="true"></i></button>
@@ -70,18 +70,18 @@
                         </ul>
                     </div><!-- //main-nav -->
                 </nav><!-- //nav -->
-            </div><!-- //nav-right  -->       
+            </div><!-- //nav-right  -->
         </div><!--//container-->
-    </header><!--//header-->     
-    
+    </header><!--//header-->
+
     <section class="alert-section">
         <div class="container">
             <div class="col-xs-3 col-lg-3 help_blk">
                 <p>
                     1、下载<br>
                     <br> “智能预警”是一款<b>智能舆情实时监控软件</b>，主要用于黑天鹅事件快速预警，以及突发利好事件的提醒。<br><br>“智能预警”基于人工智能核心算法，监控上市公司、行业论坛、财经媒体的最新发布，实时智能判断多空，无需人工干预，7×24×365不间断工作，帮助客户快速反应，防范风险。<br><br>
-                    Windows版下载(Ver.20160525)：<br><br>
-                    <a href="./data/NewsAlert.rar" class="download"><b>---绿色版(无需权限，解压可用)---</b></a>                                     
+                    Windows版下载(Ver.20170320)：<br><br>
+                    <a href="./data/NewsAlert.rar" class="download"><b>---绿色版(无需权限，解压可用)---</b></a>
                 </p>
             </div>
 
@@ -102,28 +102,36 @@
                     <br>3、快捷键：<br> ---  esc  ---   退出；<br> ---  x ---  隐藏主窗口；<br> ---  F5 ---  启动；<br> ---  F7 ---  暂停; <br> ---  S ---  保存股票；<br> ---  L ---  批量加载；<br> ---  D ---  启动删除状态；<br> ---  Q ---  退出删除状态；<br> ---  C ---  清空自选股；<br> ---  U ---  调整刷新速度；
                 </p>
             </div>
-                
-            <div class="col-xs-3 col-lg-3 help_blk">                
+
+            <div class="col-xs-3 col-lg-3 help_blk">
                 <p>4、逐个添加自选股<br>
                     <br> 登陆进入软件界面后，将鼠标移至右上方“自选股票”空格栏中，直接键入证券代码或简称的拼音首字母，将出现备选列表。鼠标点选股票，即可加入自选股列表。自选股列表栏目里，交易时段会实时显示最新股价与涨跌幅度。完成上述操作后，点击“保存自选”按钮，则自选股票池保存成功。
                 </p>
             </div>
 
-            <div class="col-xs-3 col-lg-3 help_blk"> 
+            <div class="col-xs-3 col-lg-3 help_blk">
                 <p>5、批量导入自选股<br>
                     <br> 自选股数量较多时可使用导入功能。将所需添加的股票代码与名称，按WIND导出格式（如图）写入任意txt文件。之后点击自选股界面上的“批量加载”按钮，点选刚才的文件进行导入。最后不要忘记点击“保存自选”按钮。<br><br>
                     <img src="./img/figures/news_alert_help_input.jpg">
                 </p>
             </div>
 
-            <div class="col-xs-3 col-lg-3 help_blk"> 
-                <p>6、启动监控<br>
+            <div class="col-xs-3 col-lg-3 help_blk">
+                <p>6、情绪识别精度选择<br>
+                    <br> 情绪识别精度的选择，就是在预警数量和预警准确度之间的权衡。默认值是低精度（L），此时预警数量比较多，不会错过可疑新闻；选择高精度（H），可以精确预警，可疑新闻将不会显示。请用户根据需要选用。
+                    <br><br> L：低精度，情绪识别精度比较宽泛，新闻预警数量量多；
+                    <br> H：高精度，采用严格的情绪识别机制，新闻预警数量少；
+                </p>
+            </div>
+
+            <div class="col-xs-3 col-lg-3 help_blk">
+                <p>7、启动监控<br>
                     <br> 自选股相关新闻时刻处于实时刷新状态，左上方进度条反映刷新进度与刷新频率。同时智能算法将自动进行多空识别，利多新闻反映在左下方框中，利空新闻反映在右下方框中，公司公告出现在左上方框中。通过提升客户等级，后台刷新频率可相应提高。
                 </p>
             </div>
 
-            <div class="col-xs-3 col-lg-3 help_blk"> 
-                <p>7、浏览新闻内容<br>
+            <div class="col-xs-3 col-lg-3 help_blk">
+                <p>8、浏览新闻内容<br>
                     <br> 智能预警支持弹出窗体式浏览新闻。双击新闻列表，即可自动弹出窗口显示该条新闻详细内容。
                 </p>
             </div>
@@ -131,7 +139,7 @@
         </div>
     </section>
 
-    <!-- ******FOOTER****** --> 
+    <!-- ******FOOTER****** -->
     <footer class="footer">
         <div class="container">
             <div class="row links">
@@ -144,10 +152,10 @@
             <div class="row copyright">
                 <span><i class="fa fa-copyright" aria-hidden="true"></i>2014-2016&nbsp;Smartxt.&nbsp;All Rights Reserved(沪ICP备15056427-1号)</span>
             </div>
-        </div>       
+        </div>
     </footer><!--//footer-->
- 
-    <!-- Javascript -->   
+
+    <!-- Javascript -->
     <!-- jquery -->
     <script type="text/javascript" src="/lib/jquery/js/jquery.min.js"></script>
     <script type="text/javascript" src="/lib/jquery/plugins/jquery.placeholder.min.js"></script>
@@ -155,7 +163,7 @@
     <!-- tether -->
     <script type="text/javascript" src="/lib/tether/js/tether.min.js"></script>
     <!-- bootstrap -->
-    <script type="text/javascript" src="/lib/bootstrap/js/bootstrap.min.js"></script> 
+    <script type="text/javascript" src="/lib/bootstrap/js/bootstrap.min.js"></script>
     <!-- <script type="text/javascript" src="/lib/bootstrap/plugins/bootstrap-hover-dropdown.min.js"></script> -->
     <!-- i18n used in future -->
     <!-- <script type="text/javascript" src="/lib/i18n/i18n.min.js"></script> -->
@@ -164,8 +172,6 @@
     <script type="text/javascript" src="/lib/echarts/macarons.js"></script> -->
     <!-- custom -->
     <script type="text/javascript" src="/src/common.js"></script>
-            
+
 </body>
-</html> 
-
-
+</html>

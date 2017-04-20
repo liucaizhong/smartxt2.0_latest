@@ -84,6 +84,10 @@
                         <span class="sr-only">Search icons</span>
                     </label>
                     <input id="newsInput" class="form-control search-input" placeholder="输入关键字搜索" autocomplete="off" spellcheck="false" autocorrect="off" tabindex="1">
+                    <div class="search-news-by-keyword-options" onclick="onKeywordOption(event)">
+                        <label class="label-category active" data-id="0">搜索摘要</label>
+                        <label class="label-category" data-id="1">搜索全文</label>
+                    </div>
                     <a id="search-clear" class="search-clear none" onclick="clearSearch(this)"><i class="fa fa-times-circle" aria-hidden="true"></i><span class="sr-only">Clear search</span></a>
                 </div>
             </div>
@@ -132,7 +136,7 @@
                     <label class="label-category" data-id="11">年度报告</label>
                     <label class="label-category" data-id="12">增持</label>
                     <label class="label-category" data-id="13">减持</label>
-                    <label class="label-category" data-id="14">招股说明书</label>
+                    <!-- <label class="label-category" data-id="14">招股说明书</label> -->
                 </div>
             </div>
             <div class="row" onclick="onIndustry(event)">

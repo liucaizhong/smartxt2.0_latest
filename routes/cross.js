@@ -25,12 +25,12 @@ var urls = ['http://139.196.18.233:8087/smartxtAPP/getConceptHeat?', //0
 			'http://139.196.18.233:8087/smartxtAPP/visitLog',//18
 			'http://139.196.18.233:8087/smartxtAPP/queryAnnounce?',//19
 			'http://139.196.18.233:8087/smartxtAPP/queryChats?',//20
-			'http://139.196.18.233:8087/smartxtAPP/surveyList?',//21
+			'http://139.196.18.233:8087/smartxtAPP/surveyList_web?',//21
 			'http://139.196.18.233:8087/smartxtAPP/affList?',//22
 			'http://139.196.18.233:8087/smartxtAPP/allConcepts?',//23
 			'http://139.196.18.233:8087/smartxtAPP/topicsOnAir?',//24
 			'http://139.196.18.233:8087/smartxtAPP/topicList?',//25
-		    'http://139.196.18.233:8087/smartxtAPP/register'];//26
+		  'http://139.196.18.233:8087/smartxtAPP/register'];//26
 
 exports.get = function(req, res) {
 
@@ -61,6 +61,7 @@ exports.get = function(req, res) {
 	    });
 
 	    response.on('end', function() {
+			// console.log(body)
 	      	res.json(body);
 	    });
 	});

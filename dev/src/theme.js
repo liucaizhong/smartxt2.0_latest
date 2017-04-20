@@ -301,11 +301,11 @@ function _genUrl(url, flag) {
     //add theme to url
     if(method != 2) {
         theme.forEach(function(cur) {
-        	urlTheme += cur.trim() + ';';
+        	urlTheme += cur.trim() + ',';
         });
     }else {
         theme.forEach(function(cur) {
-            urlTheme += cur.trim() + ',';
+            urlTheme += cur.trim() + ';';
         });
     }
     //remove comma at the end of str
@@ -313,7 +313,7 @@ function _genUrl(url, flag) {
     // urlTheme = encodeURIComponent(escape(urlTheme));
     //add source to url
     source.forEach(function(cur) {
-    	urlSource += cur +';';
+    	urlSource += cur +',';
     });
 	//remove comma at the end of str
 	urlSource = urlSource.substr(0, urlSource.length-1);

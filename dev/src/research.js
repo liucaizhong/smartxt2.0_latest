@@ -33,7 +33,7 @@ $(document).ready(() => {
     $('.auto-refresh > input[name=self]').change(function(e) {
         $('.focus-loading').show();
         // selfChoice = !selfChoice;
-        var loadUrl = URL_SURVEY + 'userId=' + loginfo.username + '&period=10&keyword=&selfStocksOnly=1'; 
+        var loadUrl = URL_SURVEY + 'userId=' + loginfo.username + '&period=10&keyword=&selfStocksOnly=1';
 
         _clearSource();
         _clearTheme();
@@ -68,7 +68,7 @@ $(document).ready(() => {
             $('#search-clear').show();
         }
     });
-    
+
     //echarts resize
     $(window).on('resize', () => {
         searchMap.resize();
@@ -114,7 +114,7 @@ function customOpStock(li) {
     //ajax get data
     //to do later
     $('.focus-loading').show();
-    var loadUrl = URL_SURVEY + 'userId=' + loginfo.username + '&period=10&keyword=' + code + '&selfStocksOnly=0'; 
+    var loadUrl = URL_SURVEY + 'userId=' + loginfo.username + '&period=10&keyword=' + code + '&selfStocksOnly=0';
 
     $.ajax({
         url: encodeURI(loadUrl),
@@ -222,10 +222,10 @@ function onSource(that) {
         //render results
         var renderId = $btn.attr('id')[1];
         switch(renderId) {
-            case '0': 
+            case '0':
                 _renderResults(resAll[curPeriod]);
                 break;
-            case '1': 
+            case '1':
                 _renderResults(resBuy[curPeriod]);
                 break;
             case '2':
@@ -330,7 +330,7 @@ function _renderResults(data) {
 
 	res.forEach((cur, n) => {
             cur.dates.forEach((rep, i)=>{
-                    var personNumber = 0; 
+                    var personNumber = 0;
                     //create element
                     var fragment = document.createElement('DIV');
                     var $fragment = $(fragment);
@@ -357,7 +357,7 @@ function _renderResults(data) {
                     $(rDiv).append(h5);
                     //create p
                     var p = document.createElement('P');
-                    $(p).addClass('research-card-text').text(cur.name[0] + '(' + cur.code[0] + ')');   
+                    $(p).addClass('research-card-text').text(cur.name[0] + '(' + cur.code[0] + ')');
                     $(rDiv).append(p);
                     $(header).append(rDiv);
                     //append header to card
@@ -392,7 +392,7 @@ function _renderResults(data) {
                             var $spanContent = $(spanContent);
                             $spanContent.addClass('item-content').attr('data-toggle','popover');
                             //hover handler:aria-describedby
-                            $spanContent.hover(function(e) {   
+                            $spanContent.hover(function(e) {
                                 var $tar = $(e.target);
                                 $tar.popover('show');
                                 var popId = $tar.attr('aria-describedby');
@@ -483,7 +483,7 @@ function _renderResults(data) {
                     $(h6).text(personNumber);
                     //append to card content
                     $(content).append(item);
-                    //append to card 
+                    //append to card
                     $card.append(content);
                     //append to fragment
                     $fragment.append(card);
@@ -524,7 +524,7 @@ function _renderMap(chart, data) {
 		        show: false
         	},
         	series: [{
-                name: '报告数',
+                name: '调研人数',
         		type: 'map',
         		map: 'china',
         		label: {
@@ -656,7 +656,7 @@ function _renderSearchResults(data) {
             var $spanContent = $(spanContent);
             $spanContent.addClass('item-content').attr('data-toggle','popover');
             // //hover handler:aria-describedby
-            $spanContent.hover(function(e) {   
+            $spanContent.hover(function(e) {
                 var $tar = $(e.target);
                 $tar.popover('show');
                 var popId = $tar.attr('aria-describedby');
@@ -738,7 +738,7 @@ function _renderSearchResults(data) {
 
         //append to card content
         $(content).append(item);
-        //append to card 
+        //append to card
         $card.append(content);
         //append to fragment
         $fragment.append(card);
@@ -752,9 +752,9 @@ function _renderSearchResults(data) {
 function _newLine(str) {
 
     var strRes = '';
-    var str_len = 0, 
+    var str_len = 0,
         str_length = 0,
-        len = 35, 
+        len = 35,
         charCode = -1;
 
     for (var i = 0; i < str.length; i++) {
@@ -772,7 +772,7 @@ function _newLine(str) {
         strRes = strRes.concat(a);
         if (str_length >= len) {
             strRes = strRes.concat('\n');
-            str_length = 0; 
+            str_length = 0;
         }
     }
 

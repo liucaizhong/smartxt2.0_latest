@@ -1102,8 +1102,11 @@ function onRegisterUser() {
   	    	// if(d.flag) {
   	      //
   	    	// }else {
-          if(!$.isEmptyObject(d))
-  	    	  _showFadeMsg('注册成功！');
+            if(!$.isEmptyObject(d))
+  	    	    _showFadeMsg('注册成功！');
+            else {
+                _showFadeMsg('注册失败！请用机构邮箱。');
+            }
   	    	// }
   	    },
   	    error: (err) => {

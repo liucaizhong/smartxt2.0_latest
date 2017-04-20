@@ -78,6 +78,26 @@ $(document).ready(() => {
         $('img').remove('#weixin-qr');
     });
 
+    $('.apple').hover(function(e) {
+        // console.log(e);
+        var top = e.pageY - 200;
+        var left = e.pageX - 80;
+        var qrCode = document.createElement('IMG');
+        qrCode.id = 'apple-qr';
+        qrCode.src = '../img/icon/apple.png';
+        $(qrCode).css({
+            'display':'block',
+            'position': 'absolute',
+            'top': top,
+            'left': left,
+            'z-index': 999
+        });
+
+        $('body').append(qrCode);
+    }, function(e) {
+        $('img').remove('#apple-qr');
+    });
+
     //hover event
     $('[data-hover="dropdown"]').hover(function(e) {
         // console.log('hover start!');
@@ -287,7 +307,7 @@ $.fn.extend({
         var rs = '';
         s = s.replace(/([-.*+?^${}()|[\]\/\\])/g, "\\$1");
         for (let i = 0; i < s.length; i++) {
-            console.log('rs:',rs);
+            // console.log('rs:',rs);
             if (s.charCodeAt(i) > 255)
                 rs += "\\u" + s.charCodeAt(i).toString(16);
             else

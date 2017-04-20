@@ -2389,3 +2389,14 @@ span[class*="item-2"]>strong {
   text-align: center;
   font-size: 2rem;
 }
+
+.search-news-by-keyword-options {
+    display: none;
+    position: absolute;
+    right: 50px;
+    top: 45px;
+}
+
+.search-news-by-keyword-options > label {
+    font-size: 10px;
+}
